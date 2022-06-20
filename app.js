@@ -46,7 +46,7 @@ app.post('/api/login', (req,res)=> {
     
     res.send({
         accessToken,
-    })
-)
+    }) 
+);
 
  //CAMBIOS
