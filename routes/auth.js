@@ -1,7 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const { validatorRegister, validatorLogin } = require('../validators/auth')
-const { matchedData } = require ('express-validator')
+
+const loginCtrl = require('../controllers/auth');
 
 /***
  * Crear un registro
@@ -9,16 +10,7 @@ const { matchedData } = require ('express-validator')
 //TODO http//localhost:5000/api/auth/login
 //TODO http//localhost:5000/api/auth/register
 
-
-/*
-router.post('/register',  validatorRegister, (req, res)=>{
-    res.send('listo');
-})
-*/
-router.post('/register', validatorRegister, (req, res)=>{
-    req = matchedData(req);
-    res.send({data: req})
-})
+router.post('/register', validatorRegister, loginCtrl)
 
 
 module.exports = router; 

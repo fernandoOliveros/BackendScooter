@@ -16,8 +16,7 @@ const validatorRegister = [ //Es un array []
     .isNumeric(),  //se puede calcular si el usuario pone su fecha de nacimiento
     check("password")
     .exists()
-    .notEmpty()
-    .isNumeric(), 
+    .notEmpty(), // Debe concordar con el tipo de dato de Modelos/users
     check("email")
     .exists()
     .notEmpty()

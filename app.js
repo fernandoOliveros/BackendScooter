@@ -14,17 +14,6 @@ app.use(express.urlencoded({extended: true})) //acentos
 
 const port=process.env.PORT || 5000;
 
-
-/*** PRUEBA BASICA DEL SERVIDOR 🧏‍♀️
- *         
-    app.get('/prueba', (req,res)=>{
-    const data = ["Hola", "mundo"];
-    res.send({data});
-    });
- * 
- */
-
-
 /**
  * AQUI INVOCAMOS A LAS RUTAS 
  */
@@ -36,8 +25,8 @@ app.listen(port , () => {
 
 
 const ENGINE_DB=process.env.ENGINE_DB; //selecciona el tipo de base de datos
-//conexionDBmysql(); //conexion a la base de datos MYSQL 
-
+ //conexion a la base de datos MYSQL 
+ conexionDBmysql;
 
 
 /*const user={
