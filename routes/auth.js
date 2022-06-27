@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { validatorRegister, validatorLogin } = require('../validators/auth')
 
-const loginCtrl = require('../controllers/auth');
+const { loginCtrl, registerCtrl } = require('../controllers/auth');
 
 /***
  * Crear un registro
@@ -10,7 +10,8 @@ const loginCtrl = require('../controllers/auth');
 //TODO http//localhost:5000/api/auth/login
 //TODO http//localhost:5000/api/auth/register
 
-router.post('/register', validatorRegister, loginCtrl)
+router.post('/register', validatorRegister, registerCtrl)
+router.post('/login', validatorLogin, loginCtrl)
 
 
 module.exports = router; 

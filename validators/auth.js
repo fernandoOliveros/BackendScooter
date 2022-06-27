@@ -27,13 +27,13 @@ const validatorRegister = [ //Es un array []
 ];
 
 const validatorLogin = [ //Es un array []
-    check("password").
-    exists().
-    notEmpty(),  //aqui se pueden poner mas condiciones para el password del user
-    check("email").
-    exists().
-    notEmpty()
-    .isEmail, 
+    check("password")
+    .exists()
+    .notEmpty(),  //aqui se pueden poner mas condiciones para el password del user
+    check("email")
+    .exists()
+    .notEmpty()
+    .isEmail(),
     (req, res, next) =>{
         return validateResults(req, res, next)
     }

@@ -16,7 +16,7 @@ fs.readdirSync(PATH_ROUTES).filter((file) => { //devuelve un array, lee de maner
     if(name!== 'index'){
         router.use(`/${name}`, require(`./${file}`)); //htttp://localhost:5000/api/tracks, por ejemplo
     }
-    
+
 }
 )  
 
