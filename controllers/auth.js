@@ -13,6 +13,17 @@ const { handleHttpError } = require("../utils/handleError");
 const registerCtrl = async (req, res)=>{
     try { //usamos un try catch para utilizar el manejador de errores handleError
     req = matchedData(req); //aqui aseguramos que la data venga correcta (curada)
+    
+    const user= await usersModel.findOne({
+        where: { 
+            email: req.email
+        }
+    })
+    if(user){
+        handleHttpError(res, "Ya existe un usuario registrado con ese correo", 401 );
+        return
+    }
+    
     const password = await encrypte(req.password); //await is only valid in async functions
     const body = {...req, password} //Cambiamos el password plano (explicito) por el password encriptado
     const dataUser = await usersModel.create(body); //tipo stored procedure
