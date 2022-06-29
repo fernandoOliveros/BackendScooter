@@ -69,7 +69,8 @@ const loginCtrl = async (req, res)=>{
         user.set('password', undefined, {strict:false})
         const data = {
             token: await tokenSign(user), //mandar a llamar la funcion con await porque la madre es async
-            user
+            user,
+            sucess: true
         }
 
         res.send({data});

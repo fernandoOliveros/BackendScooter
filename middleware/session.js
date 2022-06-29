@@ -1,25 +1,9 @@
 const {handleHttpError}= require('../utils/handleError');
 const {verifyToken} = require("../utils/handleJwt")
+const { usersModel } = require ('../models')
 
 
-/*
-const authMiddleware(req, res, next){ //middleware, importante agregar el "next"
-    const  authHeader= req.headers['authorization'];
-    const token = authHeader && authHeader.split(' ')[1]; //no nulo && indice 1 es donde esta el token, el 0 es Bearer
-    if (!token ){
-        return res.sendStatus(400);
-    }
-    jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) =>{
-        if(err){
-            return res.sendStatus(400);
-        }
-        req.user=user;
-        next(); //para que siga el flujo del codigo
-    });
-}
-*/
-
-const authMiddleware=(req, res, next)=>{ 
+const authMiddleware= async (req, res, next)=>{ 
     try {
 
         if(!req.headers.authorization){
@@ -29,7 +13,19 @@ const authMiddleware=(req, res, next)=>{
     const  authHeader= req.headers['authorization'];
     const token = authHeader && authHeader.split(' ')[1]; //no nulo && indice 1 es donde esta el token, el 0 es Bearer
     const dataToken =await verifyToken(token);
-    //
+    
+    if(!dataToken.id){
+        handleHttpError(res, "ERROR_ID_TOKEN", 401)
+        return
+    }
+
+    const user =  await usersModel.findOne({
+        where: { 
+            id: dataToken.id
+        }
+    })
+
+    req.user = user
 
     next();
 
@@ -38,4 +34,4 @@ const authMiddleware=(req, res, next)=>{
     }
 }
 
-module.exports=authMiddleware;
+module.exports={authMiddleware};
