@@ -15,7 +15,7 @@ const sign = await jsonwebtoken.sign (
     },
     JWT_SECRET,
     {
-        expiresIn: "2h",
+        expiresIn: "60s",
     }
 ) 
 return sign; 

@@ -1,6 +1,6 @@
-const handleHttpError= (res, message= 'Algo sucerdio...', code= 403) =>{
+const handleHttpError= (res, message= 'Algo sucedio...', code= 403) =>{  //parametros de arriba, son los de default
     res.status(code);
-    res.send    ({error: 'message'});
+    res.send    ({error: message});
 };
 
 module.exports= {handleHttpError};
