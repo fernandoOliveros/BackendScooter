@@ -20,7 +20,7 @@ const sequelize= new Sequelize (
 const conexionDBmysql= async() =>{ 
     try {
         await sequelize.authenticate();
-        console.log("Conexion exitosa con la base de datos CHINGA TU MADRE DON")
+        console.log("Conexion exitosa con la base de datos")
         
     } catch (error) {
         console.log('Error de conexion con la base de datos', error)
@@ -28,4 +28,4 @@ const conexionDBmysql= async() =>{
 }
 
 
-module.exports=conexionDBmysql;
+module.exports= {sequelize, conexionDBmysql };
