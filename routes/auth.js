@@ -13,7 +13,5 @@ const { loginCtrl, registerCtrl } = require('../controllers/auth');
 router.post('/register', validatorRegister, registerCtrl)
 router.post('/login', validatorLogin, loginCtrl)
 
-router.get('/home')
-
 
 module.exports = router; 
