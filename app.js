@@ -25,6 +25,5 @@ app.listen(port , () => {
 
 
 const ENGINE_DB=process.env.ENGINE_DB; //selecciona el tipo de base de datos
- //conexion a la base de datos MYSQL 
- conexionDBmysql;
+conexionDBmysql; //conexion a la base de datos MYSQL 
 
