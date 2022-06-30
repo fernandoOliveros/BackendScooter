@@ -20,7 +20,7 @@ const port=process.env.PORT || 5000;
 app.use("/api", require("./routes"));
 
 app.listen(port , () => {
-    console.log(`APP escuchando por el puerto: localhost:${port}`);
+    console.log(`Escuchando por el puerto: localhost:${port}`);
 });
 
 
