@@ -4,6 +4,6 @@ const { authMiddleware } = require("../middleware/session")
 const { homeCtrl } = require("../controllers/home")
 
 
-router.get('/home', authMiddleware, homeCtrl)
+router.get('/', authMiddleware, homeCtrl)
 
 module.exports = router; 
