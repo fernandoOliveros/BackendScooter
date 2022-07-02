@@ -7,7 +7,7 @@ const jwt=require('jsonwebtoken'); //libreria para crear tokens
 const { restart } = require("nodemon"); 
 
 
-
+//me la pelas
 app.use(cors());
 app.use(express.json()); //Para realizar peticiones en formato json
 app.use(express.urlencoded({extended: true})) //acentos
