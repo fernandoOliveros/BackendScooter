@@ -35,7 +35,7 @@ const registerCtrl = async (req, res)=>{
         sucess: true
     }
     res.send({ data: data })
-    
+
     } catch (e) {
         handleHttpError(res, "ERROR_REGISTER_USER");
     }
@@ -61,7 +61,7 @@ const loginCtrl = async (req, res)=>{
         }
 
         const hashPasword = user.get('password'); //revisar clase 20 min 5, porque el password no se debe regresar
-        console.log({hashPasword})
+        //console.log({hashPasword}) //solo para verificar el hash
 
         const check = await compare(req.password, hashPasword);
         if(!check){
