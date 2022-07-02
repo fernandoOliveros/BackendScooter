@@ -31,9 +31,11 @@ const registerCtrl = async (req, res)=>{
 
     const data = {
         token: await tokenSign (dataUser),
-        user: dataUser
+        user: dataUser,
+        sucess: true
     }
     res.send({ data: data })
+    
     } catch (e) {
         handleHttpError(res, "ERROR_REGISTER_USER");
     }
@@ -76,7 +78,7 @@ const loginCtrl = async (req, res)=>{
         res.send({data});
     } catch (e) {
         console.log(e)
-        handleHttpError(res, "ERROR_LGIN_USER", 404);
+        handleHttpError(res, "ERROR_LOGIN_USER", 404);
     }
 }
 
