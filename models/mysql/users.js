@@ -1,4 +1,4 @@
-const { sequelize }= require("../../config/mysql")
+/*const { sequelize }= require("../../config/mysql")
 //const sequelize = require("sequelize"); //YA NO ES NECESARIO, SE CONSIGUIO ARRIBA 
 const { DataTypes } = require("sequelize");
 
@@ -24,4 +24,4 @@ const User = sequelize.define(
     }
 );
 
-module.exports = User;
+module.exports = User;*/
