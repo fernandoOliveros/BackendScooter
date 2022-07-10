@@ -16,7 +16,7 @@ const registerCtrl = async (req, res)=>{
     
     const user= await usersModel.findOne({
         where: { 
-            email: req.email
+            st_Email: req.st_Email
         }
     })
     if(user){
@@ -52,7 +52,7 @@ const loginCtrl = async (req, res)=>{
         req=matchedData(req); //data curada, obtener solo los datos que necesitamos
         const user= await usersModel.findOne({
             where: { 
-                email: req.email
+                st_Email: req.st_Email
             }
         }) //funcion tipo stored procedure, busca los datos del usuario segun el correo registrado en la bdd
         if(!user){
@@ -60,19 +60,19 @@ const loginCtrl = async (req, res)=>{
             return
         }
 
-        const hashPasword = user.get('password'); //revisar clase 20 min 5, porque el password no se debe regresar
-        //console.log({hashPasword}) //solo para verificar el hash
+        const hashPasword = user.get('st_Password'); //revisar clase 20 min 5, porque el password no se debe regresar
+        console.log({hashPasword}) //solo para verificar el hash
 
-        const check = await compare(req.password, hashPasword);
+        const check = await compare(req.st_Password, hashPasword);
         if(!check){
             handleHttpError(res, "Contraseña incorrecta", 401 );
             return
         }
-        user.set('password', undefined, {strict:false})
+        user.set('st_Password', undefined, {strict:false})
         const data = {
             token: await tokenSign(user), //mandar a llamar la funcion con await porque la madre es async
             user,
-            sucess: true
+            success: true
         }
 
         res.send({data});

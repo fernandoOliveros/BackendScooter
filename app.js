@@ -2,14 +2,10 @@ require("dotenv").config(); //variables de entorno
 const express = require("express"); //uso de Express
 const cors = require("cors");
 const app = express();
-//const conexionDBmysql = require("./config/mysql");
-const jwt=require('jsonwebtoken'); //libreria para crear tokens
-const { restart } = require("nodemon"); 
-const connection = require ("./config/mysql")
+const conexionDBmysql = require("./config/mysql");
+//const jwt=require('jsonwebtoken'); //libreria para crear tokens
+//const { restart } = require("nodemon"); 
 
-
-
-//me la pelas
 app.use(cors());
 app.use(express.json()); //Para realizar peticiones en formato json
 app.use(express.urlencoded({extended: true})) //acentos
@@ -26,8 +22,7 @@ app.listen(port , () => {
 });
 
 const ENGINE_DB=process.env.ENGINE_DB; //selecciona el tipo de base de datos
-//conexionDBmysql; //conexion a la base de datos MYSQL 
+conexionDBmysql; //conexion a la base de datos MYSQL 
 
-connection;
 
 

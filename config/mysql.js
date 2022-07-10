@@ -1,24 +1,6 @@
+const Sequelize=require ("sequelize");
 
-//const Sequelize=require ("sequelize");
-var mysql = require('mysql');
-
-var connection = mysql.createConnection({
-    host: 'localhost',
-    user: 'root',
-    password: '',
-    database: 'scooterprueba'
- });
-
- connection.connect(function(error){
-    if(error){
-       throw error;
-    }else{
-       console.log('Conexion correcta.');
-    }
- });
-
- module.exports = connection;
-/*const database= process.env.mysql_DB;
+const database= process.env.mysql_DB;
 const username= process.env.mysql_USERNAME;
 const password= process.env.mysql_PASSWORD;
 const host= process.env.mysql_HOST;
@@ -45,5 +27,4 @@ const conexionDBmysql= async() =>{
     }
 }
 
-*/
-//module.exports= {conexionDBmysql };
+module.exports= {conexionDBmysql, sequelize };

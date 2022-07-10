@@ -6,18 +6,18 @@ const validateResults = require('../utils/handleValidator');
  * Esto es un Middleware
  */
 const validatorRegister = [ //Es un array []
-    check("name")
+    check("st_Nombre")
     .exists() //comrpueba si existe
     .notEmpty()//asegura que no esté vacío
     .isLength({min: 2, max:30}),  
-    check("age")
+    check("i_Edad")
     .exists()
     .notEmpty()
     .isNumeric(),  //se puede calcular si el usuario pone su fecha de nacimiento
-    check("password")
+    check("st_Password")
     .exists()
     .notEmpty(), // Debe concordar con el tipo de dato de Modelos/users
-    check("email")
+    check("st_Email")
     .exists()
     .notEmpty()
     .isEmail(),
@@ -27,10 +27,10 @@ const validatorRegister = [ //Es un array []
 ];
 
 const validatorLogin = [ //Es un array []
-    check("password")
+    check("st_Password")
     .exists()
     .notEmpty(),  //aqui se pueden poner mas condiciones para el password del user
-    check("email")
+    check("st_Email")
     .exists()
     .notEmpty()
     .isEmail(),

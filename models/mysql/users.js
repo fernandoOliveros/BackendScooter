@@ -1,21 +1,21 @@
-/*const { sequelize }= require("../../config/mysql")
+const { sequelize }= require("../../config/mysql")
 //const sequelize = require("sequelize"); //YA NO ES NECESARIO, SE CONSIGUIO ARRIBA 
 const { DataTypes } = require("sequelize");
 
 const User = sequelize.define(
     "users",
     {
-        name: {
+        st_Nombre: {
             type: DataTypes.STRING,
             allowNull: false
         },
-        age: {
+        i_Edad: {
             type: DataTypes.NUMBER, //poner mas validaciones futuras
         },
-        email: { 
+        st_Email: { 
             type: DataTypes.STRING
         },
-        password: {
+        st_Password: {
             type: DataTypes.STRING,
         }
     },
@@ -24,4 +24,4 @@ const User = sequelize.define(
     }
 );
 
-module.exports = User;*/
+module.exports = User;
