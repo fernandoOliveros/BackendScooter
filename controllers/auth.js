@@ -1,6 +1,6 @@
 const { matchedData } = require ("express-validator");
-const { usersModel } = require ('../models');
-const {tokenSign } = require("../utils/handleJwt");
+const  Dbmanager = require ('../models/mysql/users');
+const tokenSign  = require("../utils/handleJwt");
 const { encrypte, compare } = require("../utils/handlePassword");
 const { handleHttpError } = require("../utils/handleError");
 
@@ -10,8 +10,35 @@ const { handleHttpError } = require("../utils/handleError");
  * @param {*} res 
  */
 
+const getUsersCtrl = async (req, res) =>{
+    try {
+        console.log('works');
+        //const proofConn = new Dbmanager('localhost', 'root', '', 'scooterprueba');
+        //await (await proofConn.getConnection()).getUsers;
+        const proofConn = new Dbmanager();
+        const nombre = await proofConn.getAllFrom('users');
+        //res.send(nombre);
+        console.log(nombre);
+    } catch (e) {
+        console.log(e)
+        handleHttpError(res, "Error to retrieve data", 404)
+    }
+}
+
 const registerCtrl = async (req, res)=>{
-    try { //usamos un try catch para utilizar el manejador de errores handleError
+    try {
+        const allUsers = await dbManager.getUsers; 
+        console.log(allUsers)
+        res.status(200).json(allUsers)
+    } catch (e) {
+        console.log(e)
+        handleHttpError(res, "Error ", 404)
+    }
+
+
+
+
+    /*try { //usamos un try catch para utilizar el manejador de errores handleError
     req = matchedData(req); //aqui aseguramos que la data venga correcta (curada)
     
     const user= await usersModel.findOne({
@@ -19,6 +46,7 @@ const registerCtrl = async (req, res)=>{
             email: req.email
         }
     })
+    
     if(user){
         handleHttpError(res, "Ya existe un usuario registrado con ese correo", 401 );
         return
@@ -38,7 +66,7 @@ const registerCtrl = async (req, res)=>{
 
     } catch (e) {
         handleHttpError(res, "ERROR_REGISTER_USER");
-    }
+    }*/
 }
 
 /**
@@ -82,4 +110,4 @@ const loginCtrl = async (req, res)=>{
     }
 }
 
-module.exports = { loginCtrl, registerCtrl };
+module.exports = { loginCtrl, registerCtrl, getUsersCtrl};
