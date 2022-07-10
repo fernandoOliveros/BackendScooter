@@ -13,7 +13,6 @@ const { handleHttpError } = require("../utils/handleError");
 const registerCtrl = async (req, res)=>{
     try { //usamos un try catch para utilizar el manejador de errores handleError
     req = matchedData(req); //aqui aseguramos que la data venga correcta (curada)
-    
     const user= await usersModel.findOne({
         where: { 
             st_Email: req.st_Email
@@ -24,19 +23,21 @@ const registerCtrl = async (req, res)=>{
         return
     }
     
-    const password = await encrypte(req.password); //await is only valid in async functions
-    const body = {...req, password} //Cambiamos el password plano (explicito) por el password encriptado
+    const st_Password = await encrypte(req.st_Password); //await is only valid in async functions
+    const body = {...req, st_Password} //Cambiamos el password plano (explicito) por el password encriptado
+    //console.log(body)
     const dataUser = await usersModel.create(body); //tipo stored procedure
     //dataUser.set("password", undefined, { strict : false}); 
 
     const data = {
         token: await tokenSign (dataUser),
         user: dataUser,
-        sucess: true
+        success: true
     }
     res.send({ data: data })
 
     } catch (e) {
+        console.log(e)
         handleHttpError(res, "ERROR_REGISTER_USER");
     }
 }
