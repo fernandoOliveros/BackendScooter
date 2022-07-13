@@ -2,6 +2,7 @@ const {handleHttpError}= require('../utils/handleError');
 const {verifyToken} = require("../utils/handleJwt")
 const { usersModel } = require ('../models')
 
+//aqui verificamos la autorization por bearer Token
 
 const authMiddleware= async (req, res, next)=>{ 
     try {

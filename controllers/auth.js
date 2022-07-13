@@ -25,9 +25,8 @@ const registerCtrl = async (req, res)=>{
     
     const st_Password = await encrypte(req.st_Password); //await is only valid in async functions
     const body = {...req, st_Password} //Cambiamos el password plano (explicito) por el password encriptado
-    //console.log(body)
     const dataUser = await usersModel.create(body); //tipo stored procedure
-    //dataUser.set("password", undefined, { strict : false}); 
+    //dataUser.set("password", undefined, { strict : false});  //para ocultar el password en la response
 
     const data = {
         token: await tokenSign (dataUser),

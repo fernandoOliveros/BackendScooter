@@ -3,12 +3,11 @@ const express = require("express"); //uso de Express
 const cors = require("cors");
 const app = express();
 const conexionDBmysql = require("./config/mysql");
-//const jwt=require('jsonwebtoken'); //libreria para crear tokens
-//const { restart } = require("nodemon"); 
 
 app.use(cors());
 app.use(express.json()); //Para realizar peticiones en formato json
-app.use(express.urlencoded({extended: true})) //acentos
+app.use(express.urlencoded({extended: true})) //
+app.use(express.static("storage")) //post public files in http
 
 const port=process.env.PORT || 5000;
 

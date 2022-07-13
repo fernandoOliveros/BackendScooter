@@ -2,13 +2,11 @@ const ENGINE_DB = process.env.ENGINE_DB;
 
 const pathDB = (ENGINE_DB == 'nosql') ? './nosql' : './mysql';
 
-/*
-const pathDB = ()=>{
-    if(ENGINE_DB == 'mysql') ? pathDB =='./mysql' :  pathDB =='./nosql' ;
-}*/
-
 const models = {
     usersModel: require(`${pathDB}/users`),
+    unidadesModel: require(`${pathDB}/unidades`),
+    documentosUnidadModel: require(`${pathDB}/unidaddocumentos`),
+    storageModel: require(`${pathDB}/storage`)
 }
 
 module.exports = models;
