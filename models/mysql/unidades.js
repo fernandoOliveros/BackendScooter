@@ -10,10 +10,6 @@ const Unidad = sequelize.define(
         id_Marca : {
             type: DataTypes.NUMBER,
         },
-        id_Documento : {
-            type: DataTypes.NUMBER,
-            allowNull : true, //este se debe llenar posteriormente
-        },
         id_TipoUnidad : {
             type: DataTypes.NUMBER,
         },

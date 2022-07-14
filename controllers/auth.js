@@ -61,7 +61,7 @@ const loginCtrl = async (req, res)=>{
         }
 
         const hashPassword = user.get('st_Password'); //revisar clase 20 min 5, porque el password no se debe regresar
-        console.log(req.st_Password) //solo para verificar el hash
+        //console.log(req.st_Password) //solo para verificar el hash
 
         const check = await compare(req.st_Password, hashPassword);
         if(!check){

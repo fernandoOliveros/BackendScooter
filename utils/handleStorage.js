@@ -11,8 +11,8 @@ const storage = multer.diskStorage({
   filename: function (req, file, cb) {
     const ext = file.originalname.split(".").pop();
 
-    switch(file.fieldname) {
-      case "url_TarjetaCirculacion" :{
+    switch (file.fieldname) {
+      case "url_TarjetaCirculacion": {
         const filename = `TARCIR-${Date.now()}.${ext}`;
         cb(null, filename);
         break;
@@ -28,18 +28,9 @@ const storage = multer.diskStorage({
         break;
       }
       default:
-        const filename = `file-${Date.now()}.${ext}`;
+        const filename = `unknown-${Date.now()}.${ext}`;
         cb(null, filename);
     }
-
-    /*if (file.fieldname == "url_TarjetaCirculacion") {
-      const filename = `TARCIR-${Date.now()}.${ext}`;
-      cb(null, filename);
-    } else {
-      const filename = `file-${Date.now()}.${ext}`;
-      cb(null, filename);
-    }*/
-
   },
 });
 

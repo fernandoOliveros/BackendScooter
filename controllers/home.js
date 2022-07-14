@@ -23,19 +23,12 @@ const homeCtrl = async (req, res) => {
 //Controlador : dar de alta unidades
 const unidadesCtrl = async (req, res) => {
   try {
-    let peticion = req.body;
     const dataa = matchedData(req); //la data del request venga curada
     let bodyy = {
       ...dataa,
     };
-    console.log(bodyy);
-    //console.log(peticion)
-    //res.send({req})
-    //console.log(body.i_Año);
     const dataUnidad = await unidadesModel.create(bodyy);
-    let id_Unidad = dataUnidad.id;
-    console.log(id_Unidad);
-    //docsCtrl(id_Unidad); //** */
+    //let id_Unidad = dataUnidad.id; console.log(id_Unidad);
     const data = {
       unidad: dataUnidad,
       success: true,
@@ -46,6 +39,25 @@ const unidadesCtrl = async (req, res) => {
   } catch (e) {
     console.log(e);
     handleHttpError(res, "ERROR_UPLOAD_UNIDAD");
+  }
+};
+
+//Controlador : actualizar unidades
+const updateUnidadesCtrl = async (req, res) => {
+  try {
+    const {id, ...body} = matchedData(req); //splits the request into two objects, id and body
+    let idToUptate = id;
+    let bodyToUpdate = body;
+    console.log(idToUptate)
+    console.log(bodyToUpdate)
+    const dataUpdateUnidad = await unidadesModel.update( body, { where: { id: id }});
+
+    res.send({
+    dataUpdateUnidad,
+    success: true})
+  } catch (e) {
+    console.log(e);
+    handleHttpError(res, "ERROR_UPDATE_UNIDAD");
   }
 };
 
@@ -65,7 +77,7 @@ const docsCtrl = async (req, res) => {
     };
     const data = await documentosUnidadModel.create(filesData);
     res.send({ 
-      filesData, 
+      data, 
       success: true 
     });
   } catch (e) {
@@ -75,12 +87,30 @@ const docsCtrl = async (req, res) => {
 };
 
 const getAllUnidadesCtrl = async (req, res) => {
-  console.log("hola mundo");
-  res.send("Leer todas las unidades...");
+  try {
+    const allUnidades = await unidadesModel.findAll()
+    res.send({
+      allUnidades,
+      success: true 
+    })
+  } catch (e) {
+    console.log(e)
+    handleHttpError(res, "ERROR_GET_UNIDADES")
+  }
 };
 
 const getUnidadCtrl = async (req, res) => {
-  res.send("leer una unidad...");
+  try {
+    req = matchedData(req);
+    const {id} = req;
+    const getUnidad = await unidadesModel.findByPk(id)
+    res.send({
+      getUnidad,
+      success: true 
+    })
+  } catch (e) {
+    handleHttpError(res, "ERROR_GET_UNIDAD")
+  }
 };
 
 module.exports = {
@@ -89,4 +119,6 @@ module.exports = {
   getAllUnidadesCtrl,
   getUnidadCtrl,
   docsCtrl,
+  updateUnidadesCtrl,
+
 };

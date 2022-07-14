@@ -38,6 +38,12 @@ const validatorUnidades = [
     }
 ];
 
+const validatorGetUnidad = [
+    check("id").exists(),
+    (req, res, next) => {
+        return validateResults(req, res, next);
+    }
+];
 
 
-module.exports = { validatorUnidades};
+module.exports = { validatorUnidades, validatorGetUnidad};
