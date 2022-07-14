@@ -60,15 +60,15 @@ const loginCtrl = async (req, res)=>{
             return
         }
 
-        const hashPasword = user.get('st_Password'); //revisar clase 20 min 5, porque el password no se debe regresar
-        console.log({hashPasword}) //solo para verificar el hash
+        const hashPassword = user.get('st_Password'); //revisar clase 20 min 5, porque el password no se debe regresar
+        console.log(req.st_Password) //solo para verificar el hash
 
-        const check = await compare(req.st_Password, hashPasword);
+        const check = await compare(req.st_Password, hashPassword);
         if(!check){
             handleHttpError(res, "Contraseña incorrecta", 401 );
             return
         }
-        user.set('st_Password', undefined, {strict:false})
+        //user.set('st_Password', undefined, {strict:false})
         const data = {
             token: await tokenSign(user), //mandar a llamar la funcion con await porque la madre es async
             user,

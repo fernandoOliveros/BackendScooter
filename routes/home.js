@@ -24,15 +24,16 @@ http://localhost:5000/api/home/upload/documentos
  */
 router.post("/upload/unidad", validatorUnidades, unidadesCtrl); //Create Unidad
 
-router.post("/upload/documentos", //Upload documentos de unidad
+//Upload documentos de unidad
+router.post("/upload/documentos",
   uploadMiddleware.fields([
-    { name: "url_TarjetCirculacion", maxCount: 1 }, 
+    { name: "url_TarjetaCirculacion", maxCount: 1 }, 
     { name: "url_Factura", maxCount: 1 },
     { name: "url_PermisoSCT", maxCount: 1 },
   ]),
   docsCtrl
 );
-
+  
 router.get("/get/unidades", getAllUnidadesCtrl); //Read all unidades
 router.get("/unidades/get/:id", getUnidadCtrl); //read Unidad
 

@@ -3,7 +3,7 @@ const { sequelize }= require("../../config/mysql")
 const { DataTypes } = require("sequelize");
 
 const User = sequelize.define(
-    "users",
+    "tbl_users",
     {
         st_Nombre: {
             type: DataTypes.STRING,

@@ -1,7 +1,6 @@
 const { matchedData } = require("express-validator");
 const { handleHttpError } = require("../utils/handleError");
 const { unidadesModel, documentosUnidadModel } = require("../models");
-//const { validatorDocumentos } = require("../validators/home");
 const PUBLIC_URL = process.env.PUBLIC_URL;
 
 /**
@@ -54,7 +53,7 @@ const docsCtrl = async (req, res) => {
   try {
     const { files } = req;
 
-    let [dataTarjetaCirculacion] = files["url_TarjetCirculacion"];
+    let [dataTarjetaCirculacion] = files["url_TarjetaCirculacion"];
     let [dataFactura] = files["url_Factura"];
     let [dataPermisoSCT] = files["url_PermisoSCT"];
 

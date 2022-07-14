@@ -38,17 +38,6 @@ const validatorUnidades = [
     }
 ];
 
-const validatorDocumentos = [
-    check("url_TarjetaCirculacion")  //Poner mas validaciones despues
-    .exists(),
-    check("url_Factura")
-    .exists(),
-    check("url_PermisoSCT")
-    .isEmpty(),
-    (req, res, next) => {
-        return validateResults(req, res, next);
-    }
-];
 
 
-module.exports = { validatorUnidades, validatorDocumentos};
+module.exports = { validatorUnidades};
