@@ -27,11 +27,11 @@ const createDocumentosCtrl = async (req, res) => {
 
 const updateDocumentosCtrl = async (req, res) => {
   try {
-    /*const { id, ...body } = matchedData(req); //splits the request into two objects, id and body
-    const dataUpdateUnidad = await unidadesModel.update(body, {
+    const { id, ...body } = matchedData(req); //splits the request into two objects, id and body
+    const dataUpdateDocumento = await documentosModel.update(body, {
       where: { id: id },
     });
-    handleHttpResponse(res, dataUpdateUnidad);*/
+    handleHttpResponse(res, dataUpdateDocumento);
   } catch (e) {
     console.log(e);
     handleHttpError(res, "ERROR_UPDATE_UNIDAD");
