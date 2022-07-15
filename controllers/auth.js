@@ -2,7 +2,7 @@ const { matchedData } = require ("express-validator");
 const { usersModel } = require ('../models');
 const {tokenSign } = require("../utils/handleJwt");
 const { encrypte, compare } = require("../utils/handlePassword");
-const { handleHttpError } = require("../utils/handleError");
+const { handleHttpError, handleHttpResponse } = require("../utils/handleResponse");
 
 /**
  * Este controlador es el encargado de registrar un usuario
@@ -30,10 +30,9 @@ const registerCtrl = async (req, res)=>{
 
     const data = {
         token: await tokenSign (dataUser),
-        user: dataUser,
-        success: true
+        user: dataUser
     }
-    res.send({ data: data })
+    handleHttpResponse(res, data);
 
     } catch (e) {
         console.log(e)
@@ -71,11 +70,9 @@ const loginCtrl = async (req, res)=>{
         //user.set('st_Password', undefined, {strict:false})
         const data = {
             token: await tokenSign(user), //mandar a llamar la funcion con await porque la madre es async
-            user,
-            success: true
+            user
         }
-
-        res.send({data});
+        handleHttpResponse(res, data)
     } catch (e) {
         console.log(e)
         handleHttpError(res, "ERROR_LOGIN_USER", 404);

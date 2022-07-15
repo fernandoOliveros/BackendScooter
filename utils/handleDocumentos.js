@@ -5,12 +5,11 @@ const multer = require("multer");
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    const pathStorage = `${__dirname}/../storage`;
+    const pathStorage = `${__dirname}/../storage/documentos`;
     cb(null, pathStorage);
   },
   filename: function (req, file, cb) {
     const ext = file.originalname.split(".").pop();
-
     switch (file.fieldname) {
       case "url_TarjetaCirculacion": {
         const filename = `TARCIR-${Date.now()}.${ext}`;

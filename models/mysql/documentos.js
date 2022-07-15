@@ -2,7 +2,7 @@ const { sequelize } = require("../../config/mysql");
 const { DataTypes } = require("sequelize");
 
 const Documentos = sequelize.define(
-  "tbl_unidaddocumentos",
+  "tbl_documentos",
   {
     id_Unidad: {
       type: DataTypes.NUMBER,
