@@ -4,6 +4,11 @@ const { DataTypes } = require("sequelize");
 const Documentos = sequelize.define(
   "tbl_documentos",
   {
+    id_Documento : {
+      type: DataTypes.NUMBER,
+      primaryKey: true,
+      autoIncrement: true,
+    },
     id_Unidad: {
       type: DataTypes.NUMBER,
       allowNull: true,

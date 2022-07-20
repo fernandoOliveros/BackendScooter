@@ -29,7 +29,7 @@ const updateDocumentosCtrl = async (req, res) => {
   try {
     const { id, ...body } = matchedData(req); //splits the request into two objects, id and body
     const dataUpdateDocumento = await documentosModel.update(body, {
-      where: { id: id },
+      where: { id_Documento: id },
     });
     handleHttpResponse(res, dataUpdateDocumento);
   } catch (e) {
@@ -63,7 +63,7 @@ const deleteDocumentosCtrl = async (req, res) => {
   try {
     req = matchedData(req);
     const { id } = req;
-    const dataDeleteDocumentos = await documentosModel.destroy({ where: { id: id } });
+    const dataDeleteDocumentos = await documentosModel.destroy({ where: { id_Documento: id } });
     handleHttpResponse(res, dataDeleteDocumentos);
   } catch (e) {
     handleHttpError(res, "ERROR_DELETE_DOCUMENTO");
