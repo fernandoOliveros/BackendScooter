@@ -5,16 +5,19 @@ const validateResults = require ("../utils/handleValidator");
  * Esto es un Middleware para el request de Create, read, update, delete Unidades
  */
 const validatorUnidades = [
-    check("id_Unidad").isEmpty(),
+    check("id_Unidad").
+    isEmpty(),
     check("id_Empresa") 
-    .exists(),
-    check("id_Marca")
     .exists(),
     check("id_Documento")
     .isEmpty(),
     check("id_TipoUnidad")
     .exists(),
     check("id_Candado")
+    .exists(),
+    check("st_Marca")
+    .exists(),
+    check("st_SubMarca")
     .exists(),
     check("st_PermisoSCT")
     .exists(),

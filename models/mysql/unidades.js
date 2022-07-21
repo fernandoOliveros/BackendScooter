@@ -12,14 +12,17 @@ const Unidad = sequelize.define(
     id_Empresa: {
       type: DataTypes.NUMBER,
     },
-    id_Marca: {
-      type: DataTypes.NUMBER,
-    },
     id_TipoUnidad: {
       type: DataTypes.NUMBER,
     },
     id_Candado: {
       type: DataTypes.NUMBER,
+    },
+    st_Marca: {
+      type: DataTypes.STRING,
+    },
+    st_SubMarca: {
+      type: DataTypes.STRING,
     },
     st_PermisoSCT: {
       type: DataTypes.STRING,
