@@ -17,7 +17,7 @@ const port=process.env.PORT || 5000;
 app.use("/api", require("./routes")); //leer index
 
 app.listen(port , () => {
-    console.log(`Escuchando por el puerto: localhost:${port}`);
+    console.log(`Escuchando por el PUERTO: localhost:${port}`);
 });
 
 const ENGINE_DB=process.env.ENGINE_DB; //selecciona el tipo de base de datos
