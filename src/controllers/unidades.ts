@@ -1,14 +1,14 @@
 import express, { Request, Response } from "express";
 import { matchedData } from "express-validator";
-import unidadesModel from "../models/index"
-//import  handleHttpResponse  from "../utils/handleResponse";
+import Unidad from "../models/unidades"
+import  handleHttpResponse  from "../utils/handleResponse";
 //import handleHttpError  from "../utils/handleError";
 
 async function createUnidadesCtrl(req: Request, res: Response): Promise<void> {
   try {
-    const body = matchedData(req);
-    console.log(body)
-    //res.send("hello bro this is just a proof");
+    const body = matchedData(req); //la data del request venga curada
+    const dataUnidad = await Unidad.create(body);
+    await handleHttpResponse(res, dataUnidad, 401);
   } catch (e) {
     console.log(e);
   }

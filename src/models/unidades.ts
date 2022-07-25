@@ -1,7 +1,7 @@
-import  Sequelize  from "../config/mysql";
+import  {sequelize}  from "../config/mysql";
 import { DataTypes } from "sequelize";
 
-const Unidad = Sequelize.define(
+const Unidad = sequelize.define(
   "tbl_unidades",
   {
     id_Unidad: {

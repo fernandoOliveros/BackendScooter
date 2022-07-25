@@ -29,4 +29,4 @@ const conexionDBmysql= async() =>{
 }
 
 
-export default conexionDBmysql;
+export {conexionDBmysql, sequelize};

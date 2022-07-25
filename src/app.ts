@@ -1,5 +1,5 @@
 import 'dotenv/config'
-import conexionDBmysql from "./config/mysql";
+import {conexionDBmysql} from "./config/mysql";
 import express, { Express, Request, Response } from "express";
 import cors from "cors";
 import routes from "./routes"
