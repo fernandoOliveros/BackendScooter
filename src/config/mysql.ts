@@ -1,4 +1,5 @@
-const Sequelize=require ("sequelize");
+import { Sequelize } from 'sequelize'
+
 
 const database= process.env.mysql_DB;
 const username= process.env.mysql_USERNAME;
@@ -7,9 +8,9 @@ const host= process.env.mysql_HOST;
 
 //instanciamos la clase que guarda los datos de conexion con la bd
 const sequelize= new Sequelize (
-    database,
-    username,
-    password,
+    database!,
+    username!,
+    password!,
     {
         host, 
         dialect: "mysql"
@@ -27,4 +28,5 @@ const conexionDBmysql= async() =>{
     }
 }
 
-module.exports= {conexionDBmysql, sequelize };
+
+export default conexionDBmysql;
