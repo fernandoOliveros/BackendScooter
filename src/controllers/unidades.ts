@@ -3,7 +3,7 @@ import { matchedData } from "express-validator";
 import Unidad from "../models/unidades";
 import handleHttpResponse from "../utils/handleResponse";
 import handleHttpError from "../utils/handleError";
-import { Model } from "sequelize/types";
+//import { Model } from "sequelize/types";
 
 async function createUnidadCtrl(req: Request, res: Response): Promise<void> {
   try {
