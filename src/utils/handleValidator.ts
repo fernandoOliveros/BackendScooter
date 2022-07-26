@@ -5,12 +5,11 @@ function validateResults(req: Request, res: Response, next: NextFunction) {
     try {
         validationResult(req).throw();
         return next();
-    } catch (err) {
+    } catch (e) {
         res.status(403);
-        res.send("something went wrong");
+        res.send({ errors : e.array() });
     }
 
 } 
 
 export default validateResults;
-//module.exports= validateResults;
