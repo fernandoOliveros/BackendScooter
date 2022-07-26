@@ -7,6 +7,7 @@ const models = {
     unidadesModel: require(`${pathDB}/unidades`),
     documentosModel: require(`${pathDB}/documentos`),
     tiposUnidadesModel: require(`${pathDB}/tiposUnidades`),
+    operadoresModel: require(`${pathDB}/operadores`),
 }
 
 module.exports = models;
