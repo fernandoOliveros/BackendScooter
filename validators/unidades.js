@@ -21,7 +21,7 @@ const validatorUnidades = [
     .exists(),
     check("st_Economico")
     .exists(),
-    check("i_Año")
+    check("st_Anio")
     .exists(),
     check("st_Placa")
     .exists(),

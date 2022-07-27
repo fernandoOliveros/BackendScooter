@@ -10,7 +10,7 @@ const {
   readAllOperadoresCtrl,
   readOperadorCtrl,
   deleteOperadorCtrl,
-} = require("../controllers/documentos");
+} = require("../controllers/operadores");
 
 /**
  * RUTAS - OPERADORES

@@ -30,8 +30,8 @@ const Unidad = sequelize.define(
     st_Economico: {
       type: DataTypes.STRING,
     },
-    i_Año: {
-      type: DataTypes.NUMBER,
+    st_Anio: {
+      type: DataTypes.STRING,
     },
     st_Placa: {
       type: DataTypes.STRING,

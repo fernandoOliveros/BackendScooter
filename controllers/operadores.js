@@ -4,7 +4,7 @@ const { handleHttpError } = require("../utils/handleError");
 const { operadoresModel } = require("../models");
 
 /**
- * @param {} req  http://localhost:5000/api/unidades/...
+ * @param {} req  http://localhost:5000/api/operadores/...
  * @param {*} res   Query de la operacion
  */
 
