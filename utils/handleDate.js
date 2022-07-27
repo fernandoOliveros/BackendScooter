@@ -1,3 +1,7 @@
+/***
+ * Date in format: MM-DD-YYYY
+ */
+
 const addZero = (i = string | number) => {
   if (i < 10) {
     i = "0" + i;

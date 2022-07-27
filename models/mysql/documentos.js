@@ -10,7 +10,7 @@ const Documentos = sequelize.define(
       autoIncrement: true,
     },
     id_Unidad: {
-      type: DataTypes.NUMBER,
+      type: DataTypes.NUMBER, 
       allowNull: true,
     },
     url_TarjetaCirculacion: {

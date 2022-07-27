@@ -6,13 +6,14 @@ const { matchedData } = require("express-validator");
 
 const createDocumentosCtrl = async (req, res) => {
   try {
-    const { files } = req;
+    const {files, body} = req;
+    let id_Unidad = parseInt(body.id_Unidad); //el POSTMAN lo manda como string
     let [dataTarjetaCirculacion] = files["url_TarjetaCirculacion"];
     let [dataFactura] = files["url_Factura"];
     let [dataPermisoSCT] = files["url_PermisoSCT"];
-
+    
     const filesData = {
-      //id_Unidad : 5,
+      id_Unidad,
       url_TarjetaCirculacion: `${dataTarjetaCirculacion.filename}`,
       url_Factura: `${dataFactura.filename}`,
       url_PermisoSCT: `${dataPermisoSCT.filename}`,
