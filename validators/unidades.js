@@ -9,8 +9,6 @@ const validatorUnidades = [
     isEmpty(),
     check("id_Empresa") 
     .exists(),
-    check("id_Documento")
-    .isEmpty(),
     check("id_TipoUnidad")
     .exists(),
     check("id_Candado")
