@@ -28,7 +28,12 @@ const Operador = sequelize.define(
       type: DataTypes.DATE,
     },
     st_NumIMSS: {
-      type: DataTypes.NUMBER,
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    st_RFC: {
+      type: DataTypes.STRING,
+      allowNull: true,
     },
     st_CURP: {
       type: DataTypes.STRING,
@@ -36,7 +41,7 @@ const Operador = sequelize.define(
     st_NumLicencia: {
       type: DataTypes.STRING,
     },
-    date_Vigencia: {
+    date_LicenciaVigencia: {
       type: DataTypes.STRING,
     },
     i_Status: {

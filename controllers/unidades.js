@@ -38,7 +38,7 @@ const readAllUnidadesCtrl = async (req, res) => {
     handleHttpResponse(res, dataAllUnidades);
   } catch (e) {
     console.log(e);
-    handleHttpError(res, "ERROR_GET_UNIDADES");
+    handleHttpError(res, "ERROR_READ_UNIDADES");
   }
 };
 
@@ -49,7 +49,7 @@ const readUnidadCtrl = async (req, res) => {
     const dataUnidad = await unidadesModel.findByPk(id);
     handleHttpResponse(res, dataUnidad);
   } catch (e) {
-    handleHttpError(res, "ERROR_GET_UNIDAD");
+    handleHttpError(res, "ERROR_READ_UNIDAD");
   }
 };
 

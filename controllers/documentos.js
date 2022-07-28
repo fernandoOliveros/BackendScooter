@@ -45,7 +45,7 @@ const readAllDocumentosCtrl = async (req, res) => {
     handleHttpResponse(res, dataAllDocumentos);
   } catch (e) {
     console.log(e);
-    handleHttpError(res, "ERROR_GET_DOCUMENTOS");
+    handleHttpError(res, "ERROR_READ_DOCUMENTOS");
   }
 };
 
@@ -56,7 +56,7 @@ const readDocumentoCtrl = async (req, res) => {
     const dataDocumento = await documentosModel.findByPk(id);
     handleHttpResponse(res, dataDocumento);
   } catch (e) {
-    handleHttpError(res, "ERROR_GET_DOCUMENTO");
+    handleHttpError(res, "ERROR_READ_DOCUMENTO");
   }
 };
 

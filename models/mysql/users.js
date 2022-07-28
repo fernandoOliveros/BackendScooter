@@ -11,7 +11,7 @@ const User = sequelize.define(
       autoIncrement: true,
     },
     id_Empresa: {
-        type: DataTypes.INTEGER,
+      type: DataTypes.INTEGER,
     },
     st_Nombre: {
       type: DataTypes.STRING,

@@ -11,34 +11,44 @@ const { operadoresModel } = require("../models");
 const createOperadorCtrl = async (req, res) => {
   try {
     const body = matchedData(req); //la data del request venga curada
-    const dataUnidad = await operadoresModel.create(body);
-    await handleHttpResponse(res, dataUnidad);
+    const dataOperador = await operadoresModel.create(body);
+    await handleHttpResponse(res, dataOperador);
   } catch (e) {
     console.log(e);
-    handleHttpError(res, "ERROR_UPLOAD_UNIDAD");
+    handleHttpError(res, "ERROR_UPLOAD_OPERADOR");
   }
 };
 
 const updateOperadorCtrl = async (req, res) => {
   try {
     const { id, ...body } = matchedData(req); //splits the request into two objects, id and body
-    const dataUpdateUnidad = await operadoresModel.update(body, {
-      where: { id_Unidad: id },
+    const dataOperador = await operadoresModel.findByPk(id);
+    if (!dataOperador) {
+      handleHttpError(res, `No existe operador con id: ${id}`, 404);
+      return;
+    }
+    const dataUpdateOperador = await operadoresModel.update(body, {
+      where: { id_Operador: id },
     });
-    handleHttpResponse(res, dataUpdateUnidad);
+    /*if(dataUpdateOperador==0){
+      //console.log(`No se logro updateOperador con id: ${id}`)
+      handleHttpError(res, `No se logro updateOperador con id: ${id}`, 404);
+      return
+    }*/
+    handleHttpResponse(res, dataUpdateOperador);
   } catch (e) {
     console.log(e);
-    handleHttpError(res, "ERROR_UPDATE_UNIDAD");
+    handleHttpError(res, "ERROR_UPDATE_OPERADOR");
   }
 };
 
 const readAllOperadoresCtrl = async (req, res) => {
   try {
-    const dataAllUnidades = await operadoresModel.findAll();
-    handleHttpResponse(res, dataAllUnidades);
+    const dataAllOperadores = await operadoresModel.findAll();
+    handleHttpResponse(res, dataAllOperadores);
   } catch (e) {
     console.log(e);
-    handleHttpError(res, "ERROR_GET_UNIDADES");
+    handleHttpError(res, "ERROR_READ_OPERADORES");
   }
 };
 
@@ -46,10 +56,15 @@ const readOperadorCtrl = async (req, res) => {
   try {
     req = matchedData(req);
     const { id } = req;
-    const dataUnidad = await operadoresModel.findByPk(id);
-    handleHttpResponse(res, dataUnidad);
+    const dataOperador = await operadoresModel.findByPk(id);
+    if (!dataOperador) {
+      handleHttpError(res, `No existe operador con id: ${id}`, 404);
+      return;
+    } else {
+      handleHttpResponse(res, dataOperador);
+    }
   } catch (e) {
-    handleHttpError(res, "ERROR_GET_UNIDAD");
+    handleHttpError(res, "ERROR_READ_OPERADOR");
   }
 };
 
@@ -57,10 +72,15 @@ const deleteOperadorCtrl = async (req, res) => {
   try {
     req = matchedData(req);
     const { id } = req;
-    const dataDeleteUnidad = await operadoresModel.destroy({
-      where: { id_Unidad: id },
+    const dataOperador = await operadoresModel.findByPk(id);
+    if (!dataOperador) {
+      handleHttpError(res, `No existe operador con id: ${id}`, 404);
+      return;
+    }
+    const dataDeleteOperador = await operadoresModel.destroy({
+      where: { id_Operador: id },
     });
-    handleHttpResponse(res, dataDeleteUnidad);
+    handleHttpResponse(res, dataDeleteOperador);
   } catch (e) {
     handleHttpError(res, "ERROR_DELETE_UNIDAD");
   }
