@@ -30,6 +30,6 @@ router.post("/create", uploadDocsMiddleware, createDocumentosCtrl);
 router.get("/read", readAllDocumentosCtrl); 
 router.get("/read/:id", validatorReadDocumento, readDocumentoCtrl); 
 router.put("/update/:id", validatorReadDocumento, uploadDocsMiddleware, updateDocumentosCtrl);
-router.delete("delete/:id", validatorReadDocumento, deleteDocumentosCtrl);
+router.delete("/delete/:id", validatorReadDocumento, deleteDocumentosCtrl);
 
 module.exports = router;

@@ -10,7 +10,7 @@ const {
 } = require("../controllers/documentosOperadores");
 
 const uploadMiddleware = require("../utils/handleDocumentosOperadores");
-
+ 
 /**
  * RUTAS - DOCUMENTOS DE UNIDAD
 Create documento: http://localhost:5000/api/documentosOperadores/create
@@ -36,6 +36,6 @@ router.put(
   uploadDocsMiddleware,
   updateDocumentosCtrl
 );
-router.delete("delete/:id", validatorReadDocumento, deleteDocumentosCtrl);
+router.delete("/delete/:id", validatorReadDocumento, deleteDocumentosCtrl);
 
 module.exports = router;
