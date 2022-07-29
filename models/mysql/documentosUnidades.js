@@ -1,6 +1,6 @@
 const { sequelize } = require("../../config/mysql");
 const { DataTypes } = require("sequelize");
-
+//cambiar nombre a tbl_docs_unidades
 const Documentos = sequelize.define(
   "tbl_documentos",
   {

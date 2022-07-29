@@ -1,8 +1,14 @@
 /**
  * Posible conexion con servicio de almacenamiento S3 de AWS : leifer mendez
  */
+/**
+ * PREFIJOS : 
+TarjetaCirculacion – TARCIR
+Facturas – FACT
+PermisosSCT - PSCT
+ */
 const multer = require("multer");
-const {date, time} = require("../utils/handleDate")
+const {date, time} = require("./handleDate")
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {

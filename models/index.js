@@ -5,9 +5,10 @@ const pathDB = (ENGINE_DB == 'nosql') ? './nosql' : './mysql';
 const models = {
     usersModel: require(`${pathDB}/users`),
     unidadesModel: require(`${pathDB}/unidades`),
-    documentosModel: require(`${pathDB}/documentos`),
+    documentosUnidadesModel: require(`${pathDB}/documentosUnidades`),
     tiposUnidadesModel: require(`${pathDB}/tiposUnidades`),
     operadoresModel: require(`${pathDB}/operadores`),
+    documentosOperadoresModel: require(`${pathDB}/documentosOperadores`),
 }
 
 module.exports = models;

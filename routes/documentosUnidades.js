@@ -7,17 +7,17 @@ const {
   readAllDocumentosCtrl,
   readDocumentoCtrl,
   deleteDocumentosCtrl,
-} = require("../controllers/documentos");
+} = require("../controllers/documentosUnidades");
 
-const uploadMiddleware = require("../utils/handleDocumentos");
+const uploadMiddleware = require("../utils/handleDocumentosUnidades");
 
 /**
  * RUTAS - DOCUMENTOS DE UNIDAD
-Create documento: http://localhost:5000/api/documentos/create
-Read All documentos: http://localhost:5000/api/documentos/read
-Read One documento: http://localhost:5000/api/documentos/read/:id
-Update documento: http://localhost:5000/api/documentos/update/:id
-Delete documento: http://localhost:5000/api/documentos/delete/:id
+Create documento: http://localhost:5000/api/documentosUnidades/create
+Read All documentos: http://localhost:5000/api/documentosUnidades/read
+Read One documento: http://localhost:5000/api/documentosUnidades/read/:id
+Update documento: http://localhost:5000/api/documentosUnidades/update/:id
+Delete documento: http://localhost:5000/api/documentosUnidades/delete/:id
  */
 
 const uploadDocsMiddleware = uploadMiddleware.fields([
@@ -30,6 +30,6 @@ router.post("/create", uploadDocsMiddleware, createDocumentosCtrl);
 router.get("/read", readAllDocumentosCtrl); 
 router.get("/read/:id", validatorReadDocumento, readDocumentoCtrl); 
 router.put("/update/:id", validatorReadDocumento, uploadDocsMiddleware, updateDocumentosCtrl);
-router.delete("/delete/:id", validatorReadDocumento, deleteDocumentosCtrl);
+router.delete("delete/:id", validatorReadDocumento, deleteDocumentosCtrl);
 
 module.exports = router;

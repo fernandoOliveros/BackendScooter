@@ -1,24 +1,25 @@
-const { documentosModel } = require("../models");
+const { documentosOperadoresModel } = require("../models");
 const { handleHttpResponse } = require("../utils/handleResponse");
 const { handleHttpError } = require("../utils/handleError");
 const { matchedData } = require("express-validator");
 
-
 const createDocumentosCtrl = async (req, res) => {
   try {
-    const {files, body} = req;
-    let id_Unidad = parseInt(body.id_Unidad); //el POSTMAN lo manda como string
-    let [dataTarjetaCirculacion] = files["url_TarjetaCirculacion"];
-    let [dataFactura] = files["url_Factura"];
-    let [dataPermisoSCT] = files["url_PermisoSCT"];
-    
+    const { files, body } = req;
+    let id_Operador = parseInt(body.id_Operador); //el POSTMAN lo manda como string
+    let [dataSolicitudEmpleo] = files["url_SolicitudEmpleo"];
+    let [dataCURP] = files["url_CURP"];
+    let [dataRFC] = files["url_RFC"];
+    let [dataComprobanteDom] = files["url_ComprobanteDom"];
+
     const filesData = {
-      id_Unidad,
-      url_TarjetaCirculacion: `${dataTarjetaCirculacion.filename}`,
-      url_Factura: `${dataFactura.filename}`,
-      url_PermisoSCT: `${dataPermisoSCT.filename}`,
+      id_Operador,
+      url_SolicitudEmpleo: `${dataSolicitudEmpleo.filename}`,
+      url_CURP: `${dataCURP.filename}`,
+      url_RFC: `${dataRFC.filename}`,
+      url_ComprobanteDom: `${dataComprobanteDom.filename}`,
     };
-    const dataDocs = await documentosModel.create(filesData);
+    const dataDocs = await documentosOperadoresModel.create(filesData);
     handleHttpResponse(res, dataDocs);
   } catch (e) {
     console.log(e);
@@ -28,8 +29,10 @@ const createDocumentosCtrl = async (req, res) => {
 
 const updateDocumentosCtrl = async (req, res) => {
   try {
-    const { id, ...body } = matchedData(req); //splits the request into two objects, id and body
-    const dataUpdateDocumento = await documentosModel.update(body, {
+    let { id, ...body } = matchedData(req); //splits the request into two objects, id and body
+    const id_Operador = parseInt(req.body.id_Operador);
+    body = { ...body, id_Operador };
+    const dataUpdateDocumento = await documentosOperadoresModel.update(body, {
       where: { id_Documento: id },
     });
     handleHttpResponse(res, dataUpdateDocumento);
@@ -41,7 +44,7 @@ const updateDocumentosCtrl = async (req, res) => {
 
 const readAllDocumentosCtrl = async (req, res) => {
   try {
-    const dataAllDocumentos = await documentosModel.findAll();
+    const dataAllDocumentos = await documentosOperadoresModel.findAll();
     handleHttpResponse(res, dataAllDocumentos);
   } catch (e) {
     console.log(e);
@@ -53,7 +56,7 @@ const readDocumentoCtrl = async (req, res) => {
   try {
     req = matchedData(req);
     const { id } = req;
-    const dataDocumento = await documentosModel.findByPk(id);
+    const dataDocumento = await documentosOperadoresModel.findByPk(id);
     handleHttpResponse(res, dataDocumento);
   } catch (e) {
     handleHttpError(res, "ERROR_READ_DOCUMENTO");
@@ -64,7 +67,9 @@ const deleteDocumentosCtrl = async (req, res) => {
   try {
     req = matchedData(req);
     const { id } = req;
-    const dataDeleteDocumentos = await documentosModel.destroy({ where: { id_Documento: id } });
+    const dataDeleteDocumentos = await documentosOperadoresModel.destroy({
+      where: { id_Documento: id },
+    });
     handleHttpResponse(res, dataDeleteDocumentos);
   } catch (e) {
     handleHttpError(res, "ERROR_DELETE_DOCUMENTO");
