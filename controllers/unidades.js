@@ -22,6 +22,11 @@ const createUnidadCtrl = async (req, res) => {
 const updateUnidadesCtrl = async (req, res) => {
   try {
     const { id, ...body } = matchedData(req); //splits the request into two objects, id and body
+    const dataUnidad = await unidadesModel.findByPk(id);
+    if (!dataUnidad) {
+      handleHttpError(res, `No existe unidad con id: ${id}`, 404);
+      return;
+    }
     const dataUpdateUnidad = await unidadesModel.update(body, {
       where: { id_Unidad: id },
     });
@@ -47,7 +52,12 @@ const readUnidadCtrl = async (req, res) => {
     req = matchedData(req);
     const { id } = req;
     const dataUnidad = await unidadesModel.findByPk(id);
-    handleHttpResponse(res, dataUnidad);
+    if (!dataUnidad) {
+      handleHttpError(res, `No existe unidad con id: ${id}`, 404);
+      return;
+    } else {
+      handleHttpResponse(res, dataUnidad);
+    }
   } catch (e) {
     handleHttpError(res, "ERROR_READ_UNIDAD");
   }
@@ -57,6 +67,11 @@ const deleteUnidadCtrl = async (req, res) => {
   try {
     req = matchedData(req);
     const {id} = req;
+    const dataUnidad = await unidadesModel.findByPk(id);
+    if (!dataUnidad) {
+      handleHttpError(res, `No existe unidad con id: ${id}`, 404);
+      return;
+    }
     const dataDeleteUnidad = await unidadesModel.destroy({where: {id_Unidad: id}});
     handleHttpResponse(res, dataDeleteUnidad)
   } catch (e) {

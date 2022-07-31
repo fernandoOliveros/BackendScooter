@@ -1,13 +1,16 @@
-const express = require ("express");
+const express = require("express");
 const router = express.Router();
-const { validatorUnidades, validatorReadUnidad } = require("../validators/unidades");
 const {
-    createUnidadCtrl,
-    readAllUnidadesCtrl,
-    readUnidadCtrl,
-    updateUnidadesCtrl,
-    deleteUnidadCtrl
-  } = require("../controllers/unidades");
+  validatorUnidades,
+  validatorReadUnidad,
+} = require("../validators/unidades");
+const {
+  createUnidadCtrl,
+  readAllUnidadesCtrl,
+  readUnidadCtrl,
+  updateUnidadesCtrl,
+  deleteUnidadCtrl,
+} = require("../controllers/unidades");
 
 /**
  * RUTAS
@@ -18,10 +21,15 @@ Update Unidad: http://localhost:5000/api/unidades/update/:id
 Delete Unidad: http://localhost:5000/api/unidades/delete/:id
  */
 
-router.post("/create", validatorUnidades, createUnidadCtrl); 
-router.get("/read", readAllUnidadesCtrl); 
-router.get("/read/:id", validatorReadUnidad, readUnidadCtrl); 
-router.put("/update/:id", validatorReadUnidad, validatorUnidades,  updateUnidadesCtrl);
+router.post("/create", validatorUnidades, createUnidadCtrl);
+router.get("/read", readAllUnidadesCtrl);
+router.get("/read/:id", validatorReadUnidad, readUnidadCtrl);
+router.put(
+  "/update/:id",
+  validatorReadUnidad,
+  validatorUnidades,
+  updateUnidadesCtrl
+);
 router.delete("/delete/:id", validatorReadUnidad, deleteUnidadCtrl);
 
 module.exports = router;
