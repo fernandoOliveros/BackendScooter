@@ -11,6 +11,7 @@ const models = {
   documentosOperadoresModel: require(`${pathDB}/documentosOperadores`),
   direccionOperadoresModel: require(`${pathDB}/direccionOperadores`),
   telefonosOperadoresModel: require(`${pathDB}/telefonosOperadores`),
+  contactosEmergenciaModel: require(`${pathDB}/contactosEmOperadores`),
 };
 
 module.exports = models;
