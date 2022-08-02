@@ -15,7 +15,7 @@ const createDireccionCtrl = async (req, res) => {
     await handleHttpResponse(res, dataUnidad);
   } catch (e) {
     console.log(e);
-    handleHttpError(res, "ERROR_UPLOAD_UNIDAD");
+    handleHttpError(res, "ERROR_UPLOAD_DIRECCION");
   }
 };
 
@@ -28,7 +28,7 @@ const updateDireccionCtrl = async (req, res) => {
     handleHttpResponse(res, dataUpdateUnidad);
   } catch (e) {
     console.log(e);
-    handleHttpError(res, "ERROR_UPDATE_UNIDAD");
+    handleHttpError(res, "ERROR_UPDATE_DIRECCION");
   }
 };
 
@@ -38,7 +38,7 @@ const readAllDireccionesCtrl = async (req, res) => {
     handleHttpResponse(res, dataAllUnidades);
   } catch (e) {
     console.log(e);
-    handleHttpError(res, "ERROR_READ_UNIDADES");
+    handleHttpError(res, "ERROR_READ_DIRECCION");
   }
 };
 
@@ -49,7 +49,7 @@ const readDireccionCtrl = async (req, res) => {
     const dataUnidad = await direccionOperadoresModel.findByPk(id);
     handleHttpResponse(res, dataUnidad);
   } catch (e) {
-    handleHttpError(res, "ERROR_READ_UNIDAD");
+    handleHttpError(res, "ERROR_READ_DIRECCION");
   }
 };
 
@@ -62,7 +62,7 @@ const deleteDireccionCtrl = async (req, res) => {
     });
     handleHttpResponse(res, dataDeleteUnidad);
   } catch (e) {
-    handleHttpError(res, "ERROR_DELETE_UNIDAD");
+    handleHttpError(res, "ERROR_DELETE_DIRECCION");
   }
 };
 

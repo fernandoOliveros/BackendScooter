@@ -7,9 +7,10 @@ const {
   readAllDocumentosCtrl,
   readDocumentoCtrl,
   deleteDocumentosCtrl,
+  updateNewNameDocsCtrl,
 } = require("../controllers/documentosUnidades");
 
-const uploadMiddleware = require("../utils/handleDocumentosUnidades");
+const { uploadMiddleware } = require("../utils/handleDocumentosUnidades");
 
 /**
  * RUTAS - DOCUMENTOS DE UNIDAD
@@ -26,10 +27,21 @@ const uploadDocsMiddleware = uploadMiddleware.fields([
   { name: "url_PermisoSCT", maxCount: 1 },
 ]);
 
-router.post("/create", uploadDocsMiddleware, createDocumentosCtrl);
-router.get("/read", readAllDocumentosCtrl); 
-router.get("/read/:id", validatorReadDocumento, readDocumentoCtrl); 
-router.put("/update/:id", validatorReadDocumento, uploadDocsMiddleware, updateDocumentosCtrl);
+router.post(
+  "/create",
+  createDocumentosCtrl, //works as a middleware
+  uploadDocsMiddleware,
+  updateNewNameDocsCtrl
+);
+
+router.get("/read", readAllDocumentosCtrl);
+router.get("/read/:id", validatorReadDocumento, readDocumentoCtrl);
+router.put(
+  "/update/:id",
+  validatorReadDocumento,
+  uploadDocsMiddleware,
+  updateDocumentosCtrl
+);
 router.delete("/delete/:id", validatorReadDocumento, deleteDocumentosCtrl);
 
 module.exports = router;

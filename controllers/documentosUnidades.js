@@ -3,25 +3,60 @@ const { handleHttpResponse } = require("../utils/handleResponse");
 const { handleHttpError } = require("../utils/handleError");
 const { matchedData } = require("express-validator");
 
-const createDocumentosCtrl = async (req, res) => {
+async function createDocumentosCtrl(req, res, next) {
   try {
-    const { files, body } = req;
-    let id_Unidad = parseInt(body.id_Unidad); //el POSTMAN lo manda como string
-    let [dataTarjetaCirculacion] = files["url_TarjetaCirculacion"];
-    let [dataFactura] = files["url_Factura"];
-    let [dataPermisoSCT] = files["url_PermisoSCT"];
-
-    const filesData = {
-      id_Unidad,
-      url_TarjetaCirculacion: `${dataTarjetaCirculacion.filename}`,
-      url_Factura: `${dataFactura.filename}`,
-      url_PermisoSCT: `${dataPermisoSCT.filename}`,
+    const filesPrueba = {
+      // id_Unidad,
     };
-    const dataDocs = await documentosUnidadesModel.create(filesData);
-    handleHttpResponse(res, dataDocs);
+
+    const dataDocs = await documentosUnidadesModel.create(filesPrueba); //only to generate id_Documento
+    req.dataDocs = dataDocs; //attaches variable dataDocs to the global request
+    //handleHttpResponse(res, dataDocs)
+    next();
   } catch (e) {
     console.log(e);
     handleHttpError(res, "ERROR_UPLOAD_DOCS");
+  }
+}
+
+const updateNewNameDocsCtrl = async (req, res) => {
+  try {
+    //handleHttpResponse(res, dataUpdateDocumento);
+    let { body, files } = req; //splits the request into two objects, id and body
+    let filenames = [];
+    let fieldnames = [];
+    for (const i in req?.files) {
+      const [file] = req.files[i];
+      let currentFileName = file.filename;
+      let currentFieldName = file.fieldname;
+      filenames.push(currentFileName);
+      fieldnames.push(currentFieldName);
+    }
+    //const arr = ["zero", "one", "two"];
+    //convierto array en objeto
+    const dataFiles = filenames.reduce((accumulator, value, index) => {
+      return { ...accumulator, [`${fieldnames[index]}`]: value };
+    }, {});
+
+    // objeto listo👇️️ {'key0': 'zero', 'key1': 'one', 'key2': 'two'}
+    //console.log(dataFiles);
+
+    const id_Unidad = parseInt(req.body.id_Unidad);
+    const dataToUpdate = { id_Unidad, ...dataFiles };
+
+    let id_Documento = req.dataDocs.dataValues.id_Documento;
+
+    console.log(dataToUpdate);
+    const dataUpdateDocumento = await documentosUnidadesModel.update(
+      dataToUpdate,
+      {
+        where: { id_Documento: id_Documento },
+      }
+    );
+    handleHttpResponse(res, dataUpdateDocumento);
+  } catch (e) {
+    console.log(e);
+    handleHttpError(res, "ERROR_UPLOAD_NEWNAMES_DOCS");
   }
 };
 
@@ -80,4 +115,5 @@ module.exports = {
   readAllDocumentosCtrl,
   readDocumentoCtrl,
   deleteDocumentosCtrl,
+  updateNewNameDocsCtrl,
 };
