@@ -2,6 +2,8 @@ const { matchedData } = require("express-validator");
 const { handleHttpResponse } = require("../utils/handleResponse");
 const { handleHttpError } = require("../utils/handleError");
 const { unidadesModel } = require("../models");
+const { sequelize } = require("../config/mysql");
+const { QueryTypes } = require("sequelize");
 
 /**
  * @param {} req  http://localhost:5000/api/unidades/...
@@ -55,9 +57,22 @@ const readUnidadCtrl = async (req, res) => {
     if (!dataUnidad) {
       handleHttpError(res, `No existe unidad con id: ${id}`, 404);
       return;
-    } else {
-      handleHttpResponse(res, dataUnidad);
     }
+    //else {
+    let query =
+      "SELECT `candado`.`st_DescripcionCandado`, `unidades`.*, `docs`.`url_TarjetaCirculacion`, `docs`.`url_Factura` , `docs`.`url_PermisoSCT`"+
+      "FROM `tbl_unidades` as `unidades`"+
+      "INNER JOIN `tbl_documentos` as `docs`"+
+      "INNER JOIN  `tbl_tipocandado` as `candado`"+
+      "ON `docs`.`id_Unidad`= `unidades`.`id_Unidad`"+ 
+      "WHERE `unidades`.`id_Unidad`=:id;";
+    const consulta = await sequelize.query(query, {
+      replacements: { id: `${id}` },
+      type: QueryTypes.SELECT,
+    });
+    console.log(consulta);
+    handleHttpResponse(res, consulta);
+    //}
   } catch (e) {
     handleHttpError(res, "ERROR_READ_UNIDAD");
   }
@@ -66,14 +81,16 @@ const readUnidadCtrl = async (req, res) => {
 const deleteUnidadCtrl = async (req, res) => {
   try {
     req = matchedData(req);
-    const {id} = req;
+    const { id } = req;
     const dataUnidad = await unidadesModel.findByPk(id);
     if (!dataUnidad) {
       handleHttpError(res, `No existe unidad con id: ${id}`, 404);
       return;
     }
-    const dataDeleteUnidad = await unidadesModel.destroy({where: {id_Unidad: id}});
-    handleHttpResponse(res, dataDeleteUnidad)
+    const dataDeleteUnidad = await unidadesModel.destroy({
+      where: { id_Unidad: id },
+    });
+    handleHttpResponse(res, dataDeleteUnidad);
   } catch (e) {
     handleHttpError(res, "ERROR_DELETE_UNIDAD");
   }

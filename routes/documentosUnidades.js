@@ -36,6 +36,7 @@ router.post(
 
 router.get("/read", readAllDocumentosCtrl);
 router.get("/read/:id", validatorReadDocumento, readDocumentoCtrl);
+//*checar caso de actualizar
 router.put(
   "/update/:id",
   validatorReadDocumento,
