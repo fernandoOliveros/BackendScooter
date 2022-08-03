@@ -58,21 +58,20 @@ const readUnidadCtrl = async (req, res) => {
       handleHttpError(res, `No existe unidad con id: ${id}`, 404);
       return;
     }
-    //else {
+    else {
     let query =
-      "SELECT `candado`.`st_DescripcionCandado`, `unidades`.*, `docs`.`url_TarjetaCirculacion`, `docs`.`url_Factura` , `docs`.`url_PermisoSCT`"+
-      "FROM `tbl_unidades` as `unidades`"+
-      "INNER JOIN `tbl_documentos` as `docs`"+
-      "INNER JOIN  `tbl_tipocandado` as `candado`"+
-      "ON `docs`.`id_Unidad`= `unidades`.`id_Unidad`"+ 
+      "SELECT `candado`.`st_DescripcionCandado`, `unidades`.*, `docs`.`url_TarjetaCirculacion`, `docs`.`url_Factura` , `docs`.`url_PermisoSCT`" +
+      "FROM `tbl_unidades` as `unidades`" +
+      "INNER JOIN `tbl_documentos` as `docs`" +
+      "INNER JOIN  `tbl_tipocandado` as `candado`" +
+      "ON `docs`.`id_Unidad`= `unidades`.`id_Unidad`" +
       "WHERE `unidades`.`id_Unidad`=:id;";
-    const consulta = await sequelize.query(query, {
+    const dataUnidadModified = await sequelize.query(query, {
       replacements: { id: `${id}` },
       type: QueryTypes.SELECT,
     });
-    console.log(consulta);
-    handleHttpResponse(res, consulta);
-    //}
+    handleHttpResponse(res, dataUnidadModified);
+    }
   } catch (e) {
     handleHttpError(res, "ERROR_READ_UNIDAD");
   }
