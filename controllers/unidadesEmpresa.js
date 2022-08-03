@@ -1,24 +1,22 @@
 const { handleHttpResponse } = require("../utils/handleResponse");
 const { handleHttpError } = require("../utils/handleError");
 const { sequelize } = require("../config/mysql");
-const { unidadesModel } = require("../models");
+const { unidadesModel, empresasModel } = require("../models");
 const { matchedData } = require("express-validator");
-
-
 const { QueryTypes } = require("sequelize");
 
 /**
- * @param {GET} req  http://localhost:5000/api/tiposUnidades/read
- * @param {*} res   Query para leer todo el tipo de unidades (SAT DB)
+ * @param {GET} req  http://localhost:5000/api/unidadesEmpresa/read
+ * @param {*} res   Query para leer todo las unidades que pertenecen a una empresa ())
  */
 
 const readUnidadesEmpresaCtrl = async (req, res) => {
   try {
     req = matchedData(req);
     const { id } = req;
-    const dataUnidad = await unidadesModel.findByPk(id);
-    if (!dataUnidad) {
-      handleHttpError(res, `No existe unidad con id: ${id}`, 404);
+    const dataEmpresa = await empresasModel.findByPk(id);
+    if (!dataEmpresa) {
+      handleHttpError(res, `No existe empresa con id: ${id}`, 404);
       return;
     } else {
       let query =

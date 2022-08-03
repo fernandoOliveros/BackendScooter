@@ -2,6 +2,8 @@ const { documentosUnidadesModel } = require("../models");
 const { handleHttpResponse } = require("../utils/handleResponse");
 const { handleHttpError } = require("../utils/handleError");
 const { matchedData } = require("express-validator");
+const { sequelize } = require("../config/mysql");
+const { QueryTypes } = require("sequelize");
 
 async function createDocumentosCtrl(req, res, next) {
   try {
@@ -109,6 +111,22 @@ const deleteDocumentosCtrl = async (req, res) => {
   }
 };
 
+async function showDocumentosCtrl(req, res) {
+  try {
+    req = matchedData(req);
+    const { id } = req;
+    const dataDocumento = await documentosUnidadesModel.findByPk(id);
+    if (!dataDocumento) {
+      handleHttpError(res, `No existe documento con id: ${id}`, 404);
+      return;
+    } else {
+      
+    }
+  } catch (e) {
+    handleHttpError(res, "ERROR_SHOW_DOCUMENTOS")
+  }
+}
+
 module.exports = {
   createDocumentosCtrl,
   updateDocumentosCtrl,
@@ -116,4 +134,5 @@ module.exports = {
   readDocumentoCtrl,
   deleteDocumentosCtrl,
   updateNewNameDocsCtrl,
+  showDocumentosCtrl
 };
