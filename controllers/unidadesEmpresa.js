@@ -1,7 +1,7 @@
 const { handleHttpResponse } = require("../utils/handleResponse");
 const { handleHttpError } = require("../utils/handleError");
 const { sequelize } = require("../config/mysql");
-const { unidadesModel, empresasModel } = require("../models");
+const { empresasModel } = require("../models");
 const { matchedData } = require("express-validator");
 const { QueryTypes } = require("sequelize");
 
