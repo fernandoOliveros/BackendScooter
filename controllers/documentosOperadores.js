@@ -3,95 +3,112 @@ const { handleHttpResponse } = require("../utils/handleResponse");
 const { handleHttpError } = require("../utils/handleError");
 const { matchedData } = require("express-validator");
 
-const createDocumentosCtrl = async (req, res) => {
+const createDocumentosCtrl = async (req, res, next) => {
   try {
-    let { body, files } = matchedData(req); //splits the request into two objects, id and body
-    let filenames = [];
-    let fieldnames = [];
-    for (const i in req?.files) {
-      const [file] = req.files[i];
-      let cart = file.filename;
-      let cart2 = file.fieldname;
-      filenames.push(cart);
-      fieldnames.push(cart2);
-    }
-    //const arr = ["zero", "one", "two"];
-    //convierto array en objeto
-    const dataFiles = filenames.reduce((accumulator, value, index) => {
-      return { ...accumulator, [`${fieldnames[index]}`]: value };
-    }, {});
-
-    // objeto listo👇️️ {'key0': 'zero', 'key1': 'one', 'key2': 'two'}
-    //console.log(obj4);
-
-    const id_Operador = parseInt(req.body.id_Operador);
-    const dataCreateOperador = { id_Operador, ...dataFiles };
-    console.log(dataCreateOperador);
-
-    const dataOperador = await documentosOperadoresModel.create(
-      dataCreateOperador
-    );
-    handleHttpResponse(res, dataOperador);
-
-    /*const { files, body } = req;
-    let id_Operador = parseInt(body.id_Operador); //el POSTMAN lo manda como string
-    let [dataSolicitudEmpleo] = files["url_SolicitudEmpleo"];
-    let [dataCURP] = files["url_CURP"];
-    let [dataComprobanteDom] = files["url_ComprobanteDom"];
-
-    let filesData = {
-      id_Operador,
-      url_SolicitudEmpleo: `${dataSolicitudEmpleo.filename}`,
-      url_CURP: `${dataCURP.filename}`,
-      url_ComprobanteDom: `${dataComprobanteDom.filename}`,
+    const dataEmpty = {
+      // id_Unidad,
     };
-    const [url_RFC] = files["url_RFC"] ? files["url_RFC"] : "0";
-    if ([url_RFC] == "0") {
-      const dataDocss = await documentosOperadoresModel.create(filesData);
-      handleHttpResponse(res, dataDocss);
-    } else {
-      const filesOperadores = { ...filesData, url_RFC: `${url_RFC.filename}` };
-      const dataDocs = await documentosOperadoresModel.create(filesOperadores);
-      handleHttpResponse(res, dataDocs);
-    }*/
+    const dataRow = await documentosOperadoresModel.create(dataEmpty); //only to generate id_Documento
+    req.dataRow = dataRow; //attaches variable dataDocs to the global request
+    console.log(req.dataRow)
+    //handleHttpResponse(res, dataDocs)
+    next();
   } catch (e) {
     console.log(e);
     handleHttpError(res, "ERROR_UPLOAD_DOCS");
   }
 };
 
-const updateDocumentosCtrl = async (req, res) => {
+const updateNewNameDocsCtrl = async (req, res) => {
   try {
-    let { body, files, id } = matchedData(req); //splits the request into two objects, id and body
-
+    //handleHttpResponse(res, dataUpdateDocumento);
+    let { body, files } = req; //splits the request into two objects, id and body
     let filenames = [];
     let fieldnames = [];
     for (const i in req?.files) {
-      const [aa] = req.files[i];
-      let cart = aa.filename;
-      let cart2 = aa.fieldname;
-      //console.log(aa.filename);
-      filenames.push(cart);
-      fieldnames.push(cart2);
+      const [file] = req.files[i];
+      let currentFileName = file.filename;
+      let currentFieldName = file.fieldname;
+      filenames.push(currentFileName);
+      fieldnames.push(currentFieldName);
     }
-    console.log(filenames);
-    console.log(fieldnames);
-
-    //const arr = ["zero", "one", "two"];
-
-    const obj4 = filenames.reduce((accumulator, value, index) => {
+    //convierto array en objeto
+    const dataFiles = filenames.reduce((accumulator, value, index) => {
       return { ...accumulator, [`${fieldnames[index]}`]: value };
     }, {});
 
-    // 👇️️ {'key0': 'zero', 'key1': 'one', 'key2': 'two'}
-    //console.log(obj4);
+    // objeto listo👇️️ {'key0': 'zero', 'key1': 'one', 'key2': 'two'}
+    //console.log(dataFiles);
 
     const id_Operador = parseInt(req.body.id_Operador);
-    const dataUpdate = { id_Operador, ...obj4 };
+    const dataToUpdate = { id_Operador, ...dataFiles };
+
+    let id_Documento = req.dataRow.dataValues.id_Documento;
+
+    console.log(dataToUpdate);
+    const dataUpdateDocumento = await documentosOperadoresModel.update(
+      dataToUpdate,
+      {
+        where: { id_Documento: id_Documento },
+      }
+    );
+    handleHttpResponse(res, dataUpdateDocumento);
+  } catch (e) {
+    console.log(e);
+    handleHttpError(res, "ERROR_RENAME_DOCS");
+  }
+};
+
+const readDataToUpdateCtrl = async (req, res, next) => {
+  try {
+    req = matchedData(req);
+    const { id } = req;
+    const dataRow = await documentosOperadoresModel.findByPk(id);
+    if (!dataRow) {
+      handleHttpError(res, `No existe documento con id: ${id}`, 404);
+      return;
+    }
+    req.dataProof = 123; //attaches variable dataDocs to the global request
+    //console.log(req.dataRow)
+    next();
+    //handleHttpResponse(res, dataDocumento);
+  } catch (e) {
+    console.log(e);
+    handleHttpError(res, "ERROR_READ_DATA2UPDATE");
+  }
+}
+
+const updateDocumentosCtrl = async (req, res) => {
+  try {
+    let { body, files, id } = matchedData(req); //splits the request into two objects, id and body
+    //console.log(req.files)
+
+    let fileNames = [];
+    let fieldNames = [];
+    for (const i in req?.files) {
+      const [file] = req.files[i];
+      let currentFileName = file.filename;
+      let currentFieldName = file.fieldname;
+      fileNames.push(currentFileName);
+      fieldNames.push(currentFieldName);
+    }
+    //console.log(fileNames);
+    //console.log(fieldNames);
+
+    //const arr = ["zero", "one", "two"];
+
+    const dataFiles = fileNames.reduce((accumulator, value, index) => {
+      return { ...accumulator, [`${fieldNames[index]}`]: value };
+    }, {});
+    // 👇️️ {'key0': 'zero', 'key1': 'one', 'key2': 'two'}
+    //console.log(dataFiles);
+
+    const id_Operador = parseInt(req.body.id_Operador);
+    const dataUpdate = { id_Operador, ...dataFiles };
     console.log(dataUpdate);
 
     //const dataUp = { ...body, id_Operador };
-
+    //let id_Documento = req.dataDocumento.dataValues.id_Documento;
     const dataUpdateDocumento = await documentosOperadoresModel.update(
       dataUpdate,
       {
@@ -121,7 +138,12 @@ const readDocumentoCtrl = async (req, res) => {
     req = matchedData(req);
     const { id } = req;
     const dataDocumento = await documentosOperadoresModel.findByPk(id);
-    handleHttpResponse(res, dataDocumento);
+    if (!dataDocumento) {
+      handleHttpError(res, `No existe documento con id: ${id}`, 404);
+      return;
+    } else {
+      handleHttpResponse(res, dataDocumento);
+    }
   } catch (e) {
     handleHttpError(res, "ERROR_READ_DOCUMENTO");
   }
@@ -129,15 +151,15 @@ const readDocumentoCtrl = async (req, res) => {
 
 const deleteDocumentosCtrl = async (req, res) => {
   try {
-  req = matchedData(req);
+    req = matchedData(req);
     const { id } = req;
-    console.log(id)
+    console.log(id);
     const dataDeleteDocumentos = await documentosOperadoresModel.destroy({
-      where: { id_Documento: id }
+      where: { id_Documento: id },
     });
     handleHttpResponse(res, dataDeleteDocumentos);
   } catch (e) {
-    console.log(e)
+    console.log(e);
     handleHttpError(res, "ERROR_DELETE_DOCUMENTO");
   }
 };
@@ -148,4 +170,6 @@ module.exports = {
   readAllDocumentosCtrl,
   readDocumentoCtrl,
   deleteDocumentosCtrl,
-}
+  updateNewNameDocsCtrl,
+  readDataToUpdateCtrl,
+};

@@ -9,22 +9,20 @@ url_CURP – CURP
 url_RFC - RFC
 url_ComprobanteDom- COMPD
  */
-const { body } = require("express-validator");
 const multer = require("multer");
 const { date, time } = require("./handleDate");
 
-const storage = multer.diskStorage({
+
+const updateStorage = multer.diskStorage({
   destination: function (req, file, cb) {
     const pathStorage = `${__dirname}/../storage/documentos`;
     cb(null, pathStorage);
   },
   filename: function (req, file, cb) {
-    
-    /*let idOp = req.dataRow.dataValues.id_Operador;
-    let idDoc = req.dataRow.dataValues.id_Documento;
-    console.log(idDoc)*/
-    console.log("prueba request es", req.dataProof)
-
+    let idOp = req.dataDocumento.dataValues.id_Operador;
+    let idDoc = req.dataDocumento.dataValues.id_Documento;
+    console.log("id del operador")
+    console.log("id del doc")
 
     const ext = file.originalname.split(".").pop();
 
@@ -50,29 +48,12 @@ const storage = multer.diskStorage({
         break;
       }
       default:
-        const filename = `${idDoc}_unknown-${Date.now()}.${ext}`;
+        const filename = `${idDoc}_${idOp}_unknown-${Date.now()}.${ext}`;
         cb(null, filename);
     }
   },
 });
 
+const updateMiddleware = multer({ updateStorage });
 
-const uploadMiddleware = multer({ storage });
-
-module.exports = uploadMiddleware;
-
-/**
- * const fileFilter = (req, file, cb) => {
-    if(file.mimetype === 'image/jpg' || file.mimetype === 'image/jpeg' || file.mimetype === 'image/png'){
-        cb(null, true)
-    }else{
-        cb(new Error('should be png or jpeg'), false)
-    }
-}
-const multerStorage = multer.memoryStorage();
-
-const upload = multer({
-    storage: multerStorage,
-    fileFilter: fileFilter
-});
- */
+module.exports=updateMiddleware

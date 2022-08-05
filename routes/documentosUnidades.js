@@ -8,6 +8,7 @@ const {
   readDocumentoCtrl,
   deleteDocumentosCtrl,
   updateNewNameDocsCtrl,
+  readDataToUpdateCtrl
 } = require("../controllers/documentosUnidades");
 
 const { uploadMiddleware } = require("../utils/handleDocumentosUnidades");
@@ -39,9 +40,9 @@ router.get("/read/:id", validatorReadDocumento, readDocumentoCtrl);
 //*checar caso de actualizar
 router.put(
   "/update/:id",
-  validatorReadDocumento,
+  readDataToUpdateCtrl,
   uploadDocsMiddleware,
-  updateDocumentosCtrl
+  updateDocumentosCtrl,
 );
 router.delete("/delete/:id", validatorReadDocumento, deleteDocumentosCtrl);
 
