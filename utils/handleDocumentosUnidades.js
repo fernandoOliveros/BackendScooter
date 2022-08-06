@@ -17,8 +17,6 @@ const storage = multer.diskStorage({
     cb(null, pathStorage);
   },
   filename: function (req, file, cb) {
-    
-    console.log(req.body)
     const idUni = req.findDataRow.dataValues.id_Unidad;
     const idDoc = req.findDataRow.dataValues.id_Documento;
 

@@ -16,9 +16,7 @@ async function createDocumentosCtrl(req, res, next) {
 
     const findDataRow = await documentosUnidadesModel.findByPk(idCreatedRow);
     idCreatedRow = findDataRow.dataValues.id_Documento;
-    console.log("EL ID ES", idCreatedRow);
     req.findDataRow = findDataRow; //attaches variable dataDocs to the global request
-    //handleHttpResponse(res, dataDocs)
     next();
   } catch (e) {
     console.log(e);
@@ -28,7 +26,7 @@ async function createDocumentosCtrl(req, res, next) {
 
 const updateNewNameDocsCtrl = async (req, res) => {
   try {
-    //handleHttpResponse(res, dataUpdateDocumento);
+    
     let { body, files } = req; //splits the request into two objects, id and body
     let fileNames = [];
     let fieldNames = [];
@@ -43,9 +41,6 @@ const updateNewNameDocsCtrl = async (req, res) => {
       return { ...accumulator, [`${fieldNames[index]}`]: value };
     }, {});
 
-    // objeto listo👇️️ {'key0': 'zero', 'key1': 'one', 'key2': 'two'}
-    //console.log(dataFiles);
-
     const id_Unidad = parseInt(req.body.id_Unidad);
     const dataToUpdate = { id_Unidad, ...dataFiles };
 
@@ -57,6 +52,7 @@ const updateNewNameDocsCtrl = async (req, res) => {
         where: { id_Documento: id_Documento },
       }
     );
+    
     handleHttpResponse(res, dataUpdateDocumento);
   } catch (e) {
     console.log(e);
@@ -72,7 +68,6 @@ async function readDataToUpdateCtrl(req, res, next) {
     //req.findDataRow = findDataRow;
     req.findDataRow = findDataRow;
     next();
-    //let dsz = req.findDataRow.dataValues.id_Documento;
   } catch (e) {
     console.log(e);
     handleHttpError(res, "ERROR_READ_ROWDATA");
@@ -83,10 +78,7 @@ const updateDocumentosCtrl = async (req, res) => {
   try {
     //let id_Documento = parseInt(req.params.id);
     let { body, files, id } = matchedData(req); //splits the request into two objects, id and body
-    /*const dataUpdateDocumento = await documentosUnidadesModel.update(body, {
-      where: { id_Documento: id },
-    });
-    handleHttpResponse(res, dataUpdateDocumento);*/
+    
     let fileNames = [];
     let fieldNames = [];
     for (const i in req?.files) {
@@ -96,14 +88,10 @@ const updateDocumentosCtrl = async (req, res) => {
       fileNames.push(currentFileName);
       fieldNames.push(currentFieldName);
     }
-    //const arr = ["zero", "one", "two"];
     //convierto array en objeto
     const dataFiles = fileNames.reduce((accumulator, value, index) => {
       return { ...accumulator, [`${fieldNames[index]}`]: value };
     }, {});
-
-    // objeto listo👇️️ {'key0': 'zero', 'key1': 'one', 'key2': 'two'}
-    //console.log(dataFiles);
 
     const id_Unidad = parseInt(req.body.id_Unidad);
     const dataToUpdate = { id_Unidad, ...dataFiles };
