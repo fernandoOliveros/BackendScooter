@@ -23,7 +23,7 @@ const createUnidadCtrl = async (req, res) => {
 
 const updateUnidadesCtrl = async (req, res) => {
   try {
-    const { id, ...body } = matchedData(req); //splits the request into two objects, id and body
+    /*const { id, ...body } = matchedData(req); //splits the request into two objects, id and body
     const dataUnidad = await unidadesModel.findByPk(id);
     if (!dataUnidad) {
       handleHttpError(res, `No existe unidad con id: ${id}`, 404);
@@ -32,7 +32,30 @@ const updateUnidadesCtrl = async (req, res) => {
     const dataUpdateUnidad = await unidadesModel.update(body, {
       where: { id_Unidad: id },
     });
-    handleHttpResponse(res, dataUpdateUnidad);
+    handleHttpResponse(res, dataUpdateUnidad);*/
+    let id_Unidad = parseInt(req.params.id)
+    const { body } = req; //splits the request into two objects, id and body
+    let query =
+      "SELECT `id_Unidad`" + 
+      "FROM `tbl_unidades`" + 
+      "WHERE `id_Unidad` =:id;";
+    let dataId = await sequelize.query(query, {
+      replacements: { id: `${id_Unidad}` },
+      type: QueryTypes.SELECT,
+    });
+    if (!dataId) {
+      handleHttpError(res, `No existe unidad con id: ${id}`, 404);
+      return;
+    } else {
+      const dataUpdatedUnidad = await unidadesModel.update(body, {
+        where: { id_Unidad },
+      });
+      
+      let dataUnidad = await unidadesModel.findByPk(id_Unidad);
+      dataUnidad = { dataUnidad, status: `${dataUpdatedUnidad}` };
+      handleHttpResponse(res, dataUnidad);
+    }
+    
   } catch (e) {
     console.log(e);
     handleHttpError(res, "ERROR_UPDATE_UNIDAD");
@@ -57,20 +80,19 @@ const readUnidadCtrl = async (req, res) => {
     if (!dataUnidad) {
       handleHttpError(res, `No existe unidad con id: ${id}`, 404);
       return;
-    }
-    else {
-    let query =
-      "SELECT `candado`.`st_DescripcionCandado`, `unidades`.*, `docs`.`url_TarjetaCirculacion`, `docs`.`url_Factura` , `docs`.`url_PermisoSCT`" +
-      "FROM `tbl_unidades` as `unidades`" +
-      "INNER JOIN `tbl_documentos` as `docs`" +
-      "INNER JOIN  `tbl_tipocandado` as `candado`" +
-      "ON `docs`.`id_Unidad`= `unidades`.`id_Unidad`" +
-      "WHERE `unidades`.`id_Unidad`=:id;";
-    const dataUnidadModified = await sequelize.query(query, {
-      replacements: { id: `${id}` },
-      type: QueryTypes.SELECT,
-    });
-    handleHttpResponse(res, dataUnidadModified);
+    } else {
+      let query =
+        "SELECT `candado`.`st_DescripcionCandado`, `unidades`.*, `docs`.`url_TarjetaCirculacion`, `docs`.`url_Factura` , `docs`.`url_PermisoSCT`" +
+        "FROM `tbl_unidades` as `unidades`" +
+        "INNER JOIN `tbl_documentos` as `docs`" +
+        "INNER JOIN  `tbl_tipocandado` as `candado`" +
+        "ON `docs`.`id_Unidad`= `unidades`.`id_Unidad`" +
+        "WHERE `unidades`.`id_Unidad`=:id;";
+      const dataUnidadModified = await sequelize.query(query, {
+        replacements: { id: `${id}` },
+        type: QueryTypes.SELECT,
+      });
+      handleHttpResponse(res, dataUnidadModified);
     }
   } catch (e) {
     handleHttpError(res, "ERROR_READ_UNIDAD");

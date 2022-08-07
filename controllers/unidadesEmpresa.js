@@ -32,7 +32,7 @@ const readUnidadesEmpresaCtrl = async (req, res) => {
       handleHttpResponse(res, dataUnidadModified);
     }
   } catch (e) {
-    console.log(e)
+    console.log(e);
     handleHttpError(res, "ERROR_READ_UNIDADES-EMPRESA");
   }
 };

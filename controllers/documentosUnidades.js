@@ -87,11 +87,11 @@ const updateDocumentosCtrl = async (req, res) => {
     let [url_TarjetaCirculacion] = req.files.url_TarjetaCirculacion || "null";
     let [url_Factura] = req.files.url_Factura || "null";
     let [url_PermisoSCT] = req.files.url_PermisoSCT || "null";
-    
-    url_TarjetaCirculacion = url_TarjetaCirculacion.filename|| null;
+
+    url_TarjetaCirculacion = url_TarjetaCirculacion.filename || null;
     url_Factura = url_Factura.filename || null;
-    url_PermisoSCT = url_PermisoSCT.filename|| null;
-    
+    url_PermisoSCT = url_PermisoSCT.filename || null;
+
     let dataToUp = {
       id_Unidad,
       url_TarjetaCirculacion,

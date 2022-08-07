@@ -26,7 +26,7 @@ router.get("/read", readAllUnidadesCtrl);
 router.get("/read/:id", validatorReadUnidad, readUnidadCtrl);
 router.put(
   "/update/:id",
-  validatorReadUnidad,
+  //validatorReadUnidad,
   validatorUnidades,
   updateUnidadesCtrl
 );
