@@ -15,10 +15,14 @@ async function createDocumentosCtrl(req, res, next) {
     let idCreatedRow = dataRow.dataValues.id_Documento;
 
     const findDataRow = await documentosUnidadesModel.findByPk(idCreatedRow);
-    idCreatedRow = findDataRow.dataValues.id_Documento;
+
     req.findDataRow = findDataRow; //attaches variable dataDocs to the global request
     next();
   } catch (e) {
+    let idRowToDelete = findDataRow.dataValues.id_Documento;
+    const dataDeleteDocumentos = await documentosUnidadesModel.destroy({
+      where: { id_Documento: idRowToDelete },
+    });
     console.log(e);
     handleHttpError(res, "ERROR_UPLOAD_DOCS");
   }
@@ -26,7 +30,6 @@ async function createDocumentosCtrl(req, res, next) {
 
 const updateNewNameDocsCtrl = async (req, res) => {
   try {
-    
     let { body, files } = req; //splits the request into two objects, id and body
     let fileNames = [];
     let fieldNames = [];
@@ -52,8 +55,11 @@ const updateNewNameDocsCtrl = async (req, res) => {
         where: { id_Documento: id_Documento },
       }
     );
-    
-    handleHttpResponse(res, dataUpdateDocumento);
+    const dataReadDocumento = await documentosUnidadesModel.findByPk(
+      id_Documento
+    );
+
+    handleHttpResponse(res, dataReadDocumento);
   } catch (e) {
     console.log(e);
     handleHttpError(res, "ERROR_UPLOAD_NEWNAMES_DOCS");
@@ -63,7 +69,6 @@ const updateNewNameDocsCtrl = async (req, res) => {
 async function readDataToUpdateCtrl(req, res, next) {
   try {
     let id = parseInt(req.params.id);
-    console.log(id);
     const findDataRow = await documentosUnidadesModel.findByPk(id);
     //req.findDataRow = findDataRow;
     req.findDataRow = findDataRow;
@@ -76,9 +81,36 @@ async function readDataToUpdateCtrl(req, res, next) {
 
 const updateDocumentosCtrl = async (req, res) => {
   try {
+    let { body, files } = matchedData(req); //splits the request into two objects, id and body
+    let id_Documento = req.findDataRow.dataValues.id_Documento;
+    let id_Unidad = parseInt(req.body.id_Unidad);
+    let [url_TarjetaCirculacion] = req.files.url_TarjetaCirculacion || "null";
+    let [url_Factura] = req.files.url_Factura || "null";
+    let [url_PermisoSCT] = req.files.url_PermisoSCT || "null";
+    
+    url_TarjetaCirculacion = url_TarjetaCirculacion.filename|| null;
+    url_Factura = url_Factura.filename || null;
+    url_PermisoSCT = url_PermisoSCT.filename|| null;
+    
+    let dataToUp = {
+      id_Unidad,
+      url_TarjetaCirculacion,
+      url_Factura,
+      url_PermisoSCT,
+    };
+    console.log(dataToUp);
+
+    const dataUpdatedRow = await documentosUnidadesModel.update(dataToUp, {
+      where: { id_Documento },
+    });
+    let dataFiles = await documentosUnidadesModel.findByPk(id_Documento);
+    dataFiles = { dataFiles, status: `${dataUpdatedRow}` };
+    handleHttpResponse(res, dataFiles);
+
+    /*
     //let id_Documento = parseInt(req.params.id);
     let { body, files, id } = matchedData(req); //splits the request into two objects, id and body
-    
+
     let fileNames = [];
     let fieldNames = [];
     for (const i in req?.files) {
@@ -99,11 +131,16 @@ const updateDocumentosCtrl = async (req, res) => {
     let id_Documento = req.findDataRow.dataValues.id_Documento;
 
     console.log(dataToUpdate);
-    const dataUpdatedFile = await documentosUnidadesModel.update(dataToUpdate, {
+    
+    const dataUpdatedRow = await documentosUnidadesModel.update(dataToUpdate, {
       where: { id_Documento: id_Documento },
     });
+    let dataFiles = await documentosUnidadesModel.findByPk(id_Documento);
+    dataFiles = {dataFiles, "status":`${dataUpdatedRow}`};
+    handleHttpResponse(res, dataFiles);
 
-    handleHttpResponse(res, dataUpdatedFile);
+    //handleHttpResponse(res, dataUpdatedFile);
+    */
   } catch (e) {
     console.log(e);
     handleHttpError(res, "ERROR_UPDATE_UNIDAD");
