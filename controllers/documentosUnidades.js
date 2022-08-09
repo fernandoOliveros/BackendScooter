@@ -159,9 +159,8 @@ const readAllDocumentosCtrl = async (req, res) => {
 
 const readDocumentoCtrl = async (req, res) => {
   try {
-    req = matchedData(req);
-    const { id } = req;
-    const dataDocumento = await documentosUnidadesModel.findByPk(id);
+    let id_Documento = parseInt(req.params.id);
+    const dataDocumento = await documentosUnidadesModel.findByPk(id_Documento);
     handleHttpResponse(res, dataDocumento);
   } catch (e) {
     handleHttpError(res, "ERROR_READ_DOCUMENTO");

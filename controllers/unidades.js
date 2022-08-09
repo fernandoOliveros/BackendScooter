@@ -82,7 +82,7 @@ const readUnidadCtrl = async (req, res) => {
       return;
     } else {
       let query =
-        "SELECT `candado`.`st_DescripcionCandado`, `unidades`.*, `docs`.`url_TarjetaCirculacion`, `docs`.`url_Factura` , `docs`.`url_PermisoSCT`" +
+        "SELECT `candado`.`st_DescripcionCandado`, `unidades`.*, `docs`.`url_TarjetaCirculacion`, `docs`.`url_Factura` , `docs`.`url_PermisoSCT`,`docs`.`id_Documento` " +
         "FROM `tbl_unidades` as `unidades`" +
         "INNER JOIN `tbl_documentos` as `docs`" +
         "INNER JOIN  `tbl_tipocandado` as `candado`" +

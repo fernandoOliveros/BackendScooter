@@ -36,7 +36,10 @@ router.post(
 );
 
 router.get("/read", readAllDocumentosCtrl);
-router.get("/read/:id", validatorReadDocumento, readDocumentoCtrl);
+router.get("/read/:id", 
+//validatorReadDocumento, 
+readDocumentoCtrl);
+
 router.put(
   "/update/:id",
   readDataToUpdateCtrl,
