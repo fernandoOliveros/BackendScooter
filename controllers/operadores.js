@@ -2,6 +2,8 @@ const { matchedData } = require("express-validator");
 const { handleHttpResponse } = require("../utils/handleResponse");
 const { handleHttpError } = require("../utils/handleError");
 const { operadoresModel } = require("../models");
+const { sequelize } = require("../config/mysql");
+const { QueryTypes } = require("sequelize");
 
 /**
  * @param {} req  http://localhost:5000/api/operadores/...
@@ -61,7 +63,17 @@ const readOperadorCtrl = async (req, res) => {
       handleHttpError(res, `No existe operador con id: ${id}`, 404);
       return;
     } else {
-      handleHttpResponse(res, dataOperador);
+      let query =
+        "SELECT `operadores`.*, `docs`.`url_SolicitudEmpleo`, `docs`.`url_CURP` , `docs`.`url_RFC`,`docs`.`url_ComprobanteDom` " +
+        "FROM `tbl_operadores` as `operadores`" +
+        "INNER JOIN `tbl_docs_operadores` as `docs`" +
+        "ON `docs`.`id_Operador`= `operadores`.`id_Operador`" +
+        "WHERE `operadores`.`id_Operador`=:id;";
+      const dataOperadorModified = await sequelize.query(query, {
+        replacements: { id: `${id}` },
+        type: QueryTypes.SELECT,
+      });
+      handleHttpResponse(res, dataOperadorModified);
     }
   } catch (e) {
     handleHttpError(res, "ERROR_READ_OPERADOR");
