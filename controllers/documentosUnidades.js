@@ -81,6 +81,7 @@ async function readDataToUpdateCtrl(req, res, next) {
 
 const updateDocumentosCtrl = async (req, res) => {
   try {
+    /*
     let { body, files } = matchedData(req); //splits the request into two objects, id and body
     let id_Documento = req.findDataRow.dataValues.id_Documento;
     let id_Unidad = parseInt(req.body.id_Unidad);
@@ -106,8 +107,8 @@ const updateDocumentosCtrl = async (req, res) => {
     let dataFiles = await documentosUnidadesModel.findByPk(id_Documento);
     dataFiles = { dataFiles, status: `${dataUpdatedRow}` };
     handleHttpResponse(res, dataFiles);
-
-    /*
+    */
+    
     //let id_Documento = parseInt(req.params.id);
     let { body, files, id } = matchedData(req); //splits the request into two objects, id and body
 
@@ -135,12 +136,12 @@ const updateDocumentosCtrl = async (req, res) => {
     const dataUpdatedRow = await documentosUnidadesModel.update(dataToUpdate, {
       where: { id_Documento: id_Documento },
     });
-    let dataFiles = await documentosUnidadesModel.findByPk(id_Documento);
-    dataFiles = {dataFiles, "status":`${dataUpdatedRow}`};
-    handleHttpResponse(res, dataFiles);
+    let dataRow = await documentosUnidadesModel.findByPk(id_Documento);
+    dataRow = {dataRow, "status":`${dataUpdatedRow}`};
+    handleHttpResponse(res, dataRow);
 
     //handleHttpResponse(res, dataUpdatedFile);
-    */
+    
   } catch (e) {
     console.log(e);
     handleHttpError(res, "ERROR_UPDATE_UNIDAD");
