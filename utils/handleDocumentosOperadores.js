@@ -19,12 +19,8 @@ const storage = multer.diskStorage({
     cb(null, pathStorage);
   },
   filename: function (req, file, cb) {
-    
-    /*let idOp = req.dataRow.dataValues.id_Operador;
-    let idDoc = req.dataRow.dataValues.id_Documento;
-    console.log(idDoc)*/
-    console.log("prueba request es", req.dataProof)
-
+    const idOp = req.foundDataRow.dataValues.id_Operador;
+    const idDoc = req.foundDataRow.dataValues.id_Documento;
 
     const ext = file.originalname.split(".").pop();
 
@@ -50,12 +46,11 @@ const storage = multer.diskStorage({
         break;
       }
       default:
-        const filename = `${idDoc}_unknown-${Date.now()}.${ext}`;
+        const filename = `${idDoc}_${idOp}_unknown-${Date.now()}.${ext}`;
         cb(null, filename);
     }
   },
 });
-
 
 const uploadMiddleware = multer({ storage });
 

@@ -9,11 +9,9 @@ const {
   deleteDocumentosCtrl,
   updateNewNameDocsCtrl,
   readDataToUpdateCtrl,
-
 } = require("../controllers/documentosOperadores");
 
 const uploadMiddleware = require("../utils/handleDocumentosOperadores");
-const updateMiddleware = require("../utils/handleUpdateDocumentosOperadores");
 
  
 /**
@@ -32,13 +30,6 @@ const uploadDocsMiddleware = uploadMiddleware.fields([
   { name: "url_ComprobanteDom", maxCount: 1 },
 ]);
 
-const updateDocsMiddleware = updateMiddleware.fields([
-  { name: "url_SolicitudEmpleo", maxCount: 1 },
-  { name: "url_CURP", maxCount: 1 },
-  { name: "url_RFC", maxCount: 1 },
-  { name: "url_ComprobanteDom", maxCount: 1 },
-]);
-
 router.post(
   "/create",
   createDocumentosCtrl, //works as a middleware
@@ -50,10 +41,9 @@ router.get("/read/:id", validatorReadDocumento, readDocumentoCtrl);
 
 router.put(
   "/update/:id",
-  validatorReadDocumento,
   readDataToUpdateCtrl,
   uploadDocsMiddleware,
-  updateDocumentosCtrl
+  updateDocumentosCtrl,
 );
 router.delete("/delete/:id", validatorReadDocumento, deleteDocumentosCtrl);
 

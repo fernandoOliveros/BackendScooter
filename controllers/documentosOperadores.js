@@ -5,15 +5,20 @@ const { matchedData } = require("express-validator");
 
 const createDocumentosCtrl = async (req, res, next) => {
   try {
-    const dataEmpty = {
-      // id_Unidad,
-    };
-    const dataRow = await documentosOperadoresModel.create(dataEmpty); //only to generate id_Documento
-    req.dataRow = dataRow; //attaches variable dataDocs to the global request
-    console.log(req.dataRow)
-    //handleHttpResponse(res, dataDocs)
+    const dataEmpty = {};
+
+    let dataRow = await documentosOperadoresModel.create(dataEmpty); //only to generate id_Documento
+    let idCreatedRow = dataRow.dataValues.id_Documento;
+
+    const foundDataRow = await documentosUnidadesModel.findByPk(idCreatedRow);
+
+    req.foundDataRow = foundDataRow; //attaches variable dataDocs to the global request
     next();
   } catch (e) {
+    let idRowToDelete = foundDataRow.dataValues.id_Documento;
+    const dataDeleteDocumentos = await documentosOperadoresModel.destroy({
+      where: { id_Documento: idRowToDelete },
+    });
     console.log(e);
     handleHttpError(res, "ERROR_UPLOAD_DOCS");
   }
@@ -37,22 +42,19 @@ const updateNewNameDocsCtrl = async (req, res) => {
       return { ...accumulator, [`${fieldnames[index]}`]: value };
     }, {});
 
-    // objeto listo👇️️ {'key0': 'zero', 'key1': 'one', 'key2': 'two'}
-    //console.log(dataFiles);
-
     const id_Operador = parseInt(req.body.id_Operador);
     const dataToUpdate = { id_Operador, ...dataFiles };
 
-    let id_Documento = req.dataRow.dataValues.id_Documento;
+    let id_Documento = req.foundDataRow.dataValues.id_Documento;
 
     console.log(dataToUpdate);
-    const dataUpdateDocumento = await documentosOperadoresModel.update(
-      dataToUpdate,
-      {
-        where: { id_Documento: id_Documento },
-      }
+    await documentosOperadoresModel.update(dataToUpdate, {
+      where: { id_Documento },
+    });
+    const dataReadDocumento = await documentosOperadoresModel.findByPk(
+      id_Documento
     );
-    handleHttpResponse(res, dataUpdateDocumento);
+    handleHttpResponse(res, dataReadDocumento);
   } catch (e) {
     console.log(e);
     handleHttpError(res, "ERROR_RENAME_DOCS");
@@ -61,27 +63,24 @@ const updateNewNameDocsCtrl = async (req, res) => {
 
 const readDataToUpdateCtrl = async (req, res, next) => {
   try {
-    req = matchedData(req);
-    const { id } = req;
-    const dataRow = await documentosOperadoresModel.findByPk(id);
-    if (!dataRow) {
+    let id = parseInt(req.params.id);
+    const foundDataRow = await documentosOperadoresModel.findByPk(id);
+    if (!foundDataRow) {
       handleHttpError(res, `No existe documento con id: ${id}`, 404);
       return;
+    } else {
+      req.foundDataRow = foundDataRow; //attaches variable dataDocs to the global request
+      next();
     }
-    req.dataProof = 123; //attaches variable dataDocs to the global request
-    //console.log(req.dataRow)
-    next();
-    //handleHttpResponse(res, dataDocumento);
   } catch (e) {
     console.log(e);
     handleHttpError(res, "ERROR_READ_DATA2UPDATE");
   }
-}
+};
 
 const updateDocumentosCtrl = async (req, res) => {
   try {
     let { body, files, id } = matchedData(req); //splits the request into two objects, id and body
-    //console.log(req.files)
 
     let fileNames = [];
     let fieldNames = [];
@@ -92,31 +91,27 @@ const updateDocumentosCtrl = async (req, res) => {
       fileNames.push(currentFileName);
       fieldNames.push(currentFieldName);
     }
-    //console.log(fileNames);
-    //console.log(fieldNames);
-
-    //const arr = ["zero", "one", "two"];
-
+    //convierto array en objeto
     const dataFiles = fileNames.reduce((accumulator, value, index) => {
       return { ...accumulator, [`${fieldNames[index]}`]: value };
     }, {});
-    // 👇️️ {'key0': 'zero', 'key1': 'one', 'key2': 'two'}
-    //console.log(dataFiles);
 
     const id_Operador = parseInt(req.body.id_Operador);
-    const dataUpdate = { id_Operador, ...dataFiles };
-    console.log(dataUpdate);
+    const dataToUpdate = { id_Operador, ...dataFiles };
 
-    //const dataUp = { ...body, id_Operador };
-    //let id_Documento = req.dataDocumento.dataValues.id_Documento;
-    const dataUpdateDocumento = await documentosOperadoresModel.update(
-      dataUpdate,
+    let id_Documento = req.foundDataRow.dataValues.id_Documento;
+
+    console.log(dataToUpdate);
+
+    const dataUpdatedRow = await documentosOperadoresModel.update(
+      dataToUpdate,
       {
-        where: { id_Documento: id },
+        where: { id_Documento },
       }
     );
-
-    handleHttpResponse(res, dataUpdateDocumento);
+    let dataRow = await documentosOperadoresModel.findByPk(id_Documento);
+    dataRow = { dataRow, status: `${dataUpdatedRow}` };
+    handleHttpResponse(res, dataRow);
   } catch (e) {
     console.log(e);
     handleHttpError(res, "ERROR_UPDATE_UNIDAD");
@@ -172,4 +167,5 @@ module.exports = {
   deleteDocumentosCtrl,
   updateNewNameDocsCtrl,
   readDataToUpdateCtrl,
+  updateDocumentosCtrl,
 };
