@@ -33,12 +33,10 @@ const updateUnidadesCtrl = async (req, res) => {
       where: { id_Unidad: id },
     });
     handleHttpResponse(res, dataUpdateUnidad);*/
-    let id_Unidad = parseInt(req.params.id)
+    let id_Unidad = parseInt(req.params.id);
     const { body } = req; //splits the request into two objects, id and body
     let query =
-      "SELECT `id_Unidad`" + 
-      "FROM `tbl_unidades`" + 
-      "WHERE `id_Unidad` =:id;";
+      "SELECT `id_Unidad`" + "FROM `tbl_unidades`" + "WHERE `id_Unidad` =:id;";
     let dataId = await sequelize.query(query, {
       replacements: { id: `${id_Unidad}` },
       type: QueryTypes.SELECT,
@@ -50,12 +48,11 @@ const updateUnidadesCtrl = async (req, res) => {
       const dataUpdatedUnidad = await unidadesModel.update(body, {
         where: { id_Unidad },
       });
-      
-      let dataUnidad = await unidadesModel.findByPk(id_Unidad);
-      dataUnidad = { dataUnidad, status: `${dataUpdatedUnidad}` };
-      handleHttpResponse(res, dataUnidad);
+
+      let dataRow = await unidadesModel.findByPk(id_Unidad);
+      dataRow = { dataRow, status: `${dataUpdatedUnidad}` };
+      handleHttpResponse(res, dataRow);
     }
-    
   } catch (e) {
     console.log(e);
     handleHttpError(res, "ERROR_UPDATE_UNIDAD");
@@ -87,6 +84,7 @@ const readUnidadCtrl = async (req, res) => {
         "INNER JOIN `tbl_documentos` as `docs`" +
         "INNER JOIN  `tbl_tipocandado` as `candado`" +
         "ON `docs`.`id_Unidad`= `unidades`.`id_Unidad`" +
+        " AND `candado`.`id_Candado`= `unidades`.`id_Candado`" +
         "WHERE `unidades`.`id_Unidad`=:id;";
       const dataUnidadModified = await sequelize.query(query, {
         replacements: { id: `${id}` },
@@ -107,12 +105,20 @@ const deleteUnidadCtrl = async (req, res) => {
     if (!dataUnidad) {
       handleHttpError(res, `No existe unidad con id: ${id}`, 404);
       return;
+    } else {
+      let query =
+        "UPDATE `tbl_unidades` SET `id_Candado`='0' WHERE `id_Unidad`=:id;";
+      const statusDeleteUnidad = await sequelize.query(query, {
+        replacements: { id: `${id}` },
+        type: QueryTypes.UPDATE,
+      });
+      let getLogicStatus = statusDeleteUnidad.pop();
+      let dataRow = await unidadesModel.findByPk(id);
+      dataRow = { dataRow, status: `${getLogicStatus}` };
+      handleHttpResponse(res, dataRow);
     }
-    const dataDeleteUnidad = await unidadesModel.destroy({
-      where: { id_Unidad: id },
-    });
-    handleHttpResponse(res, dataDeleteUnidad);
   } catch (e) {
+    console.log(e);
     handleHttpError(res, "ERROR_DELETE_UNIDAD");
   }
 };

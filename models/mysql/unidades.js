@@ -16,7 +16,7 @@ const Unidad = sequelize.define(
       type: DataTypes.NUMBER,
     },
     id_Candado: {
-      type: DataTypes.NUMBER,
+      type: DataTypes.STRING,
     },
     st_Marca: {
       type: DataTypes.STRING,
