@@ -61,8 +61,15 @@ const updateUnidadesCtrl = async (req, res) => {
 
 const readAllUnidadesCtrl = async (req, res) => {
   try {
-    const dataAllUnidades = await unidadesModel.findAll();
-    handleHttpResponse(res, dataAllUnidades);
+    let query = "SELECT `candado`.`st_DescripcionCandado`, `unidades`.*"+
+    "FROM `tbl_unidades` as `unidades`" +
+    "INNER JOIN  `tbl_tipocandado` as `candado`" +
+    "ON `candado`.`id_Candado`= `unidades`.`id_Candado`" ;
+    const readAllUnidades = await sequelize.query(query, {
+      type: QueryTypes.SELECT
+    })
+    //const dataAllUnidades = await unidadesModel.findAll();
+    handleHttpResponse(res, readAllUnidades);
   } catch (e) {
     console.log(e);
     handleHttpError(res, "ERROR_READ_UNIDADES");
