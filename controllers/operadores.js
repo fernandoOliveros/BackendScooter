@@ -46,8 +46,15 @@ const updateOperadorCtrl = async (req, res) => {
 
 const readAllOperadoresCtrl = async (req, res) => {
   try {
-    const dataAllOperadores = await operadoresModel.findAll();
-    handleHttpResponse(res, dataAllOperadores);
+    let query =
+      "SELECT `op`.*, `tipop`.`st_NombreTipoPuesto`" +
+      "FROM `tbl_operadores` AS `op`" +
+      " INNER JOIN `tbl_tipopuesto` AS `tipop`" +
+      "ON `op`.`id_TipoPuesto`=`tipop`.`id_TipoPuesto`";
+    const dataReadAllOperadoresModified = await sequelize.query(query, {
+      type: QueryTypes.SELECT,
+    });
+    handleHttpResponse(res, dataReadAllOperadoresModified);
   } catch (e) {
     console.log(e);
     handleHttpError(res, "ERROR_READ_OPERADORES");
@@ -56,18 +63,19 @@ const readAllOperadoresCtrl = async (req, res) => {
 
 const readOperadorCtrl = async (req, res) => {
   try {
-    req = matchedData(req);
-    const { id } = req;
+    let id = parseInt(req.params.id);
     const dataOperador = await operadoresModel.findByPk(id);
     if (!dataOperador) {
       handleHttpError(res, `No existe operador con id: ${id}`, 404);
       return;
     } else {
       let query =
-        "SELECT `operadores`.*, `docs`.`url_SolicitudEmpleo`, `docs`.`url_CURP` , `docs`.`url_RFC`,`docs`.`url_ComprobanteDom` " +
+        "SELECT `tipopuesto`.`st_NombreTipoPuesto`,`operadores`.*, `docs`.`url_SolicitudEmpleo`, `docs`.`url_CURP` , `docs`.`url_RFC`,`docs`.`url_ComprobanteDom` " +
         "FROM `tbl_operadores` as `operadores`" +
         "INNER JOIN `tbl_docs_operadores` as `docs`" +
+        "INNER JOIN `tbl_tipopuesto` AS `tipopuesto`" +
         "ON `docs`.`id_Operador`= `operadores`.`id_Operador`" +
+        "AND `tipopuesto`.`id_TipoPuesto`= `operadores`.`id_TipoPuesto`" +
         "WHERE `operadores`.`id_Operador`=:id;";
       const dataOperadorModified = await sequelize.query(query, {
         replacements: { id: `${id}` },
@@ -76,6 +84,7 @@ const readOperadorCtrl = async (req, res) => {
       handleHttpResponse(res, dataOperadorModified);
     }
   } catch (e) {
+    console.log(e)
     handleHttpError(res, "ERROR_READ_OPERADOR");
   }
 };

@@ -10,15 +10,15 @@ const createDocumentosCtrl = async (req, res, next) => {
     let dataRow = await documentosOperadoresModel.create(dataEmpty); //only to generate id_Documento
     let idCreatedRow = dataRow.dataValues.id_Documento;
 
-    const foundDataRow = await documentosUnidadesModel.findByPk(idCreatedRow);
+    const foundDataRow = await documentosOperadoresModel.findByPk(idCreatedRow);
 
     req.foundDataRow = foundDataRow; //attaches variable dataDocs to the global request
     next();
   } catch (e) {
-    let idRowToDelete = foundDataRow.dataValues.id_Documento;
+    /*let idRowToDelete = req.foundDataRow.dataValues.id_Documento;
     const dataDeleteDocumentos = await documentosOperadoresModel.destroy({
       where: { id_Documento: idRowToDelete },
-    });
+    });*/
     console.log(e);
     handleHttpError(res, "ERROR_UPLOAD_DOCS");
   }

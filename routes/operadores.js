@@ -23,7 +23,7 @@ Delete operadores: http://localhost:5000/api/operadores/delete/:id
 
 router.post("/create", validatorOperadores, createOperadorCtrl);
 router.get("/read", readAllOperadoresCtrl);
-router.get("/read/:id", validatorReadOperador, readOperadorCtrl);
+router.get("/read/:id", readOperadorCtrl);
 router.put(
   "/update/:id",
   validatorReadOperador,
