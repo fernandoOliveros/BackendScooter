@@ -30,6 +30,10 @@ router.put(
   validatorContactosEmOperadores,
   updateContactoCtrl
 );
-router.delete("/delete/:id", validatorReadContactoEmOperador, deleteContactoCtrl);
+router.delete(
+  "/delete/:id",
+  validatorReadContactoEmOperador,
+  deleteContactoCtrl
+);
 
 module.exports = router;

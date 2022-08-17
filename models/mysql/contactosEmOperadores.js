@@ -18,6 +18,9 @@ const Contactos = sequelize.define(
     st_NumTelefono: {
       type: DataTypes.INTEGER,
     },
+    st_Parentesco: {
+      type: DataTypes.STRING,
+    },
   },
   {
     timestamps: false, //se debe especificar para cada modelo, o especificar globalmente desde /../../config/mysql

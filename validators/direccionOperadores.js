@@ -8,7 +8,7 @@ const validatorDireccion = [
   check("id_Dir_Operador").isEmpty(),
   check("id_Operador").exists(),
   check("c_codigoPostal").exists(),
-  check("c_Estado").exists(),
+  check("id_Estado").exists(),
   check("id_Localidad").exists(),
   check("id_Municipio").exists(),
   check("id_Colonia").exists(),

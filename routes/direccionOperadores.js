@@ -10,6 +10,7 @@ const {
   readDireccionCtrl,
   updateDireccionCtrl,
   deleteDireccionCtrl,
+  getByCPCtrl
 } = require("../controllers/direccionOperadores");
 
 /**
@@ -31,5 +32,6 @@ router.put(
   updateDireccionCtrl
 );
 router.delete("/delete/:id", validatorReadDireccion, deleteDireccionCtrl);
+router.get("/getByCP/:CP", getByCPCtrl)
 
 module.exports = router;

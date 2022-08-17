@@ -12,7 +12,7 @@ const createContactoCtrl = async (req, res) => {
   try {
     const body = matchedData(req); //la data del request venga curada
     const dataContacto = await contactosEmergenciaModel.create(body);
-    await handleHttpResponse(res, dataContacto);
+    handleHttpResponse(res, dataContacto);
   } catch (e) {
     console.log(e);
     handleHttpError(res, "ERROR_UPLOAD_UNIDAD");
@@ -100,6 +100,3 @@ module.exports = {
   updateContactoCtrl,
   deleteContactoCtrl,
 };
-
-
-

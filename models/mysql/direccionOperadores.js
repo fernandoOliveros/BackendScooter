@@ -16,8 +16,8 @@ const DireccionOperador = sequelize.define(
     c_codigoPostal: {
       type: DataTypes.STRING,
     },
-    c_Estado: {
-      type: DataTypes.STRING,
+    id_Estado: {
+      type: DataTypes.INTEGER,
     },
     id_Localidad: {
       type: DataTypes.INTEGER,

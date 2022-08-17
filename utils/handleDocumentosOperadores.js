@@ -9,9 +9,8 @@ url_CURP – CURP
 url_RFC - RFC
 url_ComprobanteDom- COMPD
  */
-const { body } = require("express-validator");
 const multer = require("multer");
-const { date, time } = require("./handleDate");
+const { date } = require("./handleDate");
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -25,11 +24,6 @@ const storage = multer.diskStorage({
     const ext = file.originalname.split(".").pop();
 
     switch (file.fieldname) {
-      case "url_SolicitudEmpleo": {
-        const filename = `${idDoc}_${idOp}_SOLIEM_${date}.${ext}`;
-        cb(null, filename);
-        break;
-      }
       case "url_CURP": {
         const filename = `${idDoc}_${idOp}_CURP_${date}.${ext}`;
         cb(null, filename);
@@ -54,7 +48,7 @@ const storage = multer.diskStorage({
 
 const uploadMiddleware = multer({ storage });
 
-module.exports = uploadMiddleware;
+module.exports = {uploadMiddleware};
 
 /**
  * const fileFilter = (req, file, cb) => {

@@ -13,9 +13,6 @@ const Documentos = sequelize.define(
       type: DataTypes.NUMBER,
       allowNull: true,
     },
-    url_SolicitudEmpleo: {
-      type: DataTypes.STRING,
-    },
     url_CURP: {
       type: DataTypes.STRING,
     },

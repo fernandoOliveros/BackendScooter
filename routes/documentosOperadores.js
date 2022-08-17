@@ -11,8 +11,7 @@ const {
   readDataToUpdateCtrl,
 } = require("../controllers/documentosOperadores");
 
-const uploadMiddleware = require("../utils/handleDocumentosOperadores");
-
+const {uploadMiddleware} = require("../utils/handleDocumentosOperadores");
  
 /**
  * RUTAS - DOCUMENTOS DE OPERADORES
@@ -23,8 +22,8 @@ Update documento: http://localhost:5000/api/documentosOperadores/update/:id
 Delete documento: http://localhost:5000/api/documentosOperadores/delete/:id
  */
 
+
 const uploadDocsMiddleware = uploadMiddleware.fields([
-  { name: "url_SolicitudEmpleo", maxCount: 1 },
   { name: "url_CURP", maxCount: 1 },
   { name: "url_RFC", maxCount: 1 },
   { name: "url_ComprobanteDom", maxCount: 1 },

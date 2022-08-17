@@ -70,7 +70,7 @@ const readOperadorCtrl = async (req, res) => {
       return;
     } else {
       let query =
-        "SELECT `tipopuesto`.`st_NombreTipoPuesto`,`operadores`.*, `docs`.`url_SolicitudEmpleo`, `docs`.`url_CURP` , `docs`.`url_RFC`,`docs`.`url_ComprobanteDom` " +
+        "SELECT `tipopuesto`.`st_NombreTipoPuesto`,`operadores`.*, `docs`.`url_CURP` , `docs`.`url_RFC`,`docs`.`url_ComprobanteDom` " +
         "FROM `tbl_operadores` as `operadores`" +
         "INNER JOIN `tbl_docs_operadores` as `docs`" +
         "INNER JOIN `tbl_tipopuesto` AS `tipopuesto`" +
