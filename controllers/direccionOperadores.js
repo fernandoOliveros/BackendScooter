@@ -75,9 +75,14 @@ const getByCPCtrl = async (req, res) => {
     "SELECT `CP`.`c_codigoPostal`,  `CP`.`c_Estado`" +
     ", `municipio`.`st_Municipio`" +
     ",`loc`.`st_Localidad`" +
+    ",`loc`.`id_Localidad`" +
+    ",`municipio`.`id_Municipio`" +
+    ",`estado`.`id_Estado`" +
+    ",`CP`.`id_codigoPostal`" +
     "FROM `cat_codigo_postal`  AS  `CP`" +
     "INNER JOIN  `cat_municipio` AS `municipio` ON `CP`.`c_Estado`=`municipio`.`c_Estado` AND `CP`.`c_Municipio`=`municipio`.`c_Municipio`" +
     "INNER JOIN  `cat_localidad` AS `loc` ON `CP`.`c_Estado`=`loc`.`c_Estado` AND `CP`.`c_Localidad`=`loc`.`c_Localidad`" +
+    "INNER JOIN  `cat_estado` AS `estado` ON `CP`.`c_Estado`=`estado`.`c_Estado`"+
     "WHERE `CP`.`c_codigoPostal`=:CP";
   let dataDireccion = await sequelize.query(query, {
     replacements: { CP: `${CP}` },
@@ -86,19 +91,20 @@ const getByCPCtrl = async (req, res) => {
   dataDireccion = dataDireccion[0];
 
   let queryColonias =
-    "SELECT `st_Colonia` FROM `cat_colonia` WHERE `c_CodigoPostal` =:CP";
+    "SELECT `st_Colonia`,`id_colonia`  FROM `cat_colonia` WHERE `c_CodigoPostal` =:CP";
   const dataColonias = await sequelize.query(queryColonias, {
     replacements: { CP: `${CP}` },
     type: sequelize.QueryTypes.SELECT,
   });
 
-  let colonias = [];
+  console.log(dataColonias)
+  /*let colonias = [];
   for (const i in dataColonias) {
     const colonia = dataColonias[i];
     let currentColonia = colonia.st_Colonia;
     colonias.push(currentColonia);
-  }
-  dataDireccion = { ...dataDireccion, colonias };
+  }*/
+  dataDireccion = { ...dataDireccion, dataColonias };
   //dataDireccion=[...dataDireccion, {colonias: `${colonias}` }]
   //dataDireccion.push(colonias)
   //console.log(dataDireccion)
