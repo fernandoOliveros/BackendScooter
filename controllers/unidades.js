@@ -68,6 +68,7 @@ const readAllUnidadesCtrl = async (req, res) => {
     const readAllUnidades = await sequelize.query(query, {
       type: QueryTypes.SELECT
     })
+    console.log(readAllUnidades)
     //const dataAllUnidades = await unidadesModel.findAll();
     handleHttpResponse(res, readAllUnidades);
   } catch (e) {
