@@ -29,6 +29,18 @@ const DireccionOperador = sequelize.define(
     id_Colonia: {
       type: DataTypes.INTEGER,
     },
+    st_Calle: {
+      type: DataTypes.STRING,
+    },
+    st_NoExterior: {
+      type: DataTypes.STRING,
+    },
+    st_NoInterior: {
+      type: DataTypes.STRING,
+    },
+    st_RefDomicilio: {
+      type: DataTypes.STRING,
+    },
   },
   {
     timestamps: true,
