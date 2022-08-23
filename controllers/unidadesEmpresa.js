@@ -20,9 +20,11 @@ const readUnidadesEmpresaCtrl = async (req, res) => {
       return;
     } else {
       let query =
-        "SELECT `unidades`.*, `empresa`.`id_Empresa`" +
+        "SELECT `unidades`.*, `empresa`.`id_Empresa`,  `candado`.`st_DescripcionCandado`" +
+
         "FROM `tbl_unidades` as `unidades`" +
         "INNER JOIN  `tbl_empresas` as `empresa`" +
+        "INNER JOIN  `tbl_tipocandado` as `candado`" +
         "ON `empresa`.`id_Empresa`= `unidades`.`id_Empresa`" +
         "WHERE `empresa`.`id_Empresa`=:id;";
       const dataUnidadModified = await sequelize.query(query, {
