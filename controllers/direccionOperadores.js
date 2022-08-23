@@ -79,6 +79,7 @@ const getByCPCtrl = async (req, res) => {
     ",`municipio`.`id_Municipio`" +
     ",`estado`.`id_Estado`" +
     ",`CP`.`id_codigoPostal`" +
+    ",`estado`.`st_Estado`" +
     "FROM `cat_codigo_postal`  AS  `CP`" +
     "INNER JOIN  `cat_municipio` AS `municipio` ON `CP`.`c_Estado`=`municipio`.`c_Estado` AND `CP`.`c_Municipio`=`municipio`.`c_Municipio`" +
     "INNER JOIN  `cat_localidad` AS `loc` ON `CP`.`c_Estado`=`loc`.`c_Estado` AND `CP`.`c_Localidad`=`loc`.`c_Localidad`" +
@@ -97,7 +98,6 @@ const getByCPCtrl = async (req, res) => {
     type: sequelize.QueryTypes.SELECT,
   });
 
-  console.log(dataColonias)
   /*let colonias = [];
   for (const i in dataColonias) {
     const colonia = dataColonias[i];
