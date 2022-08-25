@@ -24,8 +24,9 @@ const readUnidadesEmpresaCtrl = async (req, res) => {
 
         "FROM `tbl_unidades` as `unidades`" +
         "INNER JOIN  `tbl_empresas` as `empresa`" +
-        "INNER JOIN  `tbl_tipocandado` as `candado`" +
         "ON `empresa`.`id_Empresa`= `unidades`.`id_Empresa`" +
+        "INNER JOIN  `tbl_tipocandado` as `candado`" +
+        "ON `candado`.`id_Candado`= `unidades`.`id_Candado`" +
         "WHERE `empresa`.`id_Empresa`=:id;";
       const dataUnidadModified = await sequelize.query(query, {
         replacements: { id: `${id}` },
