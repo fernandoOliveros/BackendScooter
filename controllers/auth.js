@@ -2,7 +2,9 @@ const { matchedData } = require ("express-validator");
 const { usersModel } = require ('../models');
 const {tokenSign } = require("../utils/handleJwt");
 const { encrypte, compare } = require("../utils/handlePassword");
-const { handleHttpError, handleHttpResponse } = require("../utils/handleResponse");
+const {  handleHttpResponse } = require("../utils/handleResponse");
+const {  handleHttpError } = require("../utils/handleError");
+
 
 /**
  * Este controlador es el encargado de registrar un usuario
