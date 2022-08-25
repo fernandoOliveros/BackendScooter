@@ -23,7 +23,7 @@ Delete Unidad: http://localhost:5000/api/unidades/delete/:id
 
 router.post("/create", validatorUnidades, createUnidadCtrl);
 router.get("/read", readAllUnidadesCtrl);
-router.get("/read/:id", validatorReadUnidad, readUnidadCtrl);
+router.get("/read/:id", readUnidadCtrl);
 router.put(
   "/update/:id",
   //validatorReadUnidad,

@@ -19,10 +19,6 @@ async function createDocumentosCtrl(req, res, next) {
     req.findDataRow = findDataRow; //attaches variable dataDocs to the global request
     next();
   } catch (e) {
-    let idRowToDelete = findDataRow.dataValues.id_Documento;
-    const dataDeleteDocumentos = await documentosUnidadesModel.destroy({
-      where: { id_Documento: idRowToDelete },
-    });
     console.log(e);
     handleHttpError(res, "ERROR_UPLOAD_DOCS");
   }
