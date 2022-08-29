@@ -1,6 +1,5 @@
 const express = require("express");
 const router = express.Router();
-const { validatorReadDocumento } = require("../validators/documentos"); //BORRAR
 const {
   createDocumentosCtrl,
   updateDocumentosCtrl,
@@ -9,17 +8,17 @@ const {
   deleteDocumentosCtrl,
   updateNewNameDocsCtrl,
   readDataToUpdateCtrl
-} = require("../controllers/documentosUnidades");
+} = require("../controllers/documentosRemolques");
 
-const { uploadMiddleware } = require("../utils/handleDocumentosUnidades");
+const { uploadMiddleware } = require("../utils/handleDocumentosRemolques");
 
 /**
- * RUTAS - DOCUMENTOS DE UNIDAD
-Create documento: http://localhost:5000/api/documentosUnidades/create
-Read All documentos: http://localhost:5000/api/documentosUnidades/read
-Read One documento: http://localhost:5000/api/documentosUnidades/read/:id
-Update documento: http://localhost:5000/api/documentosUnidades/update/:id
-Delete documento: http://localhost:5000/api/documentosUnidades/delete/:id
+ * RUTAS - DOCUMENTOS DE REMOLQUE
+Create documento: http://localhost:5000/api/documentosRemolques/create
+Read All documentos: http://localhost:5000/api/documentosRemolques/read
+Read One documento: http://localhost:5000/api/documentosRemolques/read/:id
+Update documento: http://localhost:5000/api/documentosRemolques/update/:id
+Delete documento: http://localhost:5000/api/documentosRemolques/delete/:id
  */
 
 const uploadDocsMiddleware = uploadMiddleware.fields([
@@ -36,9 +35,7 @@ router.post(
 );
 
 router.get("/read", readAllDocumentosCtrl);
-router.get("/read/:id", 
-//validatorReadDocumento, 
-readDocumentoCtrl);
+router.get("/read/:id", readDocumentoCtrl);
 
 router.put(
   "/update/:id",
@@ -46,6 +43,8 @@ router.put(
   uploadDocsMiddleware,
   updateDocumentosCtrl,
 );
-router.delete("/delete/:id", validatorReadDocumento, deleteDocumentosCtrl);
+router.delete("/delete/:id", deleteDocumentosCtrl);
 
 module.exports = router;
+
+
