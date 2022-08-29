@@ -145,16 +145,23 @@ const readRemolquesEmpresaCtrl = async (req, res) => {
       return;
     } else {
       let query =
-        "SELECT `remolques`.*, `empresa`.`id_Empresa`"+
+        "SELECT `remolques`.*, `empresa`.`id_Empresa`, `docs`.`url_TarjetaCirculacion`, `docs`.`url_Factura` , `docs`.`url_PermisoSCT`,`docs`.`id_Documento` "+
         "FROM `tbl_remolques` as `remolques`" +
         "INNER JOIN  `tbl_empresas` as `empresa`" +
         "ON `empresa`.`id_Empresa`= `remolques`.`id_Empresa`" +
+        "INNER JOIN  `tbl_docs_remolques` as `docs`" +
+        "ON `docs`.`id_Remolque`= `remolques`.`id_Remolque`" +
         "WHERE `empresa`.`id_Empresa`=:id;";
       const dataRemolqueModified = await sequelize.query(query, {
         replacements: { id: `${id}` },
         type: QueryTypes.SELECT,
       });
-      handleHttpResponse(res, dataRemolqueModified);
+      if (dataRemolqueModified.length==0){
+        handleHttpError(res, `Empresa con id: ${id} aun no cuenta con remolques o documentos de remolques`, 404);
+        return;
+      } else{
+        handleHttpResponse(res, dataRemolqueModified);
+      }
     }
   } catch (e) {
     console.log(e);
