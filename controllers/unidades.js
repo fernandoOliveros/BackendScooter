@@ -14,7 +14,7 @@ const createUnidadCtrl = async (req, res) => {
   try {
     const body = matchedData(req); //la data del request venga curada
     const dataUnidad = await unidadesModel.create(body);
-    await handleHttpResponse(res, dataUnidad);
+    handleHttpResponse(res, dataUnidad);
   } catch (e) {
     console.log(e);
     handleHttpError(res, "ERROR_UPLOAD_UNIDAD");
@@ -68,7 +68,6 @@ const readAllUnidadesCtrl = async (req, res) => {
     const readAllUnidades = await sequelize.query(query, {
       type: QueryTypes.SELECT
     })
-    console.log(readAllUnidades)
     //const dataAllUnidades = await unidadesModel.findAll();
     handleHttpResponse(res, readAllUnidades);
   } catch (e) {
@@ -83,7 +82,6 @@ const readUnidadCtrl = async (req, res) => {
     //console.log(`El id ESSSS ${id}`)
 
     const dataUnidad = await unidadesModel.findByPk(id);
-    console.log(dataUnidad)
     if (!dataUnidad) {
       handleHttpError(res, `No existe unidad con id: ${id}`, 404);
       return;

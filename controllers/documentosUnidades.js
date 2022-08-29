@@ -10,12 +10,10 @@ async function createDocumentosCtrl(req, res, next) {
     const dataEmpty = {
       // id_Unidad,
     };
-
     const dataRow = await documentosUnidadesModel.create(dataEmpty); //only to generate id_Documento
+    console.log(dataRow.dataValues)
     let idCreatedRow = dataRow.dataValues.id_Documento;
-
     const findDataRow = await documentosUnidadesModel.findByPk(idCreatedRow);
-
     req.findDataRow = findDataRow; //attaches variable dataDocs to the global request
     next();
   } catch (e) {
