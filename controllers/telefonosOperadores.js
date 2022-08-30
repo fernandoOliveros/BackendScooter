@@ -12,7 +12,7 @@ const createTelefonoCtrl = async (req, res) => {
   try {
     const body = matchedData(req); //la data del request venga curada
     const dataTelefono = await telefonosOperadoresModel.create(body);
-    await handleHttpResponse(res, dataTelefono);
+    handleHttpResponse(res, dataTelefono);
   } catch (e) {
     console.log(e);
     handleHttpError(res, "ERROR_UPLOAD_TELEFONO");

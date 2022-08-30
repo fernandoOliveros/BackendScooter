@@ -7,7 +7,6 @@ const models = {
   unidadesModel: require(`${pathDB}/unidades`),
   documentosUnidadesModel: require(`${pathDB}/documentosUnidades`),
   tiposUnidadesModel: require(`${pathDB}/tiposUnidades`),
-  coloniasModel: require(`${pathDB}/colonias`),
   operadoresModel: require(`${pathDB}/operadores`),
   documentosOperadoresModel: require(`${pathDB}/documentosOperadores`),
   direccionOperadoresModel: require(`${pathDB}/direccionOperadores`),

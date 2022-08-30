@@ -16,17 +16,11 @@ const validatorDireccion = [
   check("st_NoExterior").exists(),
   check("st_NoInterior").exists(),
   check("st_RefDomicilio").exists(),
-
+  
   (req, res, next) => {
     return validateResults(req, res, next);
   },
 ];
 
-const validatorReadDireccion = [
-  check("id").exists(),
-  (req, res, next) => {
-    return validateResults(req, res, next);
-  },
-];
 
-module.exports = { validatorDireccion, validatorReadDireccion };
+module.exports = { validatorDireccion };

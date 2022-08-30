@@ -14,7 +14,7 @@ const createDireccionCtrl = async (req, res) => {
   try {
     const body = matchedData(req); //la data del request venga curada
     const dataUnidad = await direccionOperadoresModel.create(body);
-    await handleHttpResponse(res, dataUnidad);
+    handleHttpResponse(res, dataUnidad);
   } catch (e) {
     console.log(e);
     handleHttpError(res, "ERROR_UPLOAD_DIRECCION");
@@ -23,11 +23,23 @@ const createDireccionCtrl = async (req, res) => {
 
 const updateDireccionCtrl = async (req, res) => {
   try {
-    const { id, ...body } = matchedData(req); //splits the request into two objects, id and body
-    const dataUpdateUnidad = await direccionOperadoresModel.update(body, {
-      where: { id_Dir_Operador: id },
+    const { body } = req; //splits the request into two objects, id and body
+    let id = parseInt(req.params.id);
+    let query =
+      "SELECT `id_Dir_Operador` FROM `tbl_dir_operadores` WHERE `id_Dir_Operador`=:id ";
+    const dataRow = await sequelize.query(query, {
+      replacements: { id: `${id}` },
+      type: QueryTypes.SELECT,
     });
-    handleHttpResponse(res, dataUpdateUnidad);
+
+    if (dataRow.length == 0) {
+      handleHttpError(res, `No existe Direccion operador con id: ${id}`);
+    } else {
+      const dataUpdateUnidad = await direccionOperadoresModel.update(body, {
+        where: { id_Dir_Operador: id },
+      });
+      handleHttpResponse(res, dataUpdateUnidad);
+    }
   } catch (e) {
     console.log(e);
     handleHttpError(res, "ERROR_UPDATE_DIRECCION");
@@ -46,23 +58,43 @@ const readAllDireccionesCtrl = async (req, res) => {
 
 const readDireccionCtrl = async (req, res) => {
   try {
-    req = matchedData(req);
-    const { id } = req;
-    const dataUnidad = await direccionOperadoresModel.findByPk(id);
-    handleHttpResponse(res, dataUnidad);
+    let id = parseInt(req.params.id);
+    let query =
+      "SELECT * FROM `tbl_dir_operadores` WHERE `id_Dir_Operador`=:id ";
+    const dataRow = await sequelize.query(query, {
+      replacements: { id: `${id}` },
+      type: QueryTypes.SELECT,
+    });
+    console.log(dataRow);
+    if (dataRow.length == 0) {
+      handleHttpError(res, `No existe Direccion operador con id: ${id}`);
+    } else {
+      handleHttpResponse(res, dataRow);
+    }
   } catch (e) {
+    console.log(e);
     handleHttpError(res, "ERROR_READ_DIRECCION");
   }
 };
 
 const deleteDireccionCtrl = async (req, res) => {
   try {
-    req = matchedData(req);
-    const { id } = req;
-    const dataDeleteUnidad = await direccionOperadoresModel.destroy({
-      where: { id_Dir_Operador: id },
+    let id = parseInt(req.params.id);
+    let query =
+      "SELECT `id_Dir_Operador` FROM `tbl_dir_operadores` WHERE `id_Dir_Operador`=:id ";
+    const dataRow = await sequelize.query(query, {
+      replacements: { id: `${id}` },
+      type: QueryTypes.SELECT,
     });
-    handleHttpResponse(res, dataDeleteUnidad);
+
+    if (dataRow.length == 0) {
+      handleHttpError(res, `No existe Direccion operador con id: ${id}`);
+    } else {
+      const dataDeleteUnidad = await direccionOperadoresModel.destroy({
+        where: { id_Dir_Operador: id },
+      });
+      handleHttpResponse(res, dataDeleteUnidad);
+    }
   } catch (e) {
     handleHttpError(res, "ERROR_DELETE_DIRECCION");
   }
@@ -83,7 +115,7 @@ const getByCPCtrl = async (req, res) => {
     "FROM `cat_codigo_postal`  AS  `CP`" +
     "INNER JOIN  `cat_municipio` AS `municipio` ON `CP`.`c_Estado`=`municipio`.`c_Estado` AND `CP`.`c_Municipio`=`municipio`.`c_Municipio`" +
     "INNER JOIN  `cat_localidad` AS `loc` ON `CP`.`c_Estado`=`loc`.`c_Estado` AND `CP`.`c_Localidad`=`loc`.`c_Localidad`" +
-    "INNER JOIN  `cat_estado` AS `estado` ON `CP`.`c_Estado`=`estado`.`c_Estado`"+
+    "INNER JOIN  `cat_estado` AS `estado` ON `CP`.`c_Estado`=`estado`.`c_Estado`" +
     "WHERE `CP`.`c_codigoPostal`=:CP";
   let dataDireccion = await sequelize.query(query, {
     replacements: { CP: `${CP}` },

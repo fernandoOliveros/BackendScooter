@@ -2,7 +2,6 @@ const express = require("express");
 const router = express.Router();
 const {
   validatorDireccion,
-  validatorReadDireccion,
 } = require("../validators/direccionOperadores");
 const {
   createDireccionCtrl,
@@ -10,7 +9,7 @@ const {
   readDireccionCtrl,
   updateDireccionCtrl,
   deleteDireccionCtrl,
-  getByCPCtrl
+  getByCPCtrl,
 } = require("../controllers/direccionOperadores");
 
 /**
@@ -24,14 +23,12 @@ Delete direccion: http://localhost:5000/api/direccionOperadores/delete/:id
 
 router.post("/create", validatorDireccion, createDireccionCtrl);
 router.get("/read", readAllDireccionesCtrl);
-router.get("/read/:id", validatorReadDireccion, readDireccionCtrl);
-router.put(
-  "/update/:id",
-  validatorReadDireccion,
-  validatorDireccion,
-  updateDireccionCtrl
+router.get("/read/:id", readDireccionCtrl);
+router.put("/update/:id", validatorDireccion, updateDireccionCtrl);
+router.delete(
+  "/delete/:id",
+  deleteDireccionCtrl
 );
-router.delete("/delete/:id", validatorReadDireccion, deleteDireccionCtrl);
-router.get("/getByCP/:CP", getByCPCtrl)
+router.get("/getByCP/:CP", getByCPCtrl);
 
 module.exports = router;

@@ -14,7 +14,7 @@ const createOperadorCtrl = async (req, res) => {
   try {
     const body = matchedData(req); //la data del request venga curada
     const dataOperador = await operadoresModel.create(body);
-    await handleHttpResponse(res, dataOperador);
+    handleHttpResponse(res, dataOperador);
   } catch (e) {
     console.log(e);
     handleHttpError(res, "ERROR_UPLOAD_OPERADOR");
