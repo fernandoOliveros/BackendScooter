@@ -1,7 +1,7 @@
 const { matchedData } = require("express-validator");
 const { handleHttpResponse } = require("../utils/handleResponse");
 const { handleHttpError } = require("../utils/handleError");
-const { operadoresModel } = require("../models");
+const { operadoresModel, empresasModel } = require("../models");
 const { sequelize } = require("../config/mysql");
 const { QueryTypes } = require("sequelize");
 
@@ -107,10 +107,37 @@ const deleteOperadorCtrl = async (req, res) => {
   }
 };
 
+const readUnidadesEmpresaCtrl = async (req, res) => {
+  try {
+    const id = parseInt(req.params.id)
+    const dataEmpresa = await empresasModel.findByPk(id);
+    if (!dataEmpresa) {
+      handleHttpError(res, `No existe empresa con id: ${id}`, 404);
+      return;
+    } else {
+      let query =
+        "SELECT `operadores`.*, `empresa`.`id_Empresa`" +
+        "FROM `tbl_operadores` as `operadores`" +
+        "INNER JOIN  `tbl_empresas` as `empresa`" +
+        "ON `empresa`.`id_Empresa`= `operadores`.`id_Empresa`" +
+        "WHERE `empresa`.`id_Empresa`=:id;";
+      const dataOperadorModified = await sequelize.query(query, {
+        replacements: { id: `${id}` },
+        type: QueryTypes.SELECT,
+      });
+      handleHttpResponse(res, dataOperadorModified);
+    }
+  } catch (e) {
+    console.log(e);
+    handleHttpError(res, "ERROR_READ_OPERADORES-EMPRESA");
+  }
+};
+
 module.exports = {
   createOperadorCtrl,
   updateOperadorCtrl,
   readAllOperadoresCtrl,
   readOperadorCtrl,
   deleteOperadorCtrl,
+  readUnidadesEmpresaCtrl
 };
