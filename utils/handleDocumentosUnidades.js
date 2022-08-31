@@ -24,22 +24,22 @@ const storage = multer.diskStorage({
 
     switch (file.fieldname) {
       case "url_TarjetaCirculacion": {
-        const filename = `${idDoc}_${idUni}_TARCIR_${date}.${ext}`;
+        const filename = `${idDoc}_${idUni}_UTARCIR_${date}.${ext}`;
         cb(null, filename);
         break;
       }
       case "url_Factura": {
-        const filename = `${idDoc}_${idUni}_FACT_${date}.${ext}`;
+        const filename = `${idDoc}_${idUni}_UFACT_${date}.${ext}`;
         cb(null, filename);
         break;
       }
       case "url_PermisoSCT": {
-        const filename = `${idDoc}_${idUni}_PSCT_${date}.${ext}`;
+        const filename = `${idDoc}_${idUni}_UPSCT_${date}.${ext}`;
         cb(null, filename);
         break;
       }
       default:
-        const filename = `${idDoc}_${idUni}_unknown-${Date.now()}.${ext}`;
+        const filename = `${idDoc}_${idUni}_UUnknown-${Date.now()}.${ext}`;
         cb(null, filename);
     }
   },
