@@ -20,7 +20,7 @@ Delete Tel: http://localhost:5000/api/telefonosOperadores/delete/:id
 
 router.post("/create", validatorTelefonosOperadores, createTelefonoCtrl);
 router.get("/read", readAllTelefonosCtrl);
-router.get("/read/:id", validatorReadTelefonoOperador, readTelefonoCtrl);
+router.get("/read/:id", readTelefonoCtrl);
 router.put(
   "/update/:id",
   validatorReadTelefonoOperador,

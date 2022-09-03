@@ -23,7 +23,7 @@ Delete Unidad: http://localhost:5000/api/contactosEmOperadores/delete/:id
 
 router.post("/create", validatorContactosEmOperadores, createContactoCtrl);
 router.get("/read", readAllContactosCtrl);
-router.get("/read/:id", validatorReadContactoEmOperador, readContactoCtrl);
+router.get("/read/:id", readContactoCtrl);
 router.put(
   "/update/:id",
   validatorReadContactoEmOperador,

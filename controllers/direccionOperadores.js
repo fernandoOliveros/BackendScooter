@@ -1,7 +1,7 @@
 const { matchedData } = require("express-validator");
 const { handleHttpResponse } = require("../utils/handleResponse");
 const { handleHttpError } = require("../utils/handleError");
-const { direccionOperadoresModel } = require("../models");
+const { direccionOperadoresModel, operadoresModel } = require("../models");
 const { sequelize } = require("../config/mysql");
 const { QueryTypes } = require("sequelize");
 
@@ -59,17 +59,32 @@ const readAllDireccionesCtrl = async (req, res) => {
 const readDireccionCtrl = async (req, res) => {
   try {
     let id = parseInt(req.params.id);
-    let query =
-      "SELECT * FROM `tbl_dir_operadores` WHERE `id_Dir_Operador`=:id ";
-    const dataRow = await sequelize.query(query, {
-      replacements: { id: `${id}` },
-      type: QueryTypes.SELECT,
-    });
-    console.log(dataRow);
-    if (dataRow.length == 0) {
-      handleHttpError(res, `No existe Direccion operador con id: ${id}`);
+    let dataReadOperador = await operadoresModel.findByPk(id) ? true : false
+    if (dataReadOperador == false) {
+      handleHttpError(res, `No existe Operador con id: ${id}`)
+      return
     } else {
-      handleHttpResponse(res, dataRow);
+      let query =
+        "SELECT `municipio`.`st_Municipio`,  `col`.`st_Colonia`, `est`.`st_Estado`, `local`.`st_Localidad`, `dir`.* " +
+        "FROM `tbl_dir_operadores` AS `dir` " +
+        "INNER JOIN `cat_colonia` AS `col` " +
+        "ON `dir`.`id_Colonia`=`col`.`id_colonia` " +
+        "INNER JOIN `cat_estado` AS `est` " +
+        "ON `est`.`id_Estado`=`dir`.`id_Estado` " +
+        "INNER JOIN `cat_localidad` AS `local` " +
+        "ON `local`.`id_Localidad`=`dir`.`id_Localidad` " +
+        "INNER JOIN `cat_municipio` AS `municipio` " +
+        "ON `municipio`.`id_Municipio`=`dir`.`id_Municipio` " +
+        "WHERE `dir`.`id_Operador`=:id ";
+      const [dataRow] = await sequelize.query(query, {
+        replacements: { id: `${id}` },
+        type: QueryTypes.SELECT,
+      })
+      if (dataRow == undefined) {
+        handleHttpError(res, `No existe direccion asociada al operador con id: ${id}`)
+      } else {
+        handleHttpResponse(res, dataRow)
+      }
     }
   } catch (e) {
     console.log(e);

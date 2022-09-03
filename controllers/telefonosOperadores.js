@@ -1,7 +1,9 @@
 const { matchedData } = require("express-validator");
 const { handleHttpResponse } = require("../utils/handleResponse");
 const { handleHttpError } = require("../utils/handleError");
-const { telefonosOperadoresModel } = require("../models");
+const { telefonosOperadoresModel, operadoresModel } = require("../models");
+const { sequelize } = require("../config/mysql");
+const { QueryTypes } = require("sequelize");
 
 /**
  * @param {} req  http://localhost:5000/api/telefonosOperadores/...
@@ -47,18 +49,33 @@ const readAllTelefonosCtrl = async (req, res) => {
   }
 };
 
+
 const readTelefonoCtrl = async (req, res) => {
   try {
-    req = matchedData(req);
-    const { id } = req;
-    const dataTelefono = await telefonosOperadoresModel.findByPk(id);
-    if (!dataTelefono) {
-      handleHttpError(res, `No existe telefonoOperador con id: ${id}`, 404);
-      return;
+    let id = parseInt(req.params.id);
+    let dataReadOperador = await operadoresModel.findByPk(id) ? true : false
+    if (dataReadOperador == false) {
+      handleHttpError(res, `No existe Operador con id: ${id}`)
+      return
     } else {
-      handleHttpResponse(res, dataTelefono);
+      let query =
+        "SELECT `tel`.*, `catego`.`st_Descripcion` "+
+        "FROM `tbl_tel_operadores` AS `tel` " +
+        "INNER JOIN `tbl_tel_categorias` AS `catego` " +
+        "ON `catego`.`id_Categoria`=`tel`.`id_Categoria` " +
+        "WHERE `tel`.`id_Operador`=:id ";
+      const [dataRow] = await sequelize.query(query, {
+        replacements: { id: `${id}` },
+        type: QueryTypes.SELECT,
+      })
+      if (dataRow == undefined) {
+        handleHttpError(res, `No existe telefono asociado al operador con id: ${id}`)
+      } else {
+        handleHttpResponse(res, dataRow)
+      }
     }
   } catch (e) {
+    console.log(e);
     handleHttpError(res, "ERROR_READ_TELEFONO");
   }
 };

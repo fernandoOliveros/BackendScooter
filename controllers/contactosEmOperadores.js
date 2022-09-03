@@ -1,7 +1,9 @@
 const { matchedData } = require("express-validator");
 const { handleHttpResponse } = require("../utils/handleResponse");
 const { handleHttpError } = require("../utils/handleError");
-const { contactosEmergenciaModel } = require("../models");
+const { contactosEmergenciaModel, operadoresModel } = require("../models");
+const { sequelize } = require("../config/mysql");
+const { QueryTypes } = require("sequelize");
 
 /**
  * @param {} req  http://localhost:5000/api/contactosEmOperadores/...
@@ -51,23 +53,32 @@ const readAllContactosCtrl = async (req, res) => {
   }
 };
 
+
 const readContactoCtrl = async (req, res) => {
   try {
-    req = matchedData(req);
-    const { id } = req;
-    const dataContacto = await contactosEmergenciaModel.findByPk(id);
-    if (!dataContacto) {
-      handleHttpError(
-        res,
-        `No existe Contacto Emergencia Operador con id: ${id}`,
-        404
-      );
-      return;
+    let id = parseInt(req.params.id);
+    let dataReadOperador = await operadoresModel.findByPk(id) ? true : false
+    if (dataReadOperador == false) {
+      handleHttpError(res, `No existe Operador con id: ${id}`)
+      return
     } else {
-      handleHttpResponse(res, dataContacto);
+      let query =
+        "SELECT `contacto`.*"+
+        "FROM `tbl_contactoem_operadores` AS `contacto` " +
+        "WHERE `contacto`.`id_Operador`=:id ";
+      const [dataRow] = await sequelize.query(query, {
+        replacements: { id: `${id}` },
+        type: QueryTypes.SELECT,
+      })
+      if (dataRow == undefined) {
+        handleHttpError(res, `No existe Contacto emergencia asociado al Operador con id: ${id}`)
+      } else {
+        handleHttpResponse(res, dataRow)
+      }
     }
   } catch (e) {
-    handleHttpError(res, "ERROR_READ_UNIDAD");
+    console.log(e);
+    handleHttpError(res, "ERROR_READ_CONTACTO-EM");
   }
 };
 
