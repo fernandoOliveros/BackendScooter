@@ -70,8 +70,10 @@ const readOperadorCtrl = async (req, res) => {
       return;
     } else {
       let query =
-        "SELECT `tipopuesto`.`st_NombreTipoPuesto`, `docs`.`url_CURP` , `docs`.`url_RFC`,`docs`.`url_ComprobanteDom`, `docs`.`id_Documento`, `operadores`.* " +
+        "SELECT `candado`.`st_DescripcionCandado`, `tipopuesto`.`st_NombreTipoPuesto`, `docs`.`url_CURP` , `docs`.`url_RFC`,`docs`.`url_ComprobanteDom`, `docs`.`id_Documento`, `operadores`.* " +
         "FROM `tbl_operadores` as `operadores`" +
+        "INNER JOIN  `tbl_tipocandado` as `candado`" +
+        "ON `candado`.`id_Candado`= `operadores`.`id_Candado`" +
         "INNER JOIN `tbl_docs_operadores` as `docs`" +
         "INNER JOIN `tbl_tipopuesto` AS `tipopuesto`" +
         "ON `docs`.`id_Operador`= `operadores`.`id_Operador`" +
@@ -89,21 +91,29 @@ const readOperadorCtrl = async (req, res) => {
   }
 };
 
+
 const deleteOperadorCtrl = async (req, res) => {
   try {
-    req = matchedData(req);
-    const { id } = req;
+    id = parseInt(req.params.id)
     const dataOperador = await operadoresModel.findByPk(id);
     if (!dataOperador) {
       handleHttpError(res, `No existe operador con id: ${id}`, 404);
       return;
+    } else {
+      let query =
+        "UPDATE `tbl_operadores` SET `id_Candado`='0' WHERE `id_Operador`=:id;";
+      const statusDeleteOperador = await sequelize.query(query, {
+        replacements: { id: `${id}` },
+        type: QueryTypes.UPDATE,
+      });
+      let getLogicStatus = statusDeleteOperador.pop();
+      let dataRow = await operadoresModel.findByPk(id);
+      dataRow = { dataRow, status: `${getLogicStatus}` };
+      handleHttpResponse(res, dataRow);
     }
-    const dataDeleteOperador = await operadoresModel.destroy({
-      where: { id_Operador: id },
-    });
-    handleHttpResponse(res, dataDeleteOperador);
   } catch (e) {
-    handleHttpError(res, "ERROR_DELETE_UNIDAD");
+    console.log(e);
+    handleHttpError(res, "ERROR_DELETE_OPERADOR");
   }
 };
 

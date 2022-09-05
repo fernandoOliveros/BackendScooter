@@ -31,7 +31,7 @@ router.put(
   validatorOperadores,
   updateOperadorCtrl
 );
-router.delete("/delete/:id", validatorReadOperador, deleteOperadorCtrl);
+router.delete("/delete/:id", deleteOperadorCtrl);
 router.get("/readByEmpresa/:id",  readOperadoresEmpresaCtrl);
 
 

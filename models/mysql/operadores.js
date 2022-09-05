@@ -9,6 +9,9 @@ const Operador = sequelize.define(
       primaryKey: true,
       autoIncrement: true,
     },
+    id_Candado: {
+      type: DataTypes.STRING,
+    },
     id_Empresa: {
       type: DataTypes.NUMBER,
     },
