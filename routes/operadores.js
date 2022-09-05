@@ -10,7 +10,7 @@ const {
   readAllOperadoresCtrl,
   readOperadorCtrl,
   deleteOperadorCtrl,
-  readUnidadesEmpresaCtrl
+  readOperadoresEmpresaCtrl
 } = require("../controllers/operadores");
 
 /**
@@ -32,7 +32,7 @@ router.put(
   updateOperadorCtrl
 );
 router.delete("/delete/:id", validatorReadOperador, deleteOperadorCtrl);
-router.get("/readByEmpresa/:id",  readUnidadesEmpresaCtrl);
+router.get("/readByEmpresa/:id",  readOperadoresEmpresaCtrl);
 
 
 module.exports = router;
