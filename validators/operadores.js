@@ -6,7 +6,7 @@ const validateResults = require("../utils/handleValidator");
  */
 const validatorOperadores = [
   check("id_Operador").isEmpty(),
-  check("id_Candado").exists(),
+  check("id_Candado").exists().optional({checkFalsy: true}),
   check("id_Empresa").exists(),
   check("id_TipoPuesto").exists(),
   check("st_Nombre").exists().isString(),
