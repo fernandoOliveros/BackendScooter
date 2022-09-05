@@ -50,7 +50,8 @@ const readAllOperadoresCtrl = async (req, res) => {
       "SELECT `op`.*, `tipop`.`st_NombreTipoPuesto`" +
       "FROM `tbl_operadores` AS `op`" +
       " INNER JOIN `tbl_tipopuesto` AS `tipop`" +
-      "ON `op`.`id_TipoPuesto`=`tipop`.`id_TipoPuesto`";
+      "ON `op`.`id_TipoPuesto`=`tipop`.`id_TipoPuesto`"+
+      "WHERE  `op`.`id_Candado` = 1";
     const dataReadAllOperadoresModified = await sequelize.query(query, {
       type: QueryTypes.SELECT,
     });

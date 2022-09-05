@@ -64,7 +64,8 @@ const readAllUnidadesCtrl = async (req, res) => {
     let query = "SELECT `candado`.`st_DescripcionCandado`, `unidades`.*"+
     "FROM `tbl_unidades` as `unidades`" +
     "INNER JOIN  `tbl_tipocandado` as `candado`" +
-    "ON `candado`.`id_Candado`= `unidades`.`id_Candado`" ;
+    "ON `candado`.`id_Candado`= `unidades`.`id_Candado`" +
+    "WHERE  `unidades`.`id_Candado` = 1" ;
     const readAllUnidades = await sequelize.query(query, {
       type: QueryTypes.SELECT
     })
