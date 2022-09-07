@@ -8,6 +8,7 @@ const validatorRemolque = [
   check("id_Remolque").isEmpty(),
   check("id_Empresa").exists(),
   check("st_Anio").exists(),
+  check("st_Marca").exists(),
   check("st_NumSerie").exists(),
   check("date_VigenciaFM").exists(),
   check("i_Status").exists(),

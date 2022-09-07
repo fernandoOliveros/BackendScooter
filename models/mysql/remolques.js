@@ -18,6 +18,9 @@ const Remolque = sequelize.define(
     st_Anio: {
       type: DataTypes.STRING,
     },
+    st_Marca: {
+      type: DataTypes.STRING,
+    },
     st_NumSerie: {
       type: DataTypes.STRING,
     },
