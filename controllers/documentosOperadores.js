@@ -40,7 +40,6 @@ const updateNewNameDocsCtrl = async (req, res) => {
 
     let id_Documento = req.foundDataRow.dataValues.id_Documento;
 
-    console.log(dataToUpdate);
     await documentosOperadoresModel.update(dataToUpdate, {
       where: { id_Documento },
     });
@@ -94,8 +93,6 @@ const updateDocumentosCtrl = async (req, res) => {
 
     let id_Documento = req.foundDataRow.dataValues.id_Documento;
 
-    console.log(dataToUpdate);
-
     const dataUpdatedRow = await documentosOperadoresModel.update(
       dataToUpdate,
       {
@@ -141,7 +138,6 @@ const deleteDocumentosCtrl = async (req, res) => {
   try {
     req = matchedData(req);
     const { id } = req;
-    console.log(id);
     const dataDeleteDocumentos = await documentosOperadoresModel.destroy({
       where: { id_Documento: id },
     });
