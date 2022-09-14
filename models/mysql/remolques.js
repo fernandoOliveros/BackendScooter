@@ -32,6 +32,7 @@ const Remolque = sequelize.define(
     },
     i_Status:{
       type: DataTypes.TINYINT,
+      default : 1,
     },
 
   },

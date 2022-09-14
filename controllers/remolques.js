@@ -16,7 +16,7 @@ const createRemolqueCtrl = async (req, res) => {
     const dataRemolque = await remolquesModel.create(body);
     handleHttpResponse(res, dataRemolque);
   } catch (e) {
-    //console.log(e);
+    console.log(e);
     handleHttpError(res, "ERROR_UPLOAD_REMOLQUE");
   }
 };
