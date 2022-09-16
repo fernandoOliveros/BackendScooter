@@ -15,6 +15,9 @@ const Remolque = sequelize.define(
     id_Empresa: {
       type: DataTypes.INTEGER,
     },
+    st_Economico: {
+      type: DataTypes.STRING,
+    },
     st_Anio: {
       type: DataTypes.STRING,
     },
