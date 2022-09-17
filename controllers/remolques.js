@@ -78,7 +78,7 @@ const readRemolqueCtrl = async (req, res) => {
       return;
     } else {
       let query =
-        "SELECT `remolques`.*, `docs`.`url_Factura`, `docs`.`url_PermisoSCT`, `docs`.`url_TarjetaCirculacion` "+
+        "SELECT `remolques`.*, `docs`.`id_Documento`, `docs`.`url_Factura`, `docs`.`url_PermisoSCT`, `docs`.`url_TarjetaCirculacion` "+
         //"`docs`.`url_TarjetaCirculacion`, `docs`.`url_Factura` , `docs`.`url_PermisoSCT`,`docs`.`id_Documento` " +
         "FROM `tbl_remolques` as `remolques`" +
         "INNER JOIN `tbl_docs_remolques` as `docs`" +
