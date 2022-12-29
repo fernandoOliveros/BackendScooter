@@ -15,6 +15,8 @@ const models = {
   empresasModel: require(`${pathDB}/empresas`),
   remolquesModel : require(`${pathDB}/remolques`),
   documentosRemolquesModel: require(`${pathDB}/documentosRemolques`),
+  boxersModel: require(`${pathDB}/boxers`),
+
 };
 
 module.exports = models;

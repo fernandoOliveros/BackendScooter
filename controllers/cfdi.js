@@ -96,11 +96,21 @@ async function readUnidadPesoCFDICtrl(req, res) {
   }
 }
 
+async function timbrarCFDICtrl (req, res){
+  try {
+    console.log("Timbrando...")
+  } catch (e) {
+    console.log(e);
+    handleHttpError(res, "ERROR_TIMBRAR_CFDI")
+  }
+}
+
 module.exports = {
   readMonedasCtrl,
   readFormasPagoCtrl,
   readMetodosPagoCtrl,
   readProdServicioCFDICtrl,
   readUnidadPesoCFDICtrl,
-  readUsosCFDICtrl
+  readUsosCFDICtrl,
+  timbrarCFDICtrl
 };
