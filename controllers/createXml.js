@@ -50,7 +50,7 @@ async function createXmlCtrl(req, res){
                 },
                 "cfdi:Conceptos": [{
                     
-                    "concepto":[
+                    "cfdi:Concepto":[
                     {   $:{
                         "ClaveProdServ": "78101800",
                         "NoIdentificacion": "UT421511",
@@ -60,61 +60,93 @@ async function createXmlCtrl(req, res){
                         "Descripcion": "Transporte de carga por carretera",
                         "ValorUnitario": "0.00",
                         "Importe": "Transporte de carga por carretera",
-                    }} ]
+                    },
+                   
+                    } ]
                        
                     }],
 
                     "cfdi:Complemento": [{
                         "cartaporte20:CartaPorte":[
                         {   
-                            "cartaporte20:Ubicaciones": [{
-                                "cartaporte20:Ubicacion": {
-                                    "cartaporte20:Domicilio":{
-                                        $:{"Calle":"calle"}
+                            "cartaporte20:Ubicaciones": {
+                                "cartaporte20:Ubicacion": [
+                                { $ :{"IDUbicacion":'OR101010', "TipoUbicacion":"Origen", "RFCRemitenteDestinatario":"EKU9003173C9", "FechaHoraSalidaLlegada":"2021-11-01T00:00:00", },
+
+                                "cartaporte20:Domicilio": { $:{"Calle": "calle", "NumeroExterior":"211", "Colonia":"1957", "Localidad":"13", "Referencia":"casa blanca", "Municipio":"011", "Estado":"CMX", "Pais":"MEX", "CodigoPostal":"13250",}} },
+                                  { $ :{"IDUbicacion":'DE202020', "TipoUbicacion":"Destino", "RFCRemitenteDestinatario":"AAA010101AAA", "FechaHoraSalidaLlegada":"2021-11-01T01:00:00","DistanciaRecorrida":"1", },
+
+                                  "cartaporte20:Domicilio": { $:{"Calle": "calle", "NumeroExterior":"214", "Colonia":"0347", "Localidad":"23", "Referencia":"casa blanca", "Municipio":"004", "Estado":"COA", "Pais":"MEX", "CodigoPostal":"25350",}} },
+                                  //{ "attr3": 'value3' }
+                                ]
+                              },
+                              "cartaporte20:Mercancias": {
+                                $ :{
+                                    "PesoBrutoTotal":"1.0",
+                                    "UnidadPeso":"XBX",
+                                    "NumTotalMercancias":"1",
+                                },
+                                "cartaporte20:Mercancia":{
+                                    $:{
+                                    "BienesTransp":"11121900" ,"Descripcion":"Accesorios de equipo de telefonía", "Cantidad":"1.0" ,"ClaveUnidad":"XBX" ,"PesoEnKg":"1.0" ,"MaterialPeligroso":"No",
                                     },
-                                $: {
-                                    "IDUbicacion": "OR101010",
-                                    "TipoUbicacion": "Origen"
+                                    "cartaporte20:CantidadTransporta": {
+                                        $:{
+                                            "Cantidad":"1", "IDOrigen":"OR101010" ,"IDDestino":"DE202020",
+                                        }
+                                    }
                                 },
+                                "cartaporte20:Autotransporte":{
+                                    $:{"PermSCT":"TPAF01", "NumPermisoSCT":"NumPermisoSCT" },
+                                    
+                                    "cartaporte20:IdentificacionVehicular":{$:{"ConfigVehicular":"VL" ,"PlacaVM":"plac892", "AnioModeloVM":"2020"}},
+                                    
+                                    "cartaporte20:Seguros":{
+                                        $:{"AseguraCarga":"SW Seguros", "AseguraRespCivil":"SW Seguros", "PolizaRespCivil":"123456789"}},
+                                    "cartaporte20:Remolques": {
+                                        "cartaporte20:Remolque":{
+                                            $:{"SubTipoRem":"CTR004", "Placa":"VL45K98"}
+                                        }
+                                    }
+
+                                }
                                 },
-                                //"cartaporte20:Ubicacion": "chingatumadre",
-                                
+                            "cartaporte20:FiguraTransporte":{
+                                "cartaporte20:TiposFigura":{
+                                    $:{ "TipoFigura":"01", "RFCFigura":"VAAM130719H60", "NumLicencia":"a234567890"}
+                                }
                             }
+                              
+                            },
                             ],
                             $ : {"Version": "2.0",
                             "TranspInternac": "No",
                             "TotalDistRec": "1",},
-                            "cartaporte20:Mercancias": [{
-                                "cartaporte20:test": "UT421511",}
-                            ],
+                            
                         },
                          ],
-                         
-                           
-                        }]
 
             }
         };
 
-
-        var buildOptions = {
-            //explicitChildren: true,
-            attrkey: '@'
-        };
+        const options = {
+            rootName: 'cfdi:Comprobante',
+            headless: true,
+            attrNodeName: 'cartaporte20:Ubicacion',
+            cdata: true
+          };
 
         var builder = new xml2js.Builder();
-        var xml = builder.buildObject(obj);
+        var xml = builder.buildObject(obj, options);
 
         console.log(xml)
         var timestamp= Date.now()
 
-        /*fs.writeFile('./storage/documentos/cfdi_'+timestamp+'.xml', xml, function(err) {
+        fs.writeFile('./storage/documentos/cfdi_'+timestamp+'.xml', xml, function(err) {
             if(err) {
                 return console.log(err);
             }})
-            */
-
-
+            
 
         handleHttpResponse(res, "this is jsut a test");
     } catch (e) {

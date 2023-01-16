@@ -17,7 +17,7 @@ const sequelize= new Sequelize (
 )
 
 //conexion a la base de datos
-const conexionDBmysql= async() =>{ 
+/*const conexionDBmysql= async() =>{ 
     try {
         await sequelize.authenticate();
         console.log("Conexion exitosa con la base de datos")
@@ -25,6 +25,15 @@ const conexionDBmysql= async() =>{
     } catch (error) {
         console.log('Error de conexion con la base de datos', error)
     }
-}
+}*/
 
-module.exports= {conexionDBmysql, sequelize };
+sequelize.authenticate().then(function(err) {
+    console.log('Connection has been established successfully.');
+  })
+  .catch(function (err) {
+    console.log('Unable to connect to the database:', err);
+  });
+
+module.exports= {
+    //conexionDBmysql,
+     sequelize };
