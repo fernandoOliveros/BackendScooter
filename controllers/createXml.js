@@ -4,16 +4,20 @@
 //const fs = require('fs');
 const { handleHttpResponse } = require("../utils/handleResponse");
 const { handleHttpError } = require("../utils/handleError");
-var path   = require('path')
+const {matchedData} = require('express-validator')
+//var path   = require('path')
 
 var xml2js = require('xml2js');
 
-var fs = require('fs'); 
-var parser = new xml2js.Parser();
- 
+//var fs = require('fs');  
 
 async function createXmlCtrl(req, res){
     try {
+        
+        const body =matchedData(req);
+        const RFC = body.st_RFC;
+        console.log(RFC)
+
         var obj = {
         "cfdi:Comprobante" : {
             $: {
@@ -35,13 +39,13 @@ async function createXmlCtrl(req, res){
                 },
                 'cfdi:Emisor': {
                     $: {
-                    'Rfc': 'EKU9003173C9',
+                    'Rfc': RFC,
                     "Nombre":"ESCUELA KEMPER URGATE",
                     "RegimenFiscal":"601",
                         }},
                 'cfdi:Receptor': {
                     $: {
-                    'Rfc': 'EKU9003173C9',
+                    'Rfc': "RFC12345",
                     "Nombre":"ESCUELA KEMPER URGATE",
                     "DomicilioFiscalReceptor":"26015",
                     "RegimenFiscalReceptor":"601",
@@ -65,7 +69,6 @@ async function createXmlCtrl(req, res){
                     } ]
                        
                     }],
-
                     "cfdi:Complemento": [{
                         "cartaporte20:CartaPorte":[
                         {   
@@ -140,15 +143,16 @@ async function createXmlCtrl(req, res){
         var xml = builder.buildObject(obj, options);
 
         console.log(xml)
+        /*
         var timestamp= Date.now()
 
         fs.writeFile('./storage/documentos/cfdi_'+timestamp+'.xml', xml, function(err) {
             if(err) {
                 return console.log(err);
             }})
-            
+         */   
 
-        handleHttpResponse(res, "this is jsut a test");
+        handleHttpResponse(res, xml);
     } catch (e) {
         console.log("Login error: " + e);
         handleHttpError(res, "ERROR_CREATE_XML");
