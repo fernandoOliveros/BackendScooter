@@ -73,34 +73,6 @@ async function readDataToUpdateCtrl(req, res, next) {
 
 const updateDocumentosCtrl = async (req, res) => {
   try {
-    /*
-    let { body, files } = matchedData(req); //splits the request into two objects, id and body
-    let id_Documento = req.findDataRow.dataValues.id_Documento;
-    let id_Remolque = parseInt(req.body.id_Remolque);
-    let [url_TarjetaCirculacion] = req.files.url_TarjetaCirculacion || "null";
-    let [url_Factura] = req.files.url_Factura || "null";
-    let [url_PermisoSCT] = req.files.url_PermisoSCT || "null";
-
-    url_TarjetaCirculacion = url_TarjetaCirculacion.filename || null;
-    url_Factura = url_Factura.filename || null;
-    url_PermisoSCT = url_PermisoSCT.filename || null;
-
-    let dataToUp = {
-      id_Remolque,
-      url_TarjetaCirculacion,
-      url_Factura,
-      url_PermisoSCT,
-    };
-    console.log(dataToUp);
-
-    const dataUpdatedRow = await documentosRemolquesModel.update(dataToUp, {
-      where: { id_Documento },
-    });
-    let dataFiles = await documentosRemolquesModel.findByPk(id_Documento);
-    dataFiles = { dataFiles, status: `${dataUpdatedRow}` };
-    handleHttpResponse(res, dataFiles);
-    */
-
     //let id_Documento = parseInt(req.params.id);
     let { body, files, id } = matchedData(req); //splits the request into two objects, id and body
 

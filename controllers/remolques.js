@@ -152,11 +152,7 @@ const readRemolquesEmpresaCtrl = async (req, res) => {
         "INNER JOIN  `tbl_docs_remolques` as `docs`" +
         "ON `docs`.`id_Remolque`= `remolques`.`id_Remolque`" +
         "WHERE `empresa`.`id_Empresa`=:id " + 
-        "AND `remolques`.`i_Status`=1" ;
-
-
-
-
+        "AND `remolques`.`i_Status`!=0" ;
 
       const dataRemolqueModified = await sequelize.query(query, {
         replacements: { id: `${id}` },

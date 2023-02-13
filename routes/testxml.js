@@ -4,6 +4,6 @@ const router = express.Router();
 const { createXmlCtrl } = require('../controllers/createXml');
 const {validatorXml} = require('../validators/CreateXml')
 
-router.get('/test',validatorXml, createXmlCtrl);
+router.post('/test',validatorXml, createXmlCtrl);
 
 module.exports = router; 

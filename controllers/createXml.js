@@ -1,55 +1,135 @@
-//const boxrec = require("boxrec").Boxrec;
-//const fastcsv = require('fast-csv');
-//import parse from 'csv-parse/lib/sync';
-//const fs = require('fs');
+/***
+ * IMPORTANDO LIBRERIAS PARA HACER QUERIES
+ */
+const {sequelize} = require("../config/mysql");
+const { QueryTypes } = require("sequelize");
+
 const { handleHttpResponse } = require("../utils/handleResponse");
 const { handleHttpError } = require("../utils/handleError");
 const {matchedData} = require('express-validator')
-//var path   = require('path')
+var xml2js = require('xml2js'); 
 
-var xml2js = require('xml2js');
+/******Se invocan las tablas/modelos necesarias para los queries*********/
+const {tiposComprobantesModel} = require("../models")
+const {tiposMonedasModel} = require("../models")
+const {regimenFiscalModel} = require("../models")
+const {metodoPagosModel} = require("../models")
+const {formaPagosModel} = require("../models")
+const {usosCFDIModel} = require("../models")
 
-//var fs = require('fs');  
+
+
+
+/******Se invocan las librerias necesarias para los crear el archivo .xml*********/
+var fs = require('fs');
 
 async function createXmlCtrl(req, res){
     try {
-        
+        /******GETTING VARIABLES VALUES BY ID, SENT BY JSON POST ******/
         const body =matchedData(req);
-        const RFC = body.st_RFC;
-        console.log(RFC)
+        const st_RFC = body.st_RFC;
+        const id_TipoComprobante = body.id_TipoComprobante;
+        const id_TipoMoneda = body.id_TipoMoneda;
+        const st_LugarExpedicion = body.st_LugarExpedicion;
+        const id_RegimenFiscal = body.id_RegimenFiscal;
+        const id_RegimenFiscalReceptor = body.id_RegimenFiscalReceptor;
+        const id_MetodoPago = body.id_MetodoPago;    
+        const id_FormaPago = body.id_FormaPago;    
+        const id_UsoCFDI = body.id_UsoCFDI;
+        const id_DomicilioFiscalReceptor = body.id_DomicilioFiscalReceptor;
+        
+        //const id_DomicilioFiscalReceptor = body.id_DomicilioFiscalReceptor;
+
+        console.log("\nTEST TESTTTTTTTTTTTTT",id_FormaPago);
+        
+        //console.log(id_TipoComprobante, st_RFC, id_RegimenFiscal);
+
+        /******QUERYING DATA RECEIVED FROM JSON, TO POST REAL VALUES ON XML******/
+        let st_TipoComprobante= await tiposComprobantesModel.findOne({
+            where: {id_TipoComprobante },
+            attributes: ['st_TipoComprobante']
+        });
+        let st_TipoMoneda= await tiposMonedasModel.findOne({
+            where: {id_Moneda:id_TipoMoneda},
+            attributes: ['c_Moneda']
+        });
+
+        let c_RegimenFiscal= await regimenFiscalModel.findOne({
+            where: {id_RegimenFiscal:id_RegimenFiscal},
+            //attributes: ['c_RegimenFiscal']
+        });
+        let c_RegimenFiscalReceptor= await regimenFiscalModel.findOne({
+            where: {id_RegimenFiscal: id_RegimenFiscalReceptor},
+        });
+        let c_MetodoPago= await metodoPagosModel.findOne({
+            where: {id_MetodoPago: id_MetodoPago},
+        });
+        let c_FormaPago= await formaPagosModel.findOne({
+            where: {id_FormaPago},
+        });
+        let c_UsoCFDI= await usosCFDIModel.findOne({
+            where: {id_UsoCFDI},
+        });
+
+        //let c_CodigoPostal = sequelize.query()
+
+        
+        
+
+        /******
+        The result of the query is an array of objects, 
+        and we can access the data values of each column using the dataValues property
+        ******/
+        st_TipoComprobante = st_TipoComprobante.dataValues.st_TipoComprobante;
+        st_TipoMoneda = st_TipoMoneda.dataValues.c_Moneda;
+        c_RegimenFiscal = c_RegimenFiscal.dataValues.c_RegimenFiscal;        
+        c_RegimenFiscalReceptor = c_RegimenFiscalReceptor.dataValues.c_RegimenFiscal;
+        c_MetodoPago =  c_MetodoPago.dataValues.c_MetodoPago;
+        c_FormaPago =  c_FormaPago.dataValues.c_FormaPago;
+        c_UsoCFDI =  c_UsoCFDI.dataValues.c_UsoCFDI;
+        
+        
+
+        /**create date on the format ISO 8601: 2023-02-13T03:12:51.137Z*/
+        const date = new Date();
+        const st_Fecha = date.toISOString();
+
+        //console.log("test", c_FormaPago);
 
         var obj = {
         "cfdi:Comprobante" : {
-            $: {
+            $: {    
                 "xsi:schemaLocation": "http://www.sat.gob.mx/cfd/4 http://www.sat.gob.mx/sitio_internet/cfd/4/cfdv40.xsd http://www.sat.gob.mx/CartaPorte20 http://www.sat.gob.mx/sitio_internet/cfd/CartaPorte/CartaPorte20.xsd", 
                 "xmlns:cartaporte20": "http://www.sat.gob.mx/CartaPorte20",
                 "Version": "4.0",
                 "Serie": "Serie",
                 "Folio": "Folio",
-                "Fecha": "2022-07-21T00:18:10",
+                "Fecha": st_Fecha,
                 "Sello": "e",
                 "SubTotal": "0",
-                "Moneda": "XXX",
+                "Moneda": st_TipoMoneda,
                 "Total": "0",
-                "TipoDeComprobante": "T",
+                "TipoDeComprobante": st_TipoComprobante,
                 "Exportacion": "01",
-                "LugarExpedicion": "20000",
+                "MetodoPago": c_MetodoPago,
+                "FormaPago": c_FormaPago,
+                "LugarExpedicion": st_LugarExpedicion,
                 "xmlns:cfdi": "http://www.sat.gob.mx/cfd/4",
                 "xmlns:xsi": "http://www.w3.org/2001/XMLSchema-instance",
                 },
                 'cfdi:Emisor': {
                     $: {
-                    'Rfc': RFC,
+                    'Rfc': st_RFC,
                     "Nombre":"ESCUELA KEMPER URGATE",
-                    "RegimenFiscal":"601",
+                    "RegimenFiscal":c_RegimenFiscal,
                         }},
                 'cfdi:Receptor': {
                     $: {
                     'Rfc': "RFC12345",
                     "Nombre":"ESCUELA KEMPER URGATE",
-                    "DomicilioFiscalReceptor":"26015",
-                    "RegimenFiscalReceptor":"601",
-                    "UsoCFDI":"S01",
+                    "DomicilioFiscalReceptor": id_DomicilioFiscalReceptor, //Codigo postal del domic fiscal
+                    "RegimenFiscalReceptor":c_RegimenFiscalReceptor,
+                    "UsoCFDI":c_UsoCFDI,
                         },
                 },
                 "cfdi:Conceptos": [{
@@ -143,15 +223,13 @@ async function createXmlCtrl(req, res){
         var xml = builder.buildObject(obj, options);
 
         console.log(xml)
-        /*
-        var timestamp= Date.now()
+        //var timestamp= Date.now()
 
-        fs.writeFile('./storage/documentos/cfdi_'+timestamp+'.xml', xml, function(err) {
+        /*fs.writeFile('./storage/documentos/cfdi_'+timestamp+'.xml', xml, function(err) {
             if(err) {
                 return console.log(err);
-            }})
-         */   
-
+        }})
+        */
         handleHttpResponse(res, xml);
     } catch (e) {
         console.log("Login error: " + e);

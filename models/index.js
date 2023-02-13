@@ -15,8 +15,13 @@ const models = {
   empresasModel: require(`${pathDB}/empresas`),
   remolquesModel : require(`${pathDB}/remolques`),
   documentosRemolquesModel: require(`${pathDB}/documentosRemolques`),
-  boxersModel: require(`${pathDB}/boxers`),
-
+  tiposComprobantesModel: require(`${pathDB}/tiposComprobantes`),
+  tiposMonedasModel: require(`${pathDB}/tiposMonedas`),
+  regimenFiscalModel :require(`${pathDB}/regimenFiscal`),
+  metodoPagosModel :require(`${pathDB}/metodoPagos`),
+  formaPagosModel :require(`${pathDB}/formaPagos`),
+  usosCFDIModel :require(`${pathDB}/usosCFDI`),
+  
 };
 
 module.exports = models;
