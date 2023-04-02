@@ -27,22 +27,23 @@ async function createXmlCtrl(req, res){
     try {
         /******GETTING VARIABLES VALUES BY ID, SENT BY JSON POST ******/
         const body =matchedData(req);
-        const st_RFC = body.st_RFC;
+        const st_RFC_emisor = body.st_RFC_emisor;
+        const st_RFC_receptor = body.st_RFC_receptor;
         const id_TipoComprobante = body.id_TipoComprobante;
         const id_TipoMoneda = body.id_TipoMoneda;
         const st_LugarExpedicion = body.st_LugarExpedicion;
-        const id_RegimenFiscal = body.id_RegimenFiscal;
+        const id_RegimenFiscal_emisor = body.id_RegimenFiscal_emisor;
         const id_RegimenFiscalReceptor = body.id_RegimenFiscalReceptor;
         const id_MetodoPago = body.id_MetodoPago;    
-        const id_FormaPago = body.id_FormaPago;    
+        //const id_FormaPago = body.id_FormaPago;    
         const id_UsoCFDI = body.id_UsoCFDI;
         const id_DomicilioFiscalReceptor = body.id_DomicilioFiscalReceptor;
+        const st_nombre_emisor = body.st_nombre_emisor; //emisor=remitente
+        const st_nombre_receptor = body.st_nombre_receptor;
         
         //const id_DomicilioFiscalReceptor = body.id_DomicilioFiscalReceptor;
+        console.log(st_nombre_emisor)
 
-        console.log("\nTEST TESTTTTTTTTTTTTT",id_FormaPago);
-        
-        //console.log(id_TipoComprobante, st_RFC, id_RegimenFiscal);
 
         /******QUERYING DATA RECEIVED FROM JSON, TO POST REAL VALUES ON XML******/
         let st_TipoComprobante= await tiposComprobantesModel.findOne({
@@ -54,8 +55,8 @@ async function createXmlCtrl(req, res){
             attributes: ['c_Moneda']
         });
 
-        let c_RegimenFiscal= await regimenFiscalModel.findOne({
-            where: {id_RegimenFiscal:id_RegimenFiscal},
+        let c_RegimenFiscal_emisor= await regimenFiscalModel.findOne({
+            where: {id_RegimenFiscal:id_RegimenFiscal_emisor},
             //attributes: ['c_RegimenFiscal']
         });
         let c_RegimenFiscalReceptor= await regimenFiscalModel.findOne({
@@ -64,13 +65,14 @@ async function createXmlCtrl(req, res){
         let c_MetodoPago= await metodoPagosModel.findOne({
             where: {id_MetodoPago: id_MetodoPago},
         });
-        let c_FormaPago= await formaPagosModel.findOne({
+        /*let c_FormaPago= await formaPagosModel.findOne({
             where: {id_FormaPago},
-        });
+        });*/
         let c_UsoCFDI= await usosCFDIModel.findOne({
             where: {id_UsoCFDI},
         });
 
+        
         //let c_CodigoPostal = sequelize.query()
 
         
@@ -82,10 +84,10 @@ async function createXmlCtrl(req, res){
         ******/
         st_TipoComprobante = st_TipoComprobante.dataValues.st_TipoComprobante;
         st_TipoMoneda = st_TipoMoneda.dataValues.c_Moneda;
-        c_RegimenFiscal = c_RegimenFiscal.dataValues.c_RegimenFiscal;        
+        c_RegimenFiscal_emisor = c_RegimenFiscal_emisor.dataValues.c_RegimenFiscal;        
         c_RegimenFiscalReceptor = c_RegimenFiscalReceptor.dataValues.c_RegimenFiscal;
         c_MetodoPago =  c_MetodoPago.dataValues.c_MetodoPago;
-        c_FormaPago =  c_FormaPago.dataValues.c_FormaPago;
+        //c_FormaPago =  c_FormaPago.dataValues.c_FormaPago;
         c_UsoCFDI =  c_UsoCFDI.dataValues.c_UsoCFDI;
         
         
@@ -95,38 +97,41 @@ async function createXmlCtrl(req, res){
         const st_Fecha = date.toISOString();
 
         //console.log("test", c_FormaPago);
-
+        
         var obj = {
         "cfdi:Comprobante" : {
-            $: {    
-                "xsi:schemaLocation": "http://www.sat.gob.mx/cfd/4 http://www.sat.gob.mx/sitio_internet/cfd/4/cfdv40.xsd http://www.sat.gob.mx/CartaPorte20 http://www.sat.gob.mx/sitio_internet/cfd/CartaPorte/CartaPorte20.xsd", 
-                "xmlns:cartaporte20": "http://www.sat.gob.mx/CartaPorte20",
-                "Version": "4.0",
-                "Serie": "Serie",
-                "Folio": "Folio",
-                "Fecha": st_Fecha,
-                "Sello": "e",
-                "SubTotal": "0",
-                "Moneda": st_TipoMoneda,
-                "Total": "0",
-                "TipoDeComprobante": st_TipoComprobante,
-                "Exportacion": "01",
-                "MetodoPago": c_MetodoPago,
-                "FormaPago": c_FormaPago,
-                "LugarExpedicion": st_LugarExpedicion,
+            $: {
                 "xmlns:cfdi": "http://www.sat.gob.mx/cfd/4",
-                "xmlns:xsi": "http://www.w3.org/2001/XMLSchema-instance",
+                "xmlns:xsi": "http://www.w3.org/2001/XMLSchema-instance",    
+                "xmlns:cartaporte20": "http://www.sat.gob.mx/CartaPorte20",
+                "xsi:schemaLocation": "http://www.sat.gob.mx/cfd/4 http://www.sat.gob.mx/sitio_internet/cfd/4/cfdv40.xsd http://www.sat.gob.mx/CartaPorte20 http://www.sat.gob.mx/sitio_internet/cfd/CartaPorte/CartaPorte20.xsd", 
+                "Certificado": "XXXXXX", //NOS LO OTORGA EL SAT DESPUES DE TIMBRAR CFDI
+                "Fecha": st_Fecha,
+                "Folio": "CP-1", //uno hasta 40                caracteres alfanuméricos, creo que lo podemos armar nosotros mismos
+                "LugarExpedicion": st_LugarExpedicion, //Codigo postal
+                "NoCertificado": "XXXXXX", //NOS LO OTORGA EL SAT DESPUES DE TIMBRAR CFDI
+                "Sello": "XXXXXX", //NOS LO OTORGA EL SAT DESPUES DE TIMBRAR CFDI
+                "TipoDeComprobante": st_TipoComprobante,
+                "Version": "4.0",
+                "Exportacion": "01", //para CFDI de nomina o pago, siempre debe elegirse la clave 01 (significa NO APLICA)
+                "Moneda": st_TipoMoneda,
+                "SubTotal": "0",
+                "Total": "0",
+
+                "Serie": "Serie", //Este campo acepta de uno hasta 25 caracteres alfanuméricos.
+                //"MetodoPago": c_MetodoPago,
+                //"FormaPago": "c_FormaPago",
                 },
                 'cfdi:Emisor': {
                     $: {
-                    'Rfc': st_RFC,
-                    "Nombre":"ESCUELA KEMPER URGATE",
-                    "RegimenFiscal":c_RegimenFiscal,
+                    'Rfc': st_RFC_emisor,
+                    "Nombre": st_nombre_emisor, //remitente
+                    "RegimenFiscal":c_RegimenFiscal_emisor,
                         }},
                 'cfdi:Receptor': {
                     $: {
-                    'Rfc': "RFC12345",
-                    "Nombre":"ESCUELA KEMPER URGATE",
+                    'Rfc': st_RFC_receptor,
+                    "Nombre": st_nombre_receptor,
                     "DomicilioFiscalReceptor": id_DomicilioFiscalReceptor, //Codigo postal del domic fiscal
                     "RegimenFiscalReceptor":c_RegimenFiscalReceptor,
                     "UsoCFDI":c_UsoCFDI,
@@ -185,7 +190,7 @@ async function createXmlCtrl(req, res){
                                     "cartaporte20:IdentificacionVehicular":{$:{"ConfigVehicular":"VL" ,"PlacaVM":"plac892", "AnioModeloVM":"2020"}},
                                     
                                     "cartaporte20:Seguros":{
-                                        $:{"AseguraCarga":"SW Seguros", "AseguraRespCivil":"SW Seguros", "PolizaRespCivil":"123456789"}},
+                                        $:{"AseguraCarga":"Seguros", "AseguraRespCivil":"Seguros", "PolizaRespCivil":"123456789"}},
                                     "cartaporte20:Remolques": {
                                         "cartaporte20:Remolque":{
                                             $:{"SubTipoRem":"CTR004", "Placa":"VL45K98"}
@@ -223,13 +228,13 @@ async function createXmlCtrl(req, res){
         var xml = builder.buildObject(obj, options);
 
         console.log(xml)
-        //var timestamp= Date.now()
+        var timestamp= Date.now()
 
-        /*fs.writeFile('./storage/documentos/cfdi_'+timestamp+'.xml', xml, function(err) {
+        fs.writeFile('./storage/documentos/cfdi_'+timestamp+'.xml', xml, function(err) {
             if(err) {
                 return console.log(err);
         }})
-        */
+        
         handleHttpResponse(res, xml);
     } catch (e) {
         console.log("Login error: " + e);
