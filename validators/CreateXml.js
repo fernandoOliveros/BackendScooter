@@ -49,6 +49,13 @@ const validatorXml = [
     check("st_nombre_emisor")
     .exists() //comrpueba si existe
     ,
+    check("id_ObjetoImp")
+    .exists() //comrpueba si existe
+    ,
+    check("i_Importe")
+    .exists() //comrpueba si existe
+    ,
+    
     
     
             
