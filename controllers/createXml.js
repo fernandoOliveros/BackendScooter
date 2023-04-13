@@ -17,8 +17,27 @@ const { metodoPagosModel } = require("../models");
 const { formaPagosModel } = require("../models");
 const { usosCFDIModel } = require("../models");
 
-/******Se invocan las librerias necesarias para los crear el archivo .xml*********/
+/******Install the fs  library to  create the file cfdi_YYYY-MM-DD_HH-mm-ss.xml*********/
 var fs = require("fs");
+const moment = require('moment'); // Install the moment library to format the date and time
+
+
+async function createTimestampedXmlFile(xml) {
+   //var timestamp = Date.now();
+   const timestamp = moment().subtract(1, 'hour').format('YYYY-MM-DD_HH-mm-ss');
+   
+   fs.writeFile(
+    `./storage/documentos/cfdi_${timestamp}.xml`,
+     xml,
+     function (err) {
+       if (err) {
+         return console.log(err);
+       }
+       console.log(`\nFile cfdi_${timestamp}.xml created successfully.`);
+     }
+   );
+}
+
 
 async function createXmlCtrl(req, res) {
   try {
@@ -39,10 +58,17 @@ async function createXmlCtrl(req, res) {
     const st_nombre_receptor = body.st_nombre_receptor;
     const id_ObjetoImp = body.id_ObjetoImp;
     const i_Importe = body.i_Importe;
+    const dec_TotalDistRec = body.dec_TotalDistRec;
+    const st_RFCRemitente = body.st_RFCRemitente;
+    const st_FechaHoraSalida = body.st_FechaHoraSalida;
+    const st_RFCDestinatario = body.st_RFCDestinatario;
+    const st_FechaHoraLlegada = body.st_FechaHoraLlegada;
 
 
     //const id_DomicilioFiscalReceptor = body.id_DomicilioFiscalReceptor;
-    console.log("i_Importe", i_Importe);
+    
+    
+    //console.log("dec_TotalDistRec", dec_TotalDistRec);
 
     /******QUERYING DATA RECEIVED FROM JSON, TO POST REAL VALUES ON XML******/
     let st_TipoComprobante = await tiposComprobantesModel.findOne({
@@ -174,125 +200,121 @@ async function createXmlCtrl(req, res) {
             ],
           },
         ],
-        "cfdi:Complemento": [
-          {
-            "cartaporte20:CartaPorte": [
-              {
-                "cartaporte20:Ubicaciones": {
-                  "cartaporte20:Ubicacion": [
-                    {
-                      $: {
-                        IDUbicacion: "OR101010",
-                        TipoUbicacion: "Origen",
-                        RFCRemitenteDestinatario: "EKU9003173C9",
-                        FechaHoraSalidaLlegada: "2021-11-01T00:00:00",
-                      },
-
-                      "cartaporte20:Domicilio": {
-                        $: {
-                          Calle: "calle",
-                          NumeroExterior: "211",
-                          Colonia: "1957",
-                          Localidad: "13",
-                          Referencia: "casa blanca",
-                          Municipio: "011",
-                          Estado: "CMX",
-                          Pais: "MEX",
-                          CodigoPostal: "13250",
-                        },
-                      },
-                    },
-                    {
-                      $: {
-                        IDUbicacion: "DE202020",
-                        TipoUbicacion: "Destino",
-                        RFCRemitenteDestinatario: "AAA010101AAA",
-                        FechaHoraSalidaLlegada: "2021-11-01T01:00:00",
-                        DistanciaRecorrida: "1",
-                      },
-
-                      "cartaporte20:Domicilio": {
-                        $: {
-                          Calle: "calle",
-                          NumeroExterior: "214",
-                          Colonia: "0347",
-                          Localidad: "23",
-                          Referencia: "casa blanca",
-                          Municipio: "004",
-                          Estado: "COA",
-                          Pais: "MEX",
-                          CodigoPostal: "25350",
-                        },
-                      },
-                    },
-                    //{ "attr3": 'value3' }
-                  ],
-                },
-                "cartaporte20:Mercancias": {
+        "cfdi:Complemento": {
+          "cartaporte20:CartaPorte": {
+            $: {
+              "Version": "2.0",
+              "TranspInternac": "No",
+              "TotalDistRec": dec_TotalDistRec
+            },
+            "cartaporte20:Ubicaciones": {
+              "cartaporte20:Ubicacion": [
+                {
                   $: {
-                    PesoBrutoTotal: "1.0",
-                    UnidadPeso: "XBX",
-                    NumTotalMercancias: "1",
+                    "TipoUbicacion": "Origen",
+                    "RFCRemitenteDestinatario": st_RFCRemitente,
+                    "FechaHoraSalidaLlegada": st_FechaHoraSalida
                   },
-                  "cartaporte20:Mercancia": {
+                  "cartaporte20:Domicilio": {
                     $: {
-                      BienesTransp: "11121900",
-                      Descripcion: "Accesorios de equipo de telefonía",
-                      Cantidad: "1.0",
-                      ClaveUnidad: "XBX",
-                      PesoEnKg: "1.0",
-                      MaterialPeligroso: "No",
-                    },
-                    "cartaporte20:CantidadTransporta": {
-                      $: {
-                        Cantidad: "1",
-                        IDOrigen: "OR101010",
-                        IDDestino: "DE202020",
-                      },
-                    },
-                  },
-                  "cartaporte20:Autotransporte": {
-                    $: { PermSCT: "TPAF01", NumPermisoSCT: "NumPermisoSCT" },
-
-                    "cartaporte20:IdentificacionVehicular": {
-                      $: {
-                        ConfigVehicular: "VL",
-                        PlacaVM: "plac892",
-                        AnioModeloVM: "2020",
-                      },
-                    },
-
-                    "cartaporte20:Seguros": {
-                      $: {
-                        AseguraCarga: "Seguros",
-                        AseguraRespCivil: "Seguros",
-                        PolizaRespCivil: "123456789",
-                      },
-                    },
-                    "cartaporte20:Remolques": {
-                      "cartaporte20:Remolque": {
-                        $: { SubTipoRem: "CTR004", Placa: "VL45K98" },
-                      },
+                      "Localidad": "06",
+                      "Municipio": "025",
+                      "Estado": "COA",
+                      "Pais": "MEX",
+                      "Codigo": "13250",
                     },
                   },
                 },
-                "cartaporte20:FiguraTransporte": {
-                  "cartaporte20:TiposFigura": {
+                {
+                  $: {
+                    IDUbicacion: "DE202020",
+                    TipoUbicacion: "Destino",
+                    RFCRemitenteDestinatario: st_RFCDestinatario,
+                    FechaHoraSalidaLlegada: st_FechaHoraLlegada,
+                    DistanciaRecorrida: "1",
+                  },
+
+                  "cartaporte20:Domicilio": {
                     $: {
-                      TipoFigura: "01",
-                      RFCFigura: "VAAM130719H60",
-                      NumLicencia: "a234567890",
+                      Calle: "calle",
+                      NumeroExterior: "214",
+                      Colonia: "0347",
+                      Localidad: "23",
+                      Referencia: "casa blanca",
+                      Municipio: "004",
+                      Estado: "COA",
+                      Pais: "MEX",
+                      CodigoPostal: "25350",
                     },
+                  },
+                },
+                //{ "attr3": 'value3' }
+              ],
+            },
+            "cartaporte20:Mercancias": {
+              $: {
+                PesoBrutoTotal: "1.0",
+                UnidadPeso: "XBX",
+                NumTotalMercancias: "1",
+              },
+              "cartaporte20:Mercancia": {
+                $: {
+                  BienesTransp: "11121900",
+                  Descripcion: "Accesorios de equipo de telefonía",
+                  Cantidad: "1.0",
+                  ClaveUnidad: "XBX",
+                  PesoEnKg: "1.0",
+                  MaterialPeligroso: "No",
+                },
+                "cartaporte20:CantidadTransporta": {
+                  $: {
+                    Cantidad: "1",
+                    IDOrigen: "OR101010",
+                    IDDestino: "DE202020",
                   },
                 },
               },
-            ],
-            $: { Version: "2.0", TranspInternac: "No", TotalDistRec: "1" },
-          },
-        ],
-      },
-    };
+              "cartaporte20:Autotransporte": {
+                $: { PermSCT: "TPAF01", NumPermisoSCT: "NumPermisoSCT" },
 
+                "cartaporte20:IdentificacionVehicular": {
+                  $: {
+                    ConfigVehicular: "VL",
+                    PlacaVM: "plac892",
+                    AnioModeloVM: "2020",
+                  },
+                },
+
+                "cartaporte20:Seguros": {
+                  $: {
+                    AseguraCarga: "Seguros",
+                    AseguraRespCivil: "Seguros",
+                    PolizaRespCivil: "123456789",
+                  },
+                },
+                "cartaporte20:Remolques": {
+                  "cartaporte20:Remolque": {
+                    $: { SubTipoRem: "CTR004", Placa: "VL45K98" },
+                  },
+                },
+              },
+            },
+            "cartaporte20:FiguraTransporte": {
+              "cartaporte20:TiposFigura": {
+                $: {
+                  TipoFigura: "01",
+                  RFCFigura: "VAAM130719H60",
+                  NumLicencia: "a234567890",
+                },
+              },
+            },
+          },
+        
+        //TotalDistRec : value with two decimals 
+      },
+    }, };
+    
+  
     const options = {
       rootName: "cfdi:Comprobante",
       headless: true,
@@ -303,18 +325,9 @@ async function createXmlCtrl(req, res) {
     var builder = new xml2js.Builder();
     var xml = builder.buildObject(obj, options);
 
-    console.log(xml);
-    var timestamp = Date.now();
+    //console.log(xml);
+    createTimestampedXmlFile(xml);
 
-    fs.writeFile(
-      "./storage/documentos/cfdi_" + timestamp + ".xml",
-      xml,
-      function (err) {
-        if (err) {
-          return console.log(err);
-        }
-      }
-    );
 
     handleHttpResponse(res, xml);
   } catch (e) {

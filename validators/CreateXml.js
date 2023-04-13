@@ -55,7 +55,23 @@ const validatorXml = [
     check("i_Importe")
     .exists() //comrpueba si existe
     ,
+    check("dec_TotalDistRec")
+    .exists() //CHECAR QUE SEA DECIMAL
+    ,
     
+
+    check("st_RFCRemitente")
+    .exists() //comrpueba si existe
+    ,
+    check("st_FechaHoraSalida")
+    .exists() //comrpueba si existe
+    ,
+    check("st_RFCDestinatario")
+    .exists() //comrpueba si existe
+    ,
+    check("st_FechaHoraLlegada")
+    .exists() //CHECAR QUE SEA DECIMAL
+    ,
     
     
             
