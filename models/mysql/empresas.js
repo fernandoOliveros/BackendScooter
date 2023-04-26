@@ -1,5 +1,6 @@
 const { sequelize } = require("../../config/mysql");
 const { DataTypes } = require("sequelize");
+//const Cliente = require('./clientes');
 
 const Empresa = sequelize.define(
   "tbl_empresas",
@@ -29,5 +30,7 @@ const Empresa = sequelize.define(
     timestamps: false, //se debe especificar para cada modelo, o especificar globalmente desde /../../config/mysql
   }
 );
+//checar funcion
+//Empresa.hasMany(Cliente, { foreignKey: "id_Empresa" });
 
 module.exports = Empresa;

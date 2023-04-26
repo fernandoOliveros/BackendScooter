@@ -96,6 +96,26 @@ async function readUnidadPesoCFDICtrl(req, res) {
   }
 }
 
+
+async function readRegimenFiscalCFDICtrl(req, res) {
+  try {
+    let sqlQuery = "CALL 	readAllRegimenFiscalCFDI()";
+    const dataProdServicio = await sequelize.query(
+      sqlQuery,
+      true,
+      function (error, result) {
+        return result;
+      }
+    );
+    handleHttpResponse(res, dataProdServicio);
+  } catch (e) {
+    console.log(e);
+    handleHttpError(res, "ERROR_READ_REGIMEN-FISCAL-CFDI");
+  }
+}
+
+
+
 async function timbrarCFDICtrl (req, res){
   try {
     console.log("Timbrando...")
@@ -112,5 +132,6 @@ module.exports = {
   readProdServicioCFDICtrl,
   readUnidadPesoCFDICtrl,
   readUsosCFDICtrl,
+  readRegimenFiscalCFDICtrl,
   timbrarCFDICtrl
 };

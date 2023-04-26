@@ -21,6 +21,8 @@ const models = {
   metodoPagosModel :require(`${pathDB}/metodoPagos`),
   formaPagosModel :require(`${pathDB}/formaPagos`),
   usosCFDIModel :require(`${pathDB}/usosCFDI`),
+  clientesModel :require(`${pathDB}/clientes`),
+
   
 };
 

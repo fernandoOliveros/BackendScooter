@@ -14,6 +14,8 @@ const {Authentication} = require("sw-sdk-nodejs").Authentication;
  * @param {*} res
  */
 
+
+
 const registerCtrl = async (req, res) => {
   try {
     //usamos un try catch para utilizar el manejador de errores handleError

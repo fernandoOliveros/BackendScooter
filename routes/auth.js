@@ -4,6 +4,8 @@ const { validatorRegister, validatorLogin } = require('../validators/auth')
 
 const { loginCtrl, registerCtrl, cfdiCtrl } = require('../controllers/auth');
 
+
+
 /***
  * Crear un registro
  */

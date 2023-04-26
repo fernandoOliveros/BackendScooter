@@ -4,6 +4,7 @@ const validateResults = require("../utils/handleValidator");
 /**
  * Esto es un Middleware
  */
+
 const validatorRegister = [
   check("id_User").isEmpty(),
   check("id_Empresa").isNumeric(),

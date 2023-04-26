@@ -221,7 +221,7 @@ async function createXmlCtrl(req, res) {
                       "Municipio": "025",
                       "Estado": "COA",
                       "Pais": "MEX",
-                      "Codigo": "13250",
+                      "CodigoPostal": "13250",
                     },
                   },
                 },
