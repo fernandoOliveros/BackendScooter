@@ -10,7 +10,7 @@ const {
   readAllClientesCtrl,
   readclienteCtrl,
   deleteclienteCtrl,
-  //readclientesEmpresaCtrl,
+  readclientesEmpresaCtrl,
 } = require("../controllers/clientes");
 
 /**
@@ -31,6 +31,7 @@ router.put(
   [validatorClientesCreate, validatorReadCliente],
   updateclienteCtrl
 );
+router.get("/readByEmpresa/:id", validatorReadCliente, readclientesEmpresaCtrl);
 router.delete("/delete/:id", validatorReadCliente, deleteclienteCtrl);
 
 module.exports = router;

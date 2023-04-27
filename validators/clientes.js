@@ -8,7 +8,7 @@ const validatorClientesCreate = [
   check("st_RazonSocial").exists(),
   check("st_AliasCliente").exists(),
   check("id_RegimenFiscal").exists(),
-  check("st_RFC").exists(),
+  check("st_RFC").exists().isLength({ max: 13 }).withMessage("The st_RFC value must be no longer than 13 characters."),
   check("i_Status").exists(),
   check("st_PersonaRepresenta").optional({checkFalsy: true}).isString(),
   check("st_Celular").optional({checkFalsy: true}).isString().isLength({ max: 15 }),

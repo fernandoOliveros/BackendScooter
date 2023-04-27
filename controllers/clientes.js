@@ -108,18 +108,21 @@ const deleteclienteCtrl = async (req, res) => {
 const readclientesEmpresaCtrl = async (req, res) => {
   try {
     const id = parseInt(req.params.id);
+    console.log("\nid empresa", id)
     const dataEmpresa = await empresasModel.findByPk(id);
     if (!dataEmpresa) {
       handleHttpError(res, `No existe empresa con id: ${id}`, 404);
       return;
     } else {
+    console.log("\n\n doing query", id)
+
       let query =
-        "SELECT `clientees`.*, `empresa`.`id_Empresa`" +
-        "FROM `tbl_clientees` as `clientees`" +
+        "SELECT `clientes`.*, `empresa`.`id_Empresa`" +
+        "FROM `tbl_clientes` as `clientes`" +
         "INNER JOIN  `tbl_empresas` as `empresa`" +
-        "ON `empresa`.`id_Empresa`= `clientees`.`id_Empresa`" +
+        "ON `empresa`.`id_Empresa`= `clientes`.`id_Empresa`" +
         "WHERE `empresa`.`id_Empresa`=:id " +
-        "AND `clientees`.`id_Candado` = 1;";
+        "AND `clientes`.`id_Candado` = 1;";
       const dataclienteeModified = await sequelize.query(query, {
         replacements: { id: `${id}` },
         type: QueryTypes.SELECT,
