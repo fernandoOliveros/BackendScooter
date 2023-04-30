@@ -1,2 +1,3 @@
 node_modules/
-storage/
+#storage/
+#NOT COMMENT STORAGE FOR ENDPOINT "CREATE (ANY) DOCUMENTOS " TO WORK
