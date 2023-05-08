@@ -1,2 +1,0 @@
-test for path storage/documentos/ to be created
-      
