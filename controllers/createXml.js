@@ -19,34 +19,37 @@ const { usosCFDIModel } = require("../models");
 
 /******Install the fs  library to  create the file cfdi_YYYY-MM-DD_HH-mm-ss.xml*********/
 var fs = require("fs");
-const moment = require('moment'); // Install the moment library to format the date and time
-
+const moment = require("moment"); // Install the moment library to format the date and time
 
 async function createTimestampedXmlFile(xml) {
-   //var timestamp = Date.now();
-   const timestamp = moment().subtract(1, 'hour').format('YYYY-MM-DD_HH-mm-ss');
-   
-   fs.writeFile(
-    `./storage/documentos/cfdi_${timestamp}.xml`,
-     xml,
-     function (err) {
-       if (err) {
-         return console.log(err);
-       }
-       console.log(`\nFile cfdi_${timestamp}.xml created successfully.`);
-     }
-   );
+  //var timestamp = Date.now();
+  const timestamp = moment().subtract(1, "hour").format("YYYY-MM-DD_HH-mm-ss");
+  let xmlFileName = `cfdi_${timestamp}.xml`;
+  fs.writeFile(`./storage/documentos/${xmlFileName}`, xml, function (err) {
+    if (err) {
+      return console.log(err);
+    }
+    console.log(`\nFile cfdi_${timestamp}.xml created successfully.`);
+  });
+  return xmlFileName;
 }
-
 
 async function createXmlCtrl(req, res) {
   try {
     /******GETTING VARIABLES VALUES BY ID, SENT BY JSON POST ******/
-    const body = matchedData(req);
+    //const body =req.body;
+    const body = matchedData(req); //la data del request venga curada
+
+    console.log(
+      "THIS IS THE BODY AT createXmlCtrl",
+      body,
+      "ending createXmlCtrl"
+    );
+
     const st_RFC_emisor = body.st_RFC_emisor;
     const st_RFC_receptor = body.st_RFC_receptor;
     const id_TipoComprobante = body.id_TipoComprobante;
-    const id_TipoMoneda = body.id_TipoMoneda;
+    const id_TipoMoneda = body.id_Moneda;
     const st_LugarExpedicion = body.st_LugarExpedicion;
     const id_RegimenFiscal_emisor = body.id_RegimenFiscal_emisor;
     const id_RegimenFiscalReceptor = body.id_RegimenFiscalReceptor;
@@ -64,10 +67,8 @@ async function createXmlCtrl(req, res) {
     const st_RFCDestinatario = body.st_RFCDestinatario;
     const st_FechaHoraLlegada = body.st_FechaHoraLlegada;
 
-
     //const id_DomicilioFiscalReceptor = body.id_DomicilioFiscalReceptor;
-    
-    
+
     //console.log("dec_TotalDistRec", dec_TotalDistRec);
 
     /******QUERYING DATA RECEIVED FROM JSON, TO POST REAL VALUES ON XML******/
@@ -110,7 +111,6 @@ async function createXmlCtrl(req, res) {
     const c_ObjetoImp = st_ObjetoImp[0].c_ObjetoImp;
     console.log("c_ObjetoImp:", c_ObjetoImp);
     st_ObjetoImp = c_ObjetoImp;
-
 
     /******
         The result of the query is an array of objects, 
@@ -203,25 +203,25 @@ async function createXmlCtrl(req, res) {
         "cfdi:Complemento": {
           "cartaporte20:CartaPorte": {
             $: {
-              "Version": "2.0",
-              "TranspInternac": "No",
-              "TotalDistRec": dec_TotalDistRec
+              Version: "2.0",
+              TranspInternac: "No",
+              TotalDistRec: dec_TotalDistRec,
             },
             "cartaporte20:Ubicaciones": {
               "cartaporte20:Ubicacion": [
                 {
                   $: {
-                    "TipoUbicacion": "Origen",
-                    "RFCRemitenteDestinatario": st_RFCRemitente,
-                    "FechaHoraSalidaLlegada": st_FechaHoraSalida
+                    TipoUbicacion: "Origen",
+                    RFCRemitenteDestinatario: st_RFCRemitente,
+                    FechaHoraSalidaLlegada: st_FechaHoraSalida,
                   },
                   "cartaporte20:Domicilio": {
                     $: {
-                      "Localidad": "06",
-                      "Municipio": "025",
-                      "Estado": "COA",
-                      "Pais": "MEX",
-                      "CodigoPostal": "13250",
+                      Localidad: "06",
+                      Municipio: "025",
+                      Estado: "COA",
+                      Pais: "MEX",
+                      CodigoPostal: "13250",
                     },
                   },
                 },
@@ -309,12 +309,12 @@ async function createXmlCtrl(req, res) {
               },
             },
           },
-        
-        //TotalDistRec : value with two decimals 
+
+          //TotalDistRec : value with two decimals
+        },
       },
-    }, };
-    
-  
+    };
+
     const options = {
       rootName: "cfdi:Comprobante",
       headless: true,
@@ -323,16 +323,19 @@ async function createXmlCtrl(req, res) {
     };
 
     var builder = new xml2js.Builder();
-    var xml = builder.buildObject(obj, options);
+
+    var xmlRaw = builder.buildObject(obj, options);
 
     //console.log(xml);
-    createTimestampedXmlFile(xml);
+    let xmlFileName = await createTimestampedXmlFile(xmlRaw);
 
-
-    handleHttpResponse(res, xml);
+    handleHttpResponse(res, { xmlRaw: `${xmlRaw}`, xmlFileName: `${xmlFileName}` });
   } catch (e) {
+    console.error(e);
+    res.status(500).json({ success: false, message: "Server Error" });
+
     console.log("Login error: " + e);
-    handleHttpError(res, "ERROR_CREATE_XML");
+    //handleHttpError(res, "ERROR_CREATE_XML");
   }
 }
 

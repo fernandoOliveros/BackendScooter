@@ -17,7 +17,7 @@ const validatorXml = [
     //.notEmpty() //asegura que no esté vacío
     //.isLength({ min: 2, max: 30 })
     ,
-    check("id_TipoMoneda")
+    check("id_Moneda")
     .exists() //comrpueba si existe
     //.notEmpty() //asegura que no esté vacío
     //.isLength({ min: 2, max: 30 })
