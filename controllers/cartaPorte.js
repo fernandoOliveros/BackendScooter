@@ -1,11 +1,14 @@
-const { CartaPorte } = require('../models');
+const { cartaPorteModel  } = require('../models');
 const { handleHttpResponse } = require('../utils/handleResponse');
 const { handleHttpError } = require('../utils/handleError');
+const { matchedData } = require("express-validator");
 
 const createCartaPorteCtrl = async (req, res) => {
   try {
-    const { body } = req;
-    const cartaPorte = await CartaPorte.create(body);
+    const body = matchedData(req); //la data del request venga curada
+    console.log("entering controler", body)
+    const cartaPorte = await cartaPorteModel.create(body);
+
     handleHttpResponse(res, cartaPorte);
   } catch (error) {
     console.log(error);

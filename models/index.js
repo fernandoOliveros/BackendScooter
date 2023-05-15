@@ -23,11 +23,15 @@ const models = {
   usosCFDIModel :require(`${pathDB}/usosCFDI`),
   clientesModel :require(`${pathDB}/clientes`),
   cfdiModel :require(`${pathDB}/cfdi`),
-  cartaPorteModel :require(`${pathDB}/cartaPorte`)
+  cartaPorteModel :require(`${pathDB}/cartaPorte`),
+  direccionOrigenCP :require(`${pathDB}/direccionOrigenCP`),
+  direccionDestinoCPModel :require(`${pathDB}/direccionDestinoCP`),
+  viajeModel :require(`${pathDB}/viajes`)
+
   
   
 
-  
+    
 };
 
 module.exports = models;

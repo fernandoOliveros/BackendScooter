@@ -30,11 +30,11 @@ const CartaPorte = sequelize.define(
     },
     createdAt: {
       type: DataTypes.DATE,
-      allowNull: true,
+      allowNull: false,
     },
     updatedAt: {
       type: DataTypes.DATE,
-      allowNull: true,
+      allowNull: false,
     },
   },
   {

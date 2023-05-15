@@ -120,7 +120,7 @@ async function createXmlCtrl(req, res) {
     st_TipoMoneda = st_TipoMoneda.dataValues.c_Moneda;
     c_RegimenFiscal_emisor = c_RegimenFiscal_emisor.dataValues.c_RegimenFiscal;
     c_RegimenFiscalReceptor =
-      c_RegimenFiscalReceptor.dataValues.c_RegimenFiscal;
+    c_RegimenFiscalReceptor.dataValues.c_RegimenFiscal;
     c_MetodoPago = c_MetodoPago.dataValues.c_MetodoPago;
     //c_FormaPago =  c_FormaPago.dataValues.c_FormaPago;
     c_UsoCFDI = c_UsoCFDI.dataValues.c_UsoCFDI;
@@ -194,7 +194,7 @@ async function createXmlCtrl(req, res) {
                         Base: 10,000.00
                         Tasa: 0.16
                         Importe: 1,600.00
-                        **/
+                  **/
                 },
               },
             ],
@@ -205,7 +205,7 @@ async function createXmlCtrl(req, res) {
             $: {
               Version: "2.0",
               TranspInternac: "No",
-              TotalDistRec: dec_TotalDistRec,
+              TotalDistRec: dec_TotalDistRec, //DECIMAL(7,2)
             },
             "cartaporte20:Ubicaciones": {
               "cartaporte20:Ubicacion": [
