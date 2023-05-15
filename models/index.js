@@ -24,7 +24,7 @@ const models = {
   clientesModel :require(`${pathDB}/clientes`),
   cfdiModel :require(`${pathDB}/cfdi`),
   cartaPorteModel :require(`${pathDB}/cartaPorte`),
-  direccionOrigenCP :require(`${pathDB}/direccionOrigenCP`),
+  direccionOrigenCPModel :require(`${pathDB}/direccionOrigenCP`),
   direccionDestinoCPModel :require(`${pathDB}/direccionDestinoCP`),
   viajeModel :require(`${pathDB}/viajes`)
 

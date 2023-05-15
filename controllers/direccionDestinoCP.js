@@ -1,26 +1,23 @@
-const { cartaPorteModel,
-  direccionOrigenCP, 
-  direccionDestinoCPModel  } = require('../models');
-const { handleHttpResponse } = require('../utils/handleResponse');
-const { handleHttpError } = require('../utils/handleError');
+const { direccionOrigenCPModel, direccionDestinoCPModel } = require("../models");
+const { handleHttpResponse } = require("../utils/handleResponse");
+const { handleHttpError } = require("../utils/handleError");
 const { matchedData } = require("express-validator");
 
-const createCartaPorteCtrl = async (req, res, next ) => {
+const createDireccionOrigenCPCtrl = async (req, res) => {
   try {
-
-   
     const body = matchedData(req); //la data del request venga curada
-    console.log("entering controller createCartaPorteCtrl", body, "ending body sample")
-    const cartaPorte = await cartaPorteModel.create(body);
-    const id_CartaPorte = cartaPorte.dataValues.id_CartaPorte;
-    req.body.id_CartaPorte = id_CartaPorte;
-    //console.log("printing req.body", req.body)
-    next();
-    //handleHttpResponse(res, cartaPorte);
-
+    console.log(
+      "createDireccionOrigenCPCtrl",
+      body,
+      "ending body"
+    );
+    const direccionOrigenCP = await direccionOrigenCPModel.create(body);
+    //console.log("printing direccionOrigenCP", direccionOrigenCP);
+    //next();
+    handleHttpResponse(res, direccionOrigenCP);
   } catch (error) {
     console.log(error);
-    handleHttpError(res, 'ERROR_CREATING_CARTAPORTE');
+    handleHttpError(res, "ERROR_CREATING_DIRECCION_ORIGEN_CARTAPORTE");
   }
 };
 
@@ -37,7 +34,7 @@ const updateCartaPorteCtrl = async (req, res) => {
     handleHttpResponse(res, cartaPorte);
   } catch (error) {
     console.log(error);
-    handleHttpError(res, 'ERROR_UPDATING_CARTAPORTE');
+    handleHttpError(res, "ERROR_UPDATING_CARTAPORTE");
   }
 };
 
@@ -47,7 +44,7 @@ const readAllCartasPorteCtrl = async (req, res) => {
     handleHttpResponse(res, cartasPorte);
   } catch (error) {
     console.log(error);
-    handleHttpError(res, 'ERROR_READING_CARTASPORTE');
+    handleHttpError(res, "ERROR_READING_CARTASPORTE");
   }
 };
 
@@ -62,7 +59,7 @@ const readCartaPorteCtrl = async (req, res) => {
     handleHttpResponse(res, cartaPorte);
   } catch (error) {
     console.log(error);
-    handleHttpError(res, 'ERROR_READING_CARTAPORTE');
+    handleHttpError(res, "ERROR_READING_CARTAPORTE");
   }
 };
 
@@ -75,17 +72,13 @@ const deleteCartaPorteCtrl = async (req, res) => {
       return;
     }
     await cartaPorte.destroy();
-    handleHttpResponse(res, 'CartaPorte eliminada correctamente.');
+    handleHttpResponse(res, "CartaPorte eliminada correctamente.");
   } catch (error) {
     console.log(error);
-    handleHttpError(res, 'ERROR_DELETING_CARTAPORTE');
+    handleHttpError(res, "ERROR_DELETING_CARTAPORTE");
   }
 };
 
 module.exports = {
-  createCartaPorteCtrl,
-  updateCartaPorteCtrl,
-  readAllCartasPorteCtrl,
-  readCartaPorteCtrl,
-  deleteCartaPorteCtrl,
+  createDireccionOrigenCPCtrl,
 };
