@@ -1,23 +1,54 @@
-const { direccionOrigenCPModel, direccionDestinoCPModel } = require("../models");
+const { direccionDestinoCPModel } = require("../models");
 const { handleHttpResponse } = require("../utils/handleResponse");
 const { handleHttpError } = require("../utils/handleError");
 const { matchedData } = require("express-validator");
 
-const createDireccionOrigenCPCtrl = async (req, res) => {
+const createDireccionDestinoCPCtrl = async (req, res) => {
+  const {
+    id_CartaPorte = req.body.Ubicaciones.id_CartaPorte,
+    id_Estado = req.body.Ubicaciones[1].Domicilio.id_Estado,
+    id_Localidad = req.body.Ubicaciones[1].Domicilio.id_Localidad,
+    id_Municipio = req.body.Ubicaciones[1].Domicilio.id_Municipio,
+    id_Colonia = req.body.Ubicaciones[1].Domicilio.id_Colonia,
+    st_Calle = req.body.Ubicaciones[1].Domicilio.st_Calle,
+    st_NoExterior = req.body.Ubicaciones[1].Domicilio.st_NoExterior,
+    st_NoInterior = req.body.Ubicaciones[1].Domicilio.st_NoInterior,
+    st_RefDomicilio = req.body.Ubicaciones[1].Domicilio.st_RefDomicilio,
+    st_DestinatarioNombre = req.body.Ubicaciones[1].st_DestinatarioNombre,
+    st_IdUbicacion = req.body.Ubicaciones[1].st_IdUbicacion,
+    st_FechaHoraLlegada = req.body.Ubicaciones[1].st_FechaHoraLlegada,
+    st_DestinatarioRFC = req.body.Ubicaciones[1].st_DestinatarioRFC,
+    c_codigoPostal = req.body.Ubicaciones[1].Domicilio.c_codigoPostal,
+  } = req.body;
+
   try {
-    const body = matchedData(req); //la data del request venga curada
+    //const body = matchedData(req.body.Ubicaciones[1].Domicilio); //la data del request venga curada
     console.log(
-      "createDireccionOrigenCPCtrl",
-      body,
-      "ending body"
+      "req.body",
+      req.body,
+      "end of body createDireccionDestinoCPCtrl"
     );
-    const direccionOrigenCP = await direccionOrigenCPModel.create(body);
-    //console.log("printing direccionOrigenCP", direccionOrigenCP);
-    //next();
-    handleHttpResponse(res, direccionOrigenCP);
+    const newRow2 = new direccionDestinoCPModel({
+      id_CartaPorte,
+      id_Estado,
+      id_Localidad,
+      id_Municipio,
+      id_Colonia,
+      st_Calle,
+      st_NoExterior,
+      st_NoInterior,
+      st_RefDomicilio,
+      st_DestinatarioNombre,
+      st_IdUbicacion,
+      st_FechaHoraLlegada,
+      st_DestinatarioRFC,
+      c_codigoPostal,
+    });
+    await newRow2.save();
+    handleHttpResponse(res, "newRow");
   } catch (error) {
     console.log(error);
-    handleHttpError(res, "ERROR_CREATING_DIRECCION_ORIGEN_CARTAPORTE");
+    handleHttpError(res, "ERROR_CREATING_DIRECCION_DESTINO_CARTAPORTE");
   }
 };
 
@@ -80,5 +111,5 @@ const deleteCartaPorteCtrl = async (req, res) => {
 };
 
 module.exports = {
-  createDireccionOrigenCPCtrl,
+  createDireccionDestinoCPCtrl,
 };

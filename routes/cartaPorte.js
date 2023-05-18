@@ -3,7 +3,7 @@ const router = express.Router();
 
 
 /***
- * WE DECLARE THE VALIDATORS
+ * VALIDATORS
  */
 const {
   validateCartaporte,
@@ -14,23 +14,26 @@ const {
   validatorDirOrigenCartaPorte,
 } = require("../validators/direccionOrigenCP");
 
+const {
+  validatorDirDestinoCartaPorte,
+} = require("../validators/direccionDestinoCP");
 
+/***
+ * CONTROLLERS
+ */
 const {
   createDireccionOrigenCPCtrl,
-  /*readAllCARTA PORTECtrl,
-  readCARTA PORTECtrl,
-  updateCARTA PORTECtrl,
-  deleteCARTA PORTECtrl,*/
+
 } = require("../controllers/direccionOrigenCP");
+
 const {
   createCartaPorteCtrl,
-  /*readAllCARTA PORTECtrl,
-  readCARTA PORTECtrl,
-  updateCARTA PORTECtrl,
-  deleteCARTA PORTECtrl,*/
 } = require("../controllers/cartaPorte");
 
+const {
+  createDireccionDestinoCPCtrl,
 
+} = require("../controllers/direccionDestinoCP");
 
 
 /**
@@ -42,7 +45,7 @@ const {
  * Delete CARTA PORTE: http://localhost:5000/api/CARTA PORTE/delete/:id
  */
 
-router.post("/create", validateCartaporte, createCartaPorteCtrl, validatorDirOrigenCartaPorte, createDireccionOrigenCPCtrl);
+router.post("/create", validateCartaporte, createCartaPorteCtrl, validatorDirOrigenCartaPorte, createDireccionOrigenCPCtrl, validatorDirDestinoCartaPorte,createDireccionDestinoCPCtrl );
 //router.get("/read", readAllCARTA PORTECtrl);
 //router.get("/read/:id", validatorReadCARTA PORTE, readCARTA PORTECtrl);
 //router.put("/update/:id", [validatorCreateCARTA PORTE, validatorReadCARTA PORTE], updateCARTA PORTECtrl);

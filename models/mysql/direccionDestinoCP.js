@@ -1,46 +1,78 @@
 const { sequelize } = require("../../config/mysql");
 const { DataTypes } = require("sequelize");
 
-const CartaPorte = sequelize.define(
-  "tbl_cartaporte",
+const DirDestinoCP = sequelize.define(
+  "tbl_dir_destino_cartaporte",
   {
-    id_CartaPorte: {
+    id_dir_destinoCP: {
       type: DataTypes.INTEGER,
       primaryKey: true,
       autoIncrement: true,
     },
-    id_Viaje: {
+    id_CartaPorte: {
+      type: DataTypes.INTEGER,
+    },
+    id_Estado: {
       type: DataTypes.BIGINT,
       allowNull: false,
     },
-    id_CFDI: {
-      type: DataTypes.INTEGER,
-    },
-    folio_int_cp: {
-      type: DataTypes.INTEGER,
+    id_Localidad: {
+      type: DataTypes.BIGINT,
       allowNull: false,
     },
-    i_NumTotalMercancias: {
-      type: DataTypes.INTEGER,
+    id_Municipio: {
+      type: DataTypes.BIGINT,
       allowNull: false,
     },
-    st_LugarExpedicion: {
-      type: DataTypes.STRING(100),
+    id_Colonia: {
+      type: DataTypes.BIGINT,
       allowNull: false,
     },
-    createdAt: {
+    c_codigoPostal: {
+      type: DataTypes.STRING(6),
+      allowNull: false,
+    },
+    st_Calle: {
+      type: DataTypes.STRING(50),
+      allowNull: false,
+    },
+    st_NoExterior: {
+      type: DataTypes.STRING(10),
+      allowNull: false,
+    },
+    st_NoInterior: {
+      type: DataTypes.STRING(10),
+      allowNull: false,
+    },
+    st_RefDomicilio: {
+      type: DataTypes.TEXT,
+      allowNull: false,
+    },
+    st_DestinatarioNombre: {
+      type: DataTypes.STRING(50),
+      allowNull: false,
+    },
+    st_IdUbicacion: {
+      type: DataTypes.STRING(8),
+      allowNull: false,
+      defaultValue: "DE000000",
+    },
+    date_FechaLlegada: {
       type: DataTypes.DATE,
       allowNull: false,
+      defaultValue: DataTypes.NOW,
     },
-    updatedAt: {
-      type: DataTypes.DATE,
-      allowNull: false,
+    st_DestinatarioRFC: {
+      type: DataTypes.STRING(12),
+    },
+    dec_DistRec: {
+      type: DataTypes.DECIMAL(7,2),
     },
   },
   {
     timestamps: false,
-    tableName: "tbl_cartaporte",
+    tableName: "tbl_dir_destino_cartaporte",
   }
 );
 
-module.exports = CartaPorte;
+module.exports = DirDestinoCP;

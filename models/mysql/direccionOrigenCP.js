@@ -59,6 +59,10 @@ const DirOrigenCP = sequelize.define(
     st_RemitenteRFC: {
       type: DataTypes.STRING(12),
     },
+    c_codigoPostal: {
+      type: DataTypes.STRING(6),
+      allowNull: false,
+    },
   },
   {
     timestamps: false,

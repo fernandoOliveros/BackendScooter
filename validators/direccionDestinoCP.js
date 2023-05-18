@@ -1,77 +1,25 @@
-const { sequelize } = require("../../config/mysql");
-const { DataTypes } = require("sequelize");
+const { check } = require("express-validator");
+const validateResults = require("../utils/handleValidator");
 
-const DirDestinoCartaPorte = sequelize.define(
-  "tbl_dir_destino_cartaporte",
-  {
-    id_dir_destinoCP: {
-      type: DataTypes.INTEGER,
-      primaryKey: true,
-      autoIncrement: true,
-    },
-    id_CartaPorte: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-    },
-    id_Estado: {
-      type: DataTypes.BIGINT,
-      allowNull: false,
-    },
-    id_Localidad: {
-      type: DataTypes.BIGINT,
-      allowNull: false,
-    },
-    id_Municipio: {
-      type: DataTypes.BIGINT,
-      allowNull: false,
-    },
-    id_Colonia: {
-      type: DataTypes.BIGINT,
-      allowNull: false,
-    },
-    c_codigoPostal: {
-      type: DataTypes.STRING(6),
-      allowNull: false,
-    },
-    st_Calle: {
-      type: DataTypes.STRING(50),
-      allowNull: false,
-    },
-    st_NoExterior: {
-      type: DataTypes.STRING(10),
-      allowNull: false,
-    },
-    st_NoInterior: {
-      type: DataTypes.STRING(10),
-      allowNull: false,
-    },
-    st_RefDomicilio: {
-      type: DataTypes.TEXT,
-      allowNull: false,
-    },
-    st_DestinatarioNombre: {
-      type: DataTypes.STRING(50),
-      allowNull: false,
-    },
-    st_IdUbicacion: {
-      type: DataTypes.STRING(8),
-      allowNull: false,
-      defaultValue: "DE000000",
-    },
-    date_FechaLlegada: {
-      type: DataTypes.DATE,
-    },
-    st_DestinatarioRFC: {
-      type: DataTypes.STRING(12),
-    },
-    dec_DistRec: {
-      type: DataTypes.DECIMAL(7,2),
-    },
+const validatorDirDestinoCartaPorte = [
+  check("Ubicaciones.id_CartaPorte").exists(),
+  check("Ubicaciones.1.Domicilio.id_Estado").exists(),
+  check("Ubicaciones.1.Domicilio.id_Localidad").exists(),
+  check("Ubicaciones.1.Domicilio.id_Municipio").exists(),
+  check("Ubicaciones.1.Domicilio.id_Colonia").exists(),
+  check("Ubicaciones.1.Domicilio.st_Calle").exists(),
+  check("Ubicaciones.1.Domicilio.st_NoExterior").exists(),
+  check("Ubicaciones.1.Domicilio.st_NoInterior").exists(),
+  check("Ubicaciones.1.Domicilio.st_RefDomicilio").exists(),
+  check("Ubicaciones.1.st_DestinatarioNombre").exists(),
+  check("Ubicaciones.1.st_IdUbicacion").exists(),
+  check("Ubicaciones.1.st_FechaHoraLlegada").exists(),
+  check("Ubicaciones.1.st_DestinatarioRFC").exists(),
+  check("Ubicaciones.1.Domicilio.c_codigoPostal").exists(),
+
+  (req, res, next) => {
+    return validateResults(req, res, next);
   },
-  {
-    timestamps: false,
-    tableName: "tbl_dir_destino_cartaporte",
-  }
-);
+];
 
-module.exports = DirDestinoCartaPorte;
+module.exports = { validatorDirDestinoCartaPorte };

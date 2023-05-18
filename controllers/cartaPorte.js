@@ -13,11 +13,10 @@ const createCartaPorteCtrl = async (req, res, next ) => {
     console.log("entering controller createCartaPorteCtrl", body, "ending body sample")
     const cartaPorte = await cartaPorteModel.create(body);
     const id_CartaPorte = cartaPorte.dataValues.id_CartaPorte;
-    req.body.id_CartaPorte = id_CartaPorte;
-    //console.log("printing req.body", req.body)
+    req.body.Ubicaciones.id_CartaPorte = id_CartaPorte;
+    //req.body = req.body;
+    //console.log("printing req.body.Ubicaciones[1].Domicilio", req.body.Ubicaciones[1].Domicilio)
     next();
-    //handleHttpResponse(res, cartaPorte);
-
   } catch (error) {
     console.log(error);
     handleHttpError(res, 'ERROR_CREATING_CARTAPORTE');
