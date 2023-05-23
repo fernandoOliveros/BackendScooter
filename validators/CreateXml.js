@@ -4,6 +4,8 @@ const validateResults = require("../utils/handleValidator");
 /**
  * Esto es un Middleware
  */
+
+console.log()
 const validatorXml = [
   
   check("st_RFC_emisor")
@@ -77,6 +79,8 @@ const validatorXml = [
             
     
   (req, res, next) => {
+console.log("validatorXml")
+
     return validateResults(req, res, next);
   },
 ];

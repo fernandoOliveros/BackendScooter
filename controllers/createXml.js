@@ -34,33 +34,27 @@ async function createTimestampedXmlFile(xml) {
   return xmlFileName;
 }
 
-
-
-
-async function createXmlCtrl(req, res){
+async function createXmlCtrl(req, res) {
   try {
-    const jsonData = matchedData(req.body);; // Assuming req.body contains the JSON data received from the POST request
+    console.log(" createXmlCtrl");
+
+    const jsonData = matchedData(req.body); // Assuming req.body contains the JSON data received from the POST request
 
     const modifiedObj = generateXML(jsonData);
-    
+
     const options = {
       rootName: "cfdi:Comprobante",
       headless: true,
       attrNodeName: "cartaporte20:Ubicacion",
       cdata: true,
     };
-    
+
     const builder = new xml2js.Builder();
     const xmlRaw = builder.buildObject(modifiedObj, options);
-    
-    let xmlFileName = await createTimestampedXmlFile(xmlRaw);
-    
-    
-  } catch (error) {
-    
-  }
-}
 
+    let xmlFileName = await createTimestampedXmlFile(xmlRaw);
+  } catch (error) {}
+}
 
 async function createXmlCtrlBKP(req, res) {
   try {
@@ -148,7 +142,7 @@ async function createXmlCtrlBKP(req, res) {
     st_TipoMoneda = st_TipoMoneda.dataValues.c_Moneda;
     c_RegimenFiscal_emisor = c_RegimenFiscal_emisor.dataValues.c_RegimenFiscal;
     c_RegimenFiscalReceptor =
-    c_RegimenFiscalReceptor.dataValues.c_RegimenFiscal;
+      c_RegimenFiscalReceptor.dataValues.c_RegimenFiscal;
     c_MetodoPago = c_MetodoPago.dataValues.c_MetodoPago;
     //c_FormaPago =  c_FormaPago.dataValues.c_FormaPago;
     c_UsoCFDI = c_UsoCFDI.dataValues.c_UsoCFDI;
@@ -236,7 +230,48 @@ async function createXmlCtrlBKP(req, res) {
               TotalDistRec: dec_TotalDistRec, //DECIMAL(7,2)
             },
             "cartaporte20:Ubicaciones": {
-              "cartaporte20:Ubicacion": []
+              "cartaporte20:Ubicacion": [
+                {
+                  $: {
+                    TipoUbicacion: "Origen",
+                    RFCRemitenteDestinatario: st_RFCRemitente,
+                    FechaHoraSalidaLlegada: st_FechaHoraSalida,
+                  },
+                  "cartaporte20:Domicilio": {
+                    $: {
+                      Localidad: "06",
+                      Municipio: "025",
+                      Estado: "COA",
+                      Pais: "MEX",
+                      CodigoPostal: "13250",
+                    },
+                  },
+                },
+                {
+                  $: {
+                    IDUbicacion: "DE202020",
+                    TipoUbicacion: "Destino",
+                    RFCRemitenteDestinatario: st_RFCDestinatario,
+                    FechaHoraSalidaLlegada: "st_FechaHoraLlegada",
+                    DistanciaRecorrida: "1",
+                  },
+
+                  "cartaporte20:Domicilio": {
+                    $: {
+                      Calle: "calle",
+                      NumeroExterior: "214",
+                      Colonia: "0347",
+                      Localidad: "23",
+                      Referencia: "casa blanca",
+                      Municipio: "004",
+                      Estado: "COA",
+                      Pais: "MEX",
+                      CodigoPostal: "25350",
+                    },
+                  },
+                },
+                //{ "attr3": 'value3' }
+              ],
             },
             "cartaporte20:Mercancias": {
               $: {
@@ -302,17 +337,26 @@ async function createXmlCtrlBKP(req, res) {
       },
     };
 
-    obj["cfdi:Complemento"]["cartaporte20:CartaPorte"]["cartaporte20:Ubicaciones"]["cartaporte20:Ubicacion"].push({
+    /*obj["cfdi:Complemento"]["cartaporte20:CartaPorte"][
+      "cartaporte20:Ubicaciones"
+    ]["cartaporte20:Ubicacion"].push({
       $: {
         // Ubicacion properties here
-
+        TipoUbicacion: "Origen",
+        RFCRemitenteDestinatario: "st_RFCRemitente",
+        FechaHoraSalidaLlegada: "st_FechaHoraSalida",
       },
       "cartaporte20:Domicilio": {
         $: {
           // Domicilio properties here
-        }
-      }
-    });
+          Localidad: "06",
+          Municipio: "025",
+          Estado: "COA",
+          Pais: "MEX",
+          CodigoPostal: "13250",
+        },
+      },
+    });*/
 
     const options = {
       rootName: "cfdi:Comprobante",
@@ -328,7 +372,10 @@ async function createXmlCtrlBKP(req, res) {
     //console.log(xml);
     let xmlFileName = await createTimestampedXmlFile(xmlRaw);
 
-    handleHttpResponse(res, { xmlRaw: `${xmlRaw}`, xmlFileName: `${xmlFileName}` });
+    handleHttpResponse(res, {
+      xmlRaw: `${xmlRaw}`,
+      xmlFileName: `${xmlFileName}`,
+    });
   } catch (e) {
     console.error(e);
     res.status(500).json({ success: false, message: "Server Error" });
