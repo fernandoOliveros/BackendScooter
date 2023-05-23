@@ -34,7 +34,57 @@ async function createTimestampedXmlFile(xml) {
   return xmlFileName;
 }
 
-async function createXmlCtrl(req, res) {
+
+
+function generateXML(jsonData) {
+  const ubicaciones = jsonData.Ubicaciones;
+
+  // Modify 'obj' with dynamic 'Ubicaciones' values
+  obj["cfdi:Comprobante"]["cfdi:Complemento"]["cartaporte20:CartaPorte"]["cartaporte20:Ubicaciones"]["cartaporte20:Ubicacion"] = ubicaciones.map((ubicacion) => {
+    const tipoUbicacion = ubicacion.TipoUbicacion === "Origen" ? "Origen" : "Destino";
+    const rfcRemitenteDestinatario = tipoUbicacion === "Origen" ? jsonData.st_RFCRemitente : ubicacion.st_RFCDestinatario;
+    const fechaHoraSalidaLlegada = tipoUbicacion === "Origen" ? jsonData.st_FechaHoraSalida : ubicacion.st_FechaHoraLlegada;
+
+    return {
+      $: {
+        TipoUbicacion: tipoUbicacion,
+        RFCRemitenteDestinatario: rfcRemitenteDestinatario,
+        FechaHoraSalidaLlegada: fechaHoraSalidaLlegada,
+        ...ubicacion.$,
+      },
+      "cartaporte20:Domicilio": ubicacion["cartaporte20:Domicilio"],
+    };
+  });
+
+  return obj;
+}
+
+async function createXmlCtrl(req, res){
+  try {
+    const jsonData = matchedData(req.body);; // Assuming req.body contains the JSON data received from the POST request
+
+    const modifiedObj = generateXML(jsonData);
+    
+    const options = {
+      rootName: "cfdi:Comprobante",
+      headless: true,
+      attrNodeName: "cartaporte20:Ubicacion",
+      cdata: true,
+    };
+    
+    const builder = new xml2js.Builder();
+    const xmlRaw = builder.buildObject(modifiedObj, options);
+    
+    let xmlFileName = await createTimestampedXmlFile(xmlRaw);
+    
+    
+  } catch (error) {
+    
+  }
+}
+
+
+async function createXmlCtrlBKP(req, res) {
   try {
     /******GETTING VARIABLES VALUES BY ID, SENT BY JSON POST ******/
     //const body =req.body;

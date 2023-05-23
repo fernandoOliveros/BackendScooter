@@ -4,47 +4,53 @@ const { handleHttpError } = require("../utils/handleError");
 const { matchedData } = require("express-validator");
 
 const createDireccionDestinoCPCtrl = async (req, res) => {
-  const {
-    id_CartaPorte = req.body.Ubicaciones.id_CartaPorte,
-    id_Estado = req.body.Ubicaciones[1].Domicilio.id_Estado,
-    id_Localidad = req.body.Ubicaciones[1].Domicilio.id_Localidad,
-    id_Municipio = req.body.Ubicaciones[1].Domicilio.id_Municipio,
-    id_Colonia = req.body.Ubicaciones[1].Domicilio.id_Colonia,
-    st_Calle = req.body.Ubicaciones[1].Domicilio.st_Calle,
-    st_NoExterior = req.body.Ubicaciones[1].Domicilio.st_NoExterior,
-    st_NoInterior = req.body.Ubicaciones[1].Domicilio.st_NoInterior,
-    st_RefDomicilio = req.body.Ubicaciones[1].Domicilio.st_RefDomicilio,
-    st_DestinatarioNombre = req.body.Ubicaciones[1].st_DestinatarioNombre,
-    st_IdUbicacion = req.body.Ubicaciones[1].st_IdUbicacion,
-    st_FechaHoraLlegada = req.body.Ubicaciones[1].st_FechaHoraLlegada,
-    st_DestinatarioRFC = req.body.Ubicaciones[1].st_DestinatarioRFC,
-    c_codigoPostal = req.body.Ubicaciones[1].Domicilio.c_codigoPostal,
-  } = req.body;
-
   try {
-    //const body = matchedData(req.body.Ubicaciones[1].Domicilio); //la data del request venga curada
-    console.log(
-      "req.body",
-      req.body,
-      "end of body createDireccionDestinoCPCtrl"
-    );
-    const newRow2 = new direccionDestinoCPModel({
-      id_CartaPorte,
-      id_Estado,
-      id_Localidad,
-      id_Municipio,
-      id_Colonia,
-      st_Calle,
-      st_NoExterior,
-      st_NoInterior,
-      st_RefDomicilio,
-      st_DestinatarioNombre,
-      st_IdUbicacion,
-      st_FechaHoraLlegada,
-      st_DestinatarioRFC,
-      c_codigoPostal,
-    });
-    await newRow2.save();
+    const ubicaciones = req.body.Ubicaciones;
+    const ubicacionesLength = ubicaciones.length;
+    console.log(`Length of 'Ubicaciones' array: ${ubicacionesLength}`);
+    for (let i = 0; i < ubicacionesLength; i++) {
+      const ubicacion = ubicaciones[i];
+      if (ubicacion.TipoUbicacion === "Destino") {
+        // Perform the action for "TipoUbicacion" equal to "Origen"
+        console.log(`Processing 'TipoUbicacion' ${i} equal to 'Destino'`);
+      
+        const {
+          id_CartaPorte = req.body.Ubicaciones.id_CartaPorte,
+          id_Estado = req.body.Ubicaciones[i].Domicilio.id_Estado,
+          id_Localidad = req.body.Ubicaciones[i].Domicilio.id_Localidad,
+          id_Municipio = req.body.Ubicaciones[i].Domicilio.id_Municipio,
+          id_Colonia = req.body.Ubicaciones[i].Domicilio.id_Colonia,
+          st_Calle = req.body.Ubicaciones[i].Domicilio.st_Calle,
+          st_NoExterior = req.body.Ubicaciones[i].Domicilio.st_NoExterior,
+          st_NoInterior = req.body.Ubicaciones[i].Domicilio.st_NoInterior,
+          st_RefDomicilio = req.body.Ubicaciones[i].Domicilio.st_RefDomicilio,
+          st_DestinatarioNombre = req.body.Ubicaciones[i].st_DestinatarioNombre,
+          st_IdUbicacion = req.body.Ubicaciones[i].st_IdUbicacion,
+          st_FechaHoraLlegada = req.body.Ubicaciones[i].st_FechaHoraLlegada,
+          st_DestinatarioRFC = req.body.Ubicaciones[i].st_DestinatarioRFC,
+          c_codigoPostal = req.body.Ubicaciones[i].Domicilio.c_codigoPostal,
+        } = req.body;
+        const newRow2 = new direccionDestinoCPModel({
+          id_CartaPorte,
+          id_Estado,
+          id_Localidad,
+          id_Municipio,
+          id_Colonia,
+          st_Calle,
+          st_NoExterior,
+          st_NoInterior,
+          st_RefDomicilio,
+          st_DestinatarioNombre,
+          st_IdUbicacion,
+          st_FechaHoraLlegada,
+          st_DestinatarioRFC,
+          c_codigoPostal,
+        });
+        await newRow2.save();
+      }
+    }    
+        
+    //const body = matchedData(req.body.Ubicaciones[1].Domicilio); //la 
     handleHttpResponse(res, "newRow");
   } catch (error) {
     console.log(error);
