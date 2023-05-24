@@ -36,31 +36,9 @@ async function createTimestampedXmlFile(xml) {
 
 async function createXmlCtrl(req, res) {
   try {
-    console.log(" createXmlCtrl");
-
-    const jsonData = matchedData(req.body); // Assuming req.body contains the JSON data received from the POST request
-
-    const modifiedObj = generateXML(jsonData);
-
-    const options = {
-      rootName: "cfdi:Comprobante",
-      headless: true,
-      attrNodeName: "cartaporte20:Ubicacion",
-      cdata: true,
-    };
-
-    const builder = new xml2js.Builder();
-    const xmlRaw = builder.buildObject(modifiedObj, options);
-
-    let xmlFileName = await createTimestampedXmlFile(xmlRaw);
-  } catch (error) {}
-}
-
-async function createXmlCtrlBKP(req, res) {
-  try {
     /******GETTING VARIABLES VALUES BY ID, SENT BY JSON POST ******/
     //const body =req.body;
-    const body = matchedData(req); //la data del request venga curada
+    const body = req.body; //la data del request venga curada
 
     console.log(
       "THIS IS THE BODY AT createXmlCtrl",
@@ -84,9 +62,9 @@ async function createXmlCtrlBKP(req, res) {
     const id_ObjetoImp = body.id_ObjetoImp;
     const i_Importe = body.i_Importe;
     const dec_TotalDistRec = body.dec_TotalDistRec;
-    const st_RFCRemitente = body.st_RFCRemitente;
-    const st_FechaHoraSalida = body.st_FechaHoraSalida;
-    const st_RFCDestinatario = body.st_RFCDestinatario;
+    const st_RemitenteRFC = body.st_RemitenteRFC;
+    const date_FechaSalida = body.date_FechaSalida;
+    const st_DestinatarioRFC = body.st_DestinatarioRFC;
     const st_FechaHoraLlegada = body.st_FechaHoraLlegada;
 
     //const id_DomicilioFiscalReceptor = body.id_DomicilioFiscalReceptor;
@@ -153,7 +131,7 @@ async function createXmlCtrlBKP(req, res) {
 
     //console.log("test", c_FormaPago);
 
-    var obj = {
+    var JsonStructureCFDI = {
       "cfdi:Comprobante": {
         $: {
           "xmlns:cfdi": "http://www.sat.gob.mx/cfd/4",
@@ -230,48 +208,7 @@ async function createXmlCtrlBKP(req, res) {
               TotalDistRec: dec_TotalDistRec, //DECIMAL(7,2)
             },
             "cartaporte20:Ubicaciones": {
-              "cartaporte20:Ubicacion": [
-                {
-                  $: {
-                    TipoUbicacion: "Origen",
-                    RFCRemitenteDestinatario: st_RFCRemitente,
-                    FechaHoraSalidaLlegada: st_FechaHoraSalida,
-                  },
-                  "cartaporte20:Domicilio": {
-                    $: {
-                      Localidad: "06",
-                      Municipio: "025",
-                      Estado: "COA",
-                      Pais: "MEX",
-                      CodigoPostal: "13250",
-                    },
-                  },
-                },
-                {
-                  $: {
-                    IDUbicacion: "DE202020",
-                    TipoUbicacion: "Destino",
-                    RFCRemitenteDestinatario: st_RFCDestinatario,
-                    FechaHoraSalidaLlegada: "st_FechaHoraLlegada",
-                    DistanciaRecorrida: "1",
-                  },
-
-                  "cartaporte20:Domicilio": {
-                    $: {
-                      Calle: "calle",
-                      NumeroExterior: "214",
-                      Colonia: "0347",
-                      Localidad: "23",
-                      Referencia: "casa blanca",
-                      Municipio: "004",
-                      Estado: "COA",
-                      Pais: "MEX",
-                      CodigoPostal: "25350",
-                    },
-                  },
-                },
-                //{ "attr3": 'value3' }
-              ],
+              "cartaporte20:Ubicacion": [],
             },
             "cartaporte20:Mercancias": {
               $: {
@@ -337,27 +274,6 @@ async function createXmlCtrlBKP(req, res) {
       },
     };
 
-    /*obj["cfdi:Complemento"]["cartaporte20:CartaPorte"][
-      "cartaporte20:Ubicaciones"
-    ]["cartaporte20:Ubicacion"].push({
-      $: {
-        // Ubicacion properties here
-        TipoUbicacion: "Origen",
-        RFCRemitenteDestinatario: "st_RFCRemitente",
-        FechaHoraSalidaLlegada: "st_FechaHoraSalida",
-      },
-      "cartaporte20:Domicilio": {
-        $: {
-          // Domicilio properties here
-          Localidad: "06",
-          Municipio: "025",
-          Estado: "COA",
-          Pais: "MEX",
-          CodigoPostal: "13250",
-        },
-      },
-    });*/
-
     const options = {
       rootName: "cfdi:Comprobante",
       headless: true,
@@ -367,7 +283,93 @@ async function createXmlCtrlBKP(req, res) {
 
     var builder = new xml2js.Builder();
 
-    var xmlRaw = builder.buildObject(obj, options);
+    /*var jsonTest=    {
+      "cfdi:Complemento": {
+        "cartaporte20:CartaPorte": {
+          $: {
+            Version: "2.0",
+            TranspInternac: "No",
+            TotalDistRec: dec_TotalDistRec, //DECIMAL(7,2)
+          },
+          "cartaporte20:Ubicaciones": {
+    "cartaporte20:Ubicacion": []
+  }}}}*/
+
+    var ubicacionesArray =
+      JsonStructureCFDI["cfdi:Comprobante"]["cfdi:Complemento"][
+        "cartaporte20:CartaPorte"
+      ]["cartaporte20:Ubicaciones"]["cartaporte20:Ubicacion"];
+
+
+
+
+
+
+      const ubicaciones = req.body.Ubicaciones;
+      const ubicacionesLength = ubicaciones.length;
+  
+      console.log(`Length of Ubicaciones array: ${ubicacionesLength}`);
+  
+      for (let i = 0; i < ubicacionesLength; i++) {
+        const ubicacion = ubicaciones[i];
+        if (ubicacion.TipoUbicacion === "Origen") {
+          // Perform the action for "TipoUbicacion" equal to "Origen"
+          console.log(`Processing TipoUbicacion ${i} equal to 'Origen'`);
+          ubicacionesArray.push({
+            $: {
+              // Ubicacion properties here
+              TipoUbicacion: "Origen",
+              RFCRemitenteDestinatario: `${ubicaciones[i].st_RemitenteRFC}`,
+              FechaHoraSalidaLlegada: `${ubicaciones[i].date_FechaSalida}`,
+            },
+            "cartaporte20:Domicilio": {
+              $: {
+                // Domicilio properties here
+                Calle: "calle",
+                NumeroExterior: "214",
+                Colonia: "0347",
+                Localidad: "23",
+                Referencia: "casa blanca",
+                Municipio: "004",
+                Estado: "COA",
+                Pais: "MEX",
+                CodigoPostal: "25350",
+              },
+            }
+          });
+        } else {
+          console.log(`Processing 'TipoUbicacion' ${i} equal to 'Destino'`);
+          ubicacionesArray.push({
+            $: {
+              // Ubicacion properties here
+              TipoUbicacion: "Destino",
+              RFCRemitenteDestinatario: `${ubicaciones[i].st_DestinatarioRFC}`,
+              FechaHoraSalidaLlegada: `${ubicaciones[i].st_FechaHoraLlegada}`,
+            },
+            "cartaporte20:Domicilio": {
+              $: {
+                // Domicilio properties here
+                Calle: "calle",
+                NumeroExterior: "214",
+                Colonia: "0347",
+                Localidad: "23",
+                Referencia: "casa blanca",
+                Municipio: "004",
+                Estado: "COA",
+                Pais: "MEX",
+                CodigoPostal: "25350",
+              },
+            }
+          });
+        }
+      }
+      
+    
+    var xmlRaw = builder.buildObject(JsonStructureCFDI, options);
+
+    //var objectConverted = builder.buildObject(jsonTest, options);
+
+    console.log(`this is the arr  array${xmlRaw}`);
 
     //console.log(xml);
     let xmlFileName = await createTimestampedXmlFile(xmlRaw);

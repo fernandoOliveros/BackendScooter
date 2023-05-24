@@ -9,6 +9,8 @@ const createDireccionOrigenCPCtrl = async (req, res, next) => {
     req.body
   );
   try {
+
+    /***Looping trhough each Ubicacion */
     const ubicaciones = req.body.Ubicaciones;
     const ubicacionesLength = ubicaciones.length;
 
