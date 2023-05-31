@@ -412,10 +412,11 @@ async function createXmlCtrl(req, res) {
     const remolquesLength = remolques.length;
     console.log(`Length of remolques array: ${remolquesLength}`);
 
-    if (remolquesLength!=0) {
-      JsonStructureCFDI["cfdi:Comprobante"]["cfdi:Complemento"]["cartaporte20:CartaPorte"]["cartaporte20:Autotransporte"]["cartaporte20:Remolques"] = {
+    if (remolquesLength<2) {
+      JsonStructureCFDI["cfdi:Comprobante"]["cfdi:Complemento"]["cartaporte20:CartaPorte"]["cartaporte20:Mercancias"]["cartaporte20:Autotransporte"]["cartaporte20:Remolques"] = {
         "cartaporte20:Remolque": [], // puede tener 0-2 remolques
       };
+      console.log("entering conditional remolquesLength")
       
       var remolquesArray =
       JsonStructureCFDI["cfdi:Comprobante"]["cfdi:Complemento"][
@@ -437,7 +438,8 @@ async function createXmlCtrl(req, res) {
     }else if(remolquesLength==0){
       console.log("There are no remolques to add.")
     }else{
-      console.log(`ERROR: You can only a maximum of 2 remolques, you're tring to add ${remolquesLength} remolques. `)
+      throw new Error(`Fixed ERROR: You can only a maximum of 2 remolques, you're tring to add ${remolquesLength} remolques. `)
+      
     }
       
 
