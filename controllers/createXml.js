@@ -7,7 +7,6 @@ const {
 const {
   QueryTypes
 } = require("sequelize");
-
 const {
   handleHttpResponse
 } = require("../utils/handleResponse");
@@ -56,6 +55,111 @@ async function createTimestampedXmlFile(xml) {
   return xmlFileName;
 }
 
+
+async function getLocalidad(id_localidad){
+  try {
+    // Query the SQL table
+
+    let query =
+      `SELECT c_Localidad FROM cat_localidad WHERE id_Localidad = :id`;
+    let c_localidad = await sequelize.query(query, {
+      replacements: { id: `${id_localidad}` },
+      type: QueryTypes.SELECT,
+    });
+    // Process the query result
+    console.log(`c_localidad is ${c_localidad}`); // Access the returned rows
+
+    let firstRowValue = c_localidad[0].c_Localidad;
+    console.log(`First row value: ${firstRowValue}`);
+    return firstRowValue;
+  } catch (error) {
+    console.error('Error querying SQL table:', error);
+  }
+}
+
+
+async function getColonia(id_colonia){
+  try {
+    // Query the SQL table
+
+    let query =
+      `SELECT c_Colonia FROM cat_colonia WHERE id_colonia = :id`;
+    let c_colonia = await sequelize.query(query, {
+      replacements: { id: `${id_colonia}` },
+      type: QueryTypes.SELECT,
+    });
+    // Process the query result
+    let firstRowValue = c_colonia[0].c_Colonia;
+    return firstRowValue;
+  } catch (error) {
+    console.error('Error querying SQL table cat_colonia:', error);
+  }
+
+}
+
+
+async function getEstado(id_estado){
+  try {
+    // Query the SQL table
+
+    let query =
+      `SELECT c_Estado FROM cat_estado WHERE id_Estado = :id`;
+    let c_Estado = await sequelize.query(query, {
+      replacements: { id: `${id_estado}` },
+      type: QueryTypes.SELECT,
+    });
+    // Process the query result
+    let firstRowValue = c_Estado[0].c_Estado;
+    return firstRowValue;
+  } catch (error) {
+    console.error('Error querying SQL table cat_estado:', error);
+  }
+}
+
+
+
+async function getMunicipio(id_municipio){
+  try {
+    // Query the SQL table
+
+    let query =
+      `SELECT c_Municipio FROM cat_municipio WHERE id_Municipio = :id`;
+    let c_Municipio = await sequelize.query(query, {
+      replacements: { id: `${id_municipio}` },
+      type: QueryTypes.SELECT,
+    });
+    // Process the query result
+    let firstRowValue = c_Municipio[0].c_Municipio;
+    return firstRowValue;
+  } catch (error) {
+    console.error('Error querying SQL table cat_municipio:', error);
+  }
+}
+
+
+async function getCodigoPostal(id_codigopostal){
+  try {
+    // Query the SQL table
+
+    let query =
+      `SELECT c_codigoPostal FROM cat_codigo_postal WHERE id_codigoPostal = :id`;
+    let c_codigoPostal = await sequelize.query(query, {
+      replacements: { id: `${id_codigopostal}` },
+      type: QueryTypes.SELECT,
+    });
+    // Process the query result
+    let firstRowValue = c_codigoPostal[0].c_codigoPostal;
+    return firstRowValue;
+  } catch (error) {
+    console.error('Error querying SQL table cat_codigo_Postal:', error);
+  }
+}
+
+
+
+
+
+
 async function createXmlCtrl(req, res) {
   try {
     /******GETTING VARIABLES VALUES BY ID, SENT BY JSON POST ******/
@@ -65,7 +169,7 @@ async function createXmlCtrl(req, res) {
     console.log(
       "THIS IS THE BODY AT createXmlCtrl",
       body,
-      "ending createXmlCtrl"
+      "ending body request at createXmlCtrl"
     );
 
     const st_RFC_emisor = body.st_RFC_emisor;
@@ -76,7 +180,6 @@ async function createXmlCtrl(req, res) {
     const id_RegimenFiscal_emisor = body.id_RegimenFiscal_emisor;
     const id_RegimenFiscalReceptor = body.id_RegimenFiscalReceptor;
     const id_MetodoPago = body.id_MetodoPago;
-    //const id_FormaPago = body.id_FormaPago;
     const id_UsoCFDI = body.id_UsoCFDI;
     const id_DomicilioFiscalReceptor = body.id_DomicilioFiscalReceptor;
     const st_nombre_emisor = body.st_nombre_emisor; //emisor=remitente
@@ -88,7 +191,6 @@ async function createXmlCtrl(req, res) {
     const date_FechaSalida = body.date_FechaSalida;
     const st_DestinatarioRFC = body.st_DestinatarioRFC;
     const st_FechaHoraLlegada = body.st_FechaHoraLlegada;
-
     //const id_DomicilioFiscalReceptor = body.id_DomicilioFiscalReceptor;
     //1 de diciembre de 2022 3 de julio de 2023
     //console.log("dec_TotalDistRec", dec_TotalDistRec);
@@ -100,13 +202,13 @@ async function createXmlCtrl(req, res) {
       },
       attributes: ["st_TipoComprobante"],
     });
+
     let st_TipoMoneda = await tiposMonedasModel.findOne({
       where: {
         id_Moneda: id_TipoMoneda
       },
       attributes: ["c_Moneda"],
     });
-
     let c_RegimenFiscal_emisor = await regimenFiscalModel.findOne({
       where: {
         id_RegimenFiscal: id_RegimenFiscal_emisor
@@ -134,28 +236,27 @@ async function createXmlCtrl(req, res) {
 
     /**USING A RAW QUERY FOR US TO NOT CREATE A MODEL AND QUERYING DIRECT FROM THE DATA BASE,
      * WE NEED TO SANITIZE THE INPUT THOUGH!
-     */
+     **/
     let st_ObjetoImp = await sequelize.query(
       "SELECT c_ObjetoImp FROM c_ObjetoImp WHERE id_ObjetoImp = ?", {
         replacements: [id_ObjetoImp],
         type: sequelize.QueryTypes.SELECT,
       }
     );
-    const c_ObjetoImp = st_ObjetoImp[0].c_ObjetoImp;
-    console.log("c_ObjetoImp:", c_ObjetoImp);
-    st_ObjetoImp = c_ObjetoImp;
 
-    /******
-        The result of the query is an array of objects, 
+    const c_ObjetoImp = st_ObjetoImp[0].c_ObjetoImp;
+    //console.log("c_ObjetoImp:", c_ObjetoImp);
+    st_ObjetoImp = c_ObjetoImp;
+    /*****
+        The result of the query is an array of objects,
         and we can access the data values of each column using the dataValues property
-        ******/
+    *****/
+
     st_TipoComprobante = st_TipoComprobante.dataValues.st_TipoComprobante;
     st_TipoMoneda = st_TipoMoneda.dataValues.c_Moneda;
     c_RegimenFiscal_emisor = c_RegimenFiscal_emisor.dataValues.c_RegimenFiscal;
-    c_RegimenFiscalReceptor =
-      c_RegimenFiscalReceptor.dataValues.c_RegimenFiscal;
+    c_RegimenFiscalReceptor = c_RegimenFiscalReceptor.dataValues.c_RegimenFiscal;
     c_MetodoPago = c_MetodoPago.dataValues.c_MetodoPago;
-    //c_FormaPago =  c_FormaPago.dataValues.c_FormaPago;
     c_UsoCFDI = c_UsoCFDI.dataValues.c_UsoCFDI;
 
     /**create date on the format ISO 8601: 2023-02-13T03:12:51.137Z*/
@@ -277,7 +378,6 @@ async function createXmlCtrl(req, res) {
         },
       },
     };
-
     const options = {
       rootName: "cfdi:Comprobante",
       headless: true,
@@ -291,7 +391,6 @@ async function createXmlCtrl(req, res) {
       JsonStructureCFDI["cfdi:Comprobante"]["cfdi:Complemento"][
         "cartaporte20:CartaPorte"
       ]["cartaporte20:Ubicaciones"]["cartaporte20:Ubicacion"];
-
 
     const ubicaciones = req.body.Ubicaciones;
     const ubicacionesLength = ubicaciones.length;
@@ -316,12 +415,12 @@ async function createXmlCtrl(req, res) {
             $: {
               // Domicilio properties here
               Calle: `${ubicaciones[i].Domicilio.st_Calle}`,
-              Colonia: `${ubicaciones[i].Domicilio.id_Colonia}`,
-              Localidad: `${ubicaciones[i].Domicilio.id_Localidad}`,
-              Municipio: `${ubicaciones[i].Domicilio.id_Municipio}`,
-              Estado: `${ubicaciones[i].Domicilio.id_Estado}`,
+              Colonia: `${await getColonia(ubicaciones[i].Domicilio.id_Colonia)}`,
+              Localidad: `${await getLocalidad(ubicaciones[i].Domicilio.id_Localidad)}`,
+              Municipio: `${await getMunicipio(ubicaciones[i].Domicilio.id_Municipio)}`,
+              Estado: `${await getEstado(ubicaciones[i].Domicilio.id_Estado)}`,
               Pais: "MEX",
-              CodigoPostal: `${ubicaciones[i].Domicilio.c_codigoPostal}`,
+              CodigoPostal: `${await getCodigoPostal(ubicaciones[i].Domicilio.c_codigoPostal)}`,
             },
           }
         });
@@ -339,12 +438,12 @@ async function createXmlCtrl(req, res) {
             $: {
               // Domicilio properties here
               Calle: `${ubicaciones[i].Domicilio.st_Calle}`,
-              Colonia: `${ubicaciones[i].Domicilio.id_Colonia}`,
-              Localidad: `${ubicaciones[i].Domicilio.id_Localidad}`,
-              Municipio: `${ubicaciones[i].Domicilio.id_Municipio}`,
-              Estado: `${ubicaciones[i].Domicilio.id_Estado}`,
+              Colonia: `${await getColonia(ubicaciones[i].Domicilio.id_Colonia)}`,
+              Localidad: `${await getLocalidad(ubicaciones[i].Domicilio.id_Localidad)}`,
+              Municipio: `${await getMunicipio(ubicaciones[i].Domicilio.id_Municipio)}`,
+              Estado: `${await getEstado(ubicaciones[i].Domicilio.id_Estado)}`,
               Pais: "MEX",
-              CodigoPostal: `${ubicaciones[i].Domicilio.c_codigoPostal}`,
+              CodigoPostal: `${await getCodigoPostal(ubicaciones[i].Domicilio.c_codigoPostal)}`,
 
             },
           }
@@ -397,8 +496,6 @@ async function createXmlCtrl(req, res) {
         }
       })
     };
-
-
 
     const remolques = req.body.Mercancias[0].Autotransporte.Remolques;
     console.log(`This is inside the remolques object: ${JSON.stringify(remolques)}`)
@@ -460,7 +557,13 @@ async function createXmlCtrl(req, res) {
       "cartaporte20:Domicilio": {
         $: {
           Calle: `${TiposFigura[0].Domicilio.Calle}`,
-          Municipio: `${TiposFigura[0].Domicilio.Municipio}`,
+          Municipio: `${await getMunicipio(TiposFigura[0].Domicilio.id_Municipio)}`,
+          Estado: `${await getEstado(TiposFigura[0].Domicilio.id_Estado)}`,
+          
+          Colonia: `${await getColonia(TiposFigura[0].Domicilio.id_Colonia)}`,
+          Localidad: `${await getLocalidad(TiposFigura[0].Domicilio.id_Localidad)}`,
+          CodigoPostal: `${await getCodigoPostal(TiposFigura[0].Domicilio.id_CodigoPostal)}`
+              
         }
       }
     });
