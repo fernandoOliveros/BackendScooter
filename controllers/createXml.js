@@ -270,13 +270,7 @@ async function createXmlCtrl(req, res) {
               },
             },
             "cartaporte20:FiguraTransporte": {
-              "cartaporte20:TiposFigura": {
-                $: {
-                  TipoFigura: "01",
-                  RFCFigura: "VAAM130719H60",
-                  NumLicencia: "a234567890",
-                },
-              },
+              "cartaporte20:TiposFigura": []
             },
           },
 
@@ -412,7 +406,7 @@ async function createXmlCtrl(req, res) {
     const remolquesLength = remolques.length;
     console.log(`Length of remolques array: ${remolquesLength}`);
 
-    if (remolquesLength<2) {
+    if (remolquesLength<3) {
       JsonStructureCFDI["cfdi:Comprobante"]["cfdi:Complemento"]["cartaporte20:CartaPorte"]["cartaporte20:Mercancias"]["cartaporte20:Autotransporte"]["cartaporte20:Remolques"] = {
         "cartaporte20:Remolque": [], // puede tener 0-2 remolques
       };
@@ -425,23 +419,65 @@ async function createXmlCtrl(req, res) {
   
       for (let i = 0; i < remolquesLength; i++) {
         const remolque = remolques[i];
-        // Perform the action for teach mercancia" equal to "Origen"
         console.log(`Pushing remolque number ${i}: ${remolque}`);
         remolquesArray.push(
           
           { // Mercancia properties here
+            $: {
             Placa: `${remolques[i].st_Placa}`,
             SubTipoRem: `${remolques[i].st_ClaveRemolque}`,
+            }
           }
           )
       };
     }else if(remolquesLength==0){
       console.log("There are no remolques to add.")
     }else{
-      throw new Error(`Fixed ERROR: You can only a maximum of 2 remolques, you're tring to add ${remolquesLength} remolques. `)
-      
+      throw new Error(`Fixed ERROR: You can only a maximum of 2 remolques, you're tring to add ${remolquesLength + 1} remolques. `)
     }
       
+
+    
+    var TiposFiguraArray =
+    JsonStructureCFDI["cfdi:Comprobante"]["cfdi:Complemento"][
+      "cartaporte20:CartaPorte"
+    ]["cartaporte20:FiguraTransporte"]["cartaporte20:TiposFigura"];
+  const TiposFigura = req.body.FiguraTransporte;
+  
+  console.log(`this is the domicilio of figura transport ${JSON.stringify(req.body.FiguraTransporte[0].Domicilio)}`);
+  
+  if (req.body.FiguraTransporte[0].Domicilio) {
+    const tipoAutotransporte = req.body.FiguraTransporte[0].Domicilio;
+  
+    console.log("it exists a domicilio");
+  
+    TiposFiguraArray.push({
+      $: {
+        TipoFigura: `${TiposFigura[0].id_TipoFigura}`,
+        RFCFigura: `${TiposFigura[0].RFCFigura}`,
+        NumLicencia: `${TiposFigura[0].NumLicencia}`,
+      },
+      "cartaporte20:Domicilio": {
+        $: {
+          Calle: `${TiposFigura[0].Domicilio.Calle}`,
+          Municipio: `${TiposFigura[0].Domicilio.Municipio}`,
+        }
+      }
+    });
+  } else {
+    console.log(`Pushing TiposFigura number`);
+    TiposFiguraArray.push({
+      $: {
+        TipoFigura: `${TiposFigura[0].id_TipoFigura}`,
+        RFCFigura: `${TiposFigura[0].RFCFigura}`,
+        NumLicencia: `${TiposFigura[0].NumLicencia}`,
+      }
+    });
+  }
+  
+
+
+
 
 
     var xmlRaw = builder.buildObject(JsonStructureCFDI, options);
