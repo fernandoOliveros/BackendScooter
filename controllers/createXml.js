@@ -42,6 +42,50 @@ const {
 var fs = require("fs");
 const moment = require("moment"); // Install the moment library to format the date and time
 
+
+async function validate_DomicilioFigura(id_Operador){
+  try {
+    let query =
+      `SELECT tbl_dir_operadores.id_Dir_Operador FROM tbl_operadores
+      LEFT JOIN tbl_dir_operadores on tbl_dir_operadores.id_Operador = tbl_operadores.id_Operador
+       WHERE tbl_operadores.id_Operador = :id`;
+    let id_Domicilio = await sequelize.query(query, {
+      replacements: { id: `${id_Operador}` },
+      type: QueryTypes.SELECT,
+    });
+    // Process the query result
+    console.log(`id_Domicilio lenght is ${id_Domicilio.length}`); // Access the returned rows
+    return id_Domicilio.length;
+    
+  } catch (error) {
+    console.error('Error querying SQL table tbl_unidades:', error);
+    
+  }
+}
+
+async function getAutotransporteInfo(){
+  try {
+    let query =
+      `SELECT st_PermisoSCT, st_PermisoSCT FROM tbl_unidades LEFT JOIN WHERE id_Localidad = :id`;
+    let c_localidad = await sequelize.query(query, {
+      replacements: { id: `${id_localidad}` },
+      type: QueryTypes.SELECT,
+    });
+    // Process the query result
+    console.log(`c_localidad is ${c_localidad}`); // Access the returned rows
+
+    let firstRowValue = c_localidad[0].c_Localidad;
+    console.log(`First row value: ${firstRowValue}`);
+    return firstRowValue;
+    
+  } catch (error) {
+    console.error('Error querying SQL table tbl_unidades:', error);
+    
+  }
+}
+
+
+
 async function createTimestampedXmlFile(xml) {
   //var timestamp = Date.now();
   const timestamp = moment().subtract(1, "hour").format("YYYY-MM-DD_HH-mm-ss");
@@ -157,7 +201,57 @@ async function getCodigoPostal(id_codigopostal){
 
 
 
+async function getIdTipoFigura(id_TipoFigura){
+  try {
+    // Query catalog of tipos de figura by the id given on the postman request
+    let query =
+      `SELECT st_ClaveFiguraTransporte FROM cat_tipofigura WHERE id_TipoFigura = :id`;
+    let st_ClaveFiguraTransporte_query_result = await sequelize.query(query, {
+      replacements: { id: `${id_TipoFigura}` },
+      type: QueryTypes.SELECT,
+    });
+    
+    // Process the query result
+    let firstRowValue_TipoFigura = st_ClaveFiguraTransporte_query_result[0].st_ClaveFiguraTransporte;
+    return firstRowValue_TipoFigura;
+  } catch (error) {
+    throw new Error(`Fixed ERROR: Failed to query the catalog cat_tipofigura: ${error.message}\nsurely you're inserting an id that doesn't match the ids on the catalog`);
+  }
+}
 
+
+
+async function getOperadorInformation(id_Operador){
+  try {
+    let query =
+    `SELECT tbl_operadores.*, cat_tipofigura.st_ClaveFiguraTransporte, cat_estado.c_Estado, cat_estado.c_Pais,
+    cat_municipio.c_Municipio , tbl_dir_operadores.c_codigoPostal,tbl_dir_operadores.st_Calle, 
+    cat_colonia.c_colonia, cat_localidad.c_Localidad
+    FROM tbl_operadores
+    LEFT JOIN cat_tipofigura on tbl_operadores.id_TipoFigura= cat_tipofigura.id_TipoFigura
+    LEFT JOIN tbl_dir_operadores on tbl_dir_operadores.id_Operador = tbl_operadores.id_Operador
+    LEFT JOIN cat_estado ON tbl_dir_operadores.id_Estado = cat_estado.id_Estado
+    LEFT JOIN  cat_municipio ON tbl_dir_operadores.id_Municipio = cat_municipio.id_Municipio
+    LEFT JOIN  cat_colonia ON tbl_dir_operadores.id_Colonia = cat_colonia.id_Colonia
+    LEFT JOIN  cat_localidad ON tbl_dir_operadores.id_Localidad = cat_localidad.id_Localidad
+    WHERE tbl_operadores.id_Operador = :id `;
+
+    const [OperadorInformation] = await sequelize.query(query, {
+      replacements: { id: `${id_Operador}` },
+      type: QueryTypes.SELECT,
+    });    
+
+    console.log(`query inside the function operadorinfo ${JSON.stringify(OperadorInformation)} end of query \n\n end`)
+    // Process the query result
+    return OperadorInformation;
+
+  } catch (error) {
+    throw new Error(`Fixed ERROR: Failed to query the catalog tbl_operadores: ${error.message}\nsurely you're inserting an id that doesn't match `);
+    
+  }
+
+
+}
 
 
 async function createXmlCtrl(req, res) {
@@ -444,7 +538,6 @@ async function createXmlCtrl(req, res) {
               Estado: `${await getEstado(ubicaciones[i].Domicilio.id_Estado)}`,
               Pais: "MEX",
               CodigoPostal: `${await getCodigoPostal(ubicaciones[i].Domicilio.c_codigoPostal)}`,
-
             },
           }
         });
@@ -541,39 +634,51 @@ async function createXmlCtrl(req, res) {
     ]["cartaporte20:FiguraTransporte"]["cartaporte20:TiposFigura"];
   const TiposFigura = req.body.FiguraTransporte;
   
-  console.log(`this is the domicilio of figura transport ${JSON.stringify(req.body.FiguraTransporte[0].Domicilio)}`);
+  //console.log(`this is the domicilio of figura transport ${JSON.stringify(req.body.FiguraTransporte[0].Domicilio)}`);
   
-  if (req.body.FiguraTransporte[0].Domicilio) {
-    const tipoAutotransporte = req.body.FiguraTransporte[0].Domicilio;
+  let validateLength_DomicilioFigura = await validate_DomicilioFigura(TiposFigura[0].id_Operador);
+  let OperadorInformation =  await getOperadorInformation(TiposFigura[0].id_Operador);
+
+  console.log(`this is operador info ${JSON.stringify(OperadorInformation)}`);
+
+  if (validateLength_DomicilioFigura > 0) {
+    console.log("it exists a domicilio of Operador");
   
-    console.log("it exists a domicilio");
-  
+    //const tipoAutotransporte = req.body.FiguraTransporte[0].Domicilio;
+    //let id_tipoFiguraOperador = await getIdTipoFigura(TiposFigura[0].id_TipoFigura);    
+
+    const NombreFigura = OperadorInformation.st_Nombre;
+    const RFCFigura = OperadorInformation.st_RFC; 
+
     TiposFiguraArray.push({
       $: {
-        TipoFigura: `${TiposFigura[0].id_TipoFigura}`,
-        RFCFigura: `${TiposFigura[0].RFCFigura}`,
-        NumLicencia: `${TiposFigura[0].NumLicencia}`,
+        TipoFigura: `${OperadorInformation.st_ClaveFiguraTransporte}`,
+        RFCFigura: `${RFCFigura}`,
+        NumLicencia: `${OperadorInformation.st_NumLicencia}`,
+        NombreFigura: `${NombreFigura} ${ OperadorInformation.st_ApellidoP} ${ OperadorInformation.st_ApellidoM}`,
       },
       "cartaporte20:Domicilio": {
         $: {
-          Calle: `${TiposFigura[0].Domicilio.Calle}`,
-          Municipio: `${await getMunicipio(TiposFigura[0].Domicilio.id_Municipio)}`,
-          Estado: `${await getEstado(TiposFigura[0].Domicilio.id_Estado)}`,
-          
-          Colonia: `${await getColonia(TiposFigura[0].Domicilio.id_Colonia)}`,
-          Localidad: `${await getLocalidad(TiposFigura[0].Domicilio.id_Localidad)}`,
-          CodigoPostal: `${await getCodigoPostal(TiposFigura[0].Domicilio.id_CodigoPostal)}`
-              
+          Calle: `${OperadorInformation.st_Calle}`,
+          Municipio: `${OperadorInformation.c_Municipio}`,
+          Estado: `${OperadorInformation.c_Estado}`,
+          Pais: `${OperadorInformation.c_Pais}`,
+          Colonia: `${OperadorInformation.c_colonia}`,
+          Localidad: `${OperadorInformation.c_Localidad}`,
+          CodigoPostal: `${OperadorInformation.c_codigoPostal}`
         }
       }
     });
   } else {
     console.log(`Pushing TiposFigura number`);
+
     TiposFiguraArray.push({
       $: {
-        TipoFigura: `${TiposFigura[0].id_TipoFigura}`,
-        RFCFigura: `${TiposFigura[0].RFCFigura}`,
-        NumLicencia: `${TiposFigura[0].NumLicencia}`,
+        TipoFigura: `${OperadorInformation.st_ClaveFiguraTransporte}`,
+        RFCFigura: `${OperadorInformation.st_RFC}`,
+        NumLicencia: `${OperadorInformation.st_NumLicencia}`,
+        NombreFigura: `${NombreFigura} ${ OperadorInformation.st_ApellidoP} ${ OperadorInformation.st_ApellidoM}`,
+      
       }
     });
   }
@@ -584,7 +689,7 @@ async function createXmlCtrl(req, res) {
 
 
     var xmlRaw = builder.buildObject(JsonStructureCFDI, options);
-    console.log(`this is generated raw XML${xmlRaw}`);
+    //console.log(`this is generated raw XML${xmlRaw}`);
 
     let xmlFileName = await createTimestampedXmlFile(xmlRaw);
 
