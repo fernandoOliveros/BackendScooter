@@ -63,27 +63,25 @@ async function validate_DomicilioFigura(id_Operador){
   }
 }
 
-async function getAutotransporteInfo(){
+async function getAutotransporteInfo(id_Unidad){
   try {
     let query =
-      `SELECT st_PermisoSCT, st_PermisoSCT FROM tbl_unidades LEFT JOIN WHERE id_Localidad = :id`;
-    let c_localidad = await sequelize.query(query, {
-      replacements: { id: `${id_localidad}` },
+      `SELECT tbl_unidades.*, cat_tipopermiso.st_Clave  FROM tbl_unidades
+      LEFT JOIN cat_tipopermiso ON tbl_unidades.id_TipoPermiso = cat_tipopermiso.id_TipoPermiso
+      WHERE tbl_unidades.id_Unidad = :id `;
+
+    let UnidadInformation = await sequelize.query(query, {
+      replacements: { id: `${id_Unidad}` },
       type: QueryTypes.SELECT,
     });
     // Process the query result
-    console.log(`c_localidad is ${c_localidad}`); // Access the returned rows
-
-    let firstRowValue = c_localidad[0].c_Localidad;
-    console.log(`First row value: ${firstRowValue}`);
-    return firstRowValue;
+    return UnidadInformation;
     
   } catch (error) {
     console.error('Error querying SQL table tbl_unidades:', error);
     
   }
 }
-
 
 
 async function createTimestampedXmlFile(xml) {
@@ -241,7 +239,7 @@ async function getOperadorInformation(id_Operador){
       type: QueryTypes.SELECT,
     });    
 
-    console.log(`query inside the function operadorinfo ${JSON.stringify(OperadorInformation)} end of query \n\n end`)
+//    console.log(`query inside the function operadorinfo ${JSON.stringify(OperadorInformation)} end of query \n\n end`)
     // Process the query result
     return OperadorInformation;
 
@@ -288,6 +286,14 @@ async function createXmlCtrl(req, res) {
     //const id_DomicilioFiscalReceptor = body.id_DomicilioFiscalReceptor;
     //1 de diciembre de 2022 3 de julio de 2023
     //console.log("dec_TotalDistRec", dec_TotalDistRec);
+
+    const Autotransporte = req.body.Mercancias[0].Autotransporte;
+  
+    console.log(`Autotransporte ${JSON.stringify(Autotransporte)} end of query \n\n end`)
+      
+    let UnidadInformation =  await getAutotransporteInfo(Autotransporte.id_Unidad);
+    
+    console.log(`query inside the function unidadinformation ${JSON.stringify(UnidadInformation)} end of query \n\n end`)
 
     /******QUERYING DATA RECEIVED FROM JSON, TO POST REAL VALUES ON XML******/
     let st_TipoComprobante = await tiposComprobantesModel.findOne({
@@ -443,15 +449,15 @@ async function createXmlCtrl(req, res) {
               "cartaporte20:Mercancia": [],
               "cartaporte20:Autotransporte": {
                 $: {
-                  PermSCT: `test`,
-                  NumPermisoSCT: "NumPermisoSCT"
+                  PermSCT: `${UnidadInformation[0].st_Clave}`,
+                  NumPermisoSCT: `${UnidadInformation[0].st_PermisoSCT}`
                 },
 
                 "cartaporte20:IdentificacionVehicular": {
                   $: {
-                    ConfigVehicular: "VL",
-                    PlacaVM: "plac892",
-                    AnioModeloVM: "2020",
+                    ConfigVehicular: `${UnidadInformation[0].st_Clave}`,
+                    PlacaVM: `${UnidadInformation[0].st_Placa}`,
+                    AnioModeloVM: `${UnidadInformation[0].st_Anio}`,
                   },
                 },
 
@@ -639,7 +645,7 @@ async function createXmlCtrl(req, res) {
   let validateLength_DomicilioFigura = await validate_DomicilioFigura(TiposFigura[0].id_Operador);
   let OperadorInformation =  await getOperadorInformation(TiposFigura[0].id_Operador);
 
-  console.log(`this is operador info ${JSON.stringify(OperadorInformation)}`);
+  //console.log(`this is operador info ${JSON.stringify(OperadorInformation)}`);
 
   if (validateLength_DomicilioFigura > 0) {
     console.log("it exists a domicilio of Operador");
