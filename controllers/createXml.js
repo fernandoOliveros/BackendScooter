@@ -41,6 +41,7 @@ const {
 /******Install the fs  library to  create the file cfdi_YYYY-MM-DD_HH-mm-ss.xml*********/
 var fs = require("fs");
 const moment = require("moment"); // Install the moment library to format the date and time
+const { cfdiModel } = require("../models");
 
 
 async function validate_DomicilioFigura(id_Operador){
@@ -251,18 +252,40 @@ async function getOperadorInformation(id_Operador){
 
 }
 
+// function to update table tbl_cfdi on st_nombreCrudoXML column with the name of the raw XML to stamp  
+async function updateTableCFDI(xmlFileName, id_CFDI_database){
+  try {
+    let query =
+    `UPDATE tbl_cfdi  SET  st_nombreCrudoXML= :xmlFileName WHERE id_CFDI= :id ;` ;
+    const OperadorInformation = await sequelize.query(query, {
+      replacements: { 
+        //st_nombreCrudoXML: `${xmlFileName}`,
+        xmlFileName,
+                    id: `${id_CFDI_database}`},
+      type: QueryTypes.UPDATE,
+    });    
 
+    
+  } catch (error) {
+    console.log("Unable to update the tbl_cfdi table", error)
+  }
+} 
+
+
+    /******GETTING VARIABLES VALUES BY ID, SENT BY JSON POST ******/
 async function createXmlCtrl(req, res) {
   try {
-    /******GETTING VARIABLES VALUES BY ID, SENT BY JSON POST ******/
     //const body =req.body;
     const body = req.body; //la data del request venga curada
+    const id_CFDI_database = req.id_CFDI_database;
 
-    console.log(
-      "THIS IS THE BODY AT createXmlCtrl",
-      body,
-      "ending body request at createXmlCtrl"
-    );
+
+   console.log(`Fixed ERROR: Failed to query the catalog tbl_operadores: ${id_CFDI_database}\n`)
+    // console.log(
+    //   "THIS IS THE BODY AT createXmlCtrl",
+    //   body,
+    //   "ending body request at createXmlCtrl"
+    // );
 
     const st_RFC_emisor = body.st_RFC_emisor;
     const st_RFC_receptor = body.st_RFC_receptor;
@@ -280,12 +303,11 @@ async function createXmlCtrl(req, res) {
     const i_Importe = body.i_Importe;
     const dec_TotalDistRec = body.dec_TotalDistRec;
     const st_RemitenteRFC = body.st_RemitenteRFC;
-    const date_FechaSalida = body.date_FechaSalida;
-    const st_DestinatarioRFC = body.st_DestinatarioRFC;
-    const st_FechaHoraLlegada = body.st_FechaHoraLlegada;
-    //const id_DomicilioFiscalReceptor = body.id_DomicilioFiscalReceptor;
-    //1 de diciembre de 2022 3 de julio de 2023
-    //console.log("dec_TotalDistRec", dec_TotalDistRec);
+    //TO DELETE??
+    //const date_FechaSalida = body.date_FechaSalida;
+    //const st_DestinatarioRFC = body.st_DestinatarioRFC;
+    //const st_FechaHoraLlegada = body.st_FechaHoraLlegada;
+
 
     const Autotransporte = req.body.Mercancias[0].Autotransporte;
   
@@ -698,6 +720,9 @@ async function createXmlCtrl(req, res) {
     //console.log(`this is generated raw XML${xmlRaw}`);
 
     let xmlFileName = await createTimestampedXmlFile(xmlRaw);
+    updateTableCFDI(xmlFileName.slice(0, -4), id_CFDI_database)
+    //const cfdi = await cfdiModel.find(body);
+
 
     handleHttpResponse(res, {
       xmlRaw: `${xmlRaw}`,

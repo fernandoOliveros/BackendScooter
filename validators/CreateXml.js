@@ -5,7 +5,7 @@ const validateResults = require("../utils/handleValidator");
  * Esto es un Middleware
  */
 
-console.log();
+
 const validatorXml = [
   /***VALIDATE CFDI FIELDS */
   check("st_RFC_emisor").exists(), //comrpueba si existe
@@ -30,7 +30,6 @@ const validatorXml = [
   check("Ubicaciones.1.st_FechaHoraLlegada").exists(), //CHECAR QUE SEA DECIMAL
   (req, res, next) => {
     console.log("validatorXml test");
-
     return validateResults(req, res, next);
   },
 ];
