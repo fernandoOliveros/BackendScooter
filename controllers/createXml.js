@@ -721,6 +721,7 @@ async function createXmlCtrl(req, res) {
 
     let xmlFileName = await createTimestampedXmlFile(xmlRaw);
     updateTableCFDI(xmlFileName.slice(0, -4), id_CFDI_database)
+    
     //const cfdi = await cfdiModel.find(body);
 
 
