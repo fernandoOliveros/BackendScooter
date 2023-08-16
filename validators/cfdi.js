@@ -1,7 +1,7 @@
 const { check, validationResult } = require("express-validator");
 
 
-console.log("entering the cfdi validator")
+//console.log("entering the cfdi validator")
 
 const validatorCreateCFDI = [
   check("id_Empresa").notEmpty(),
