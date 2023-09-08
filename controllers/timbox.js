@@ -24,39 +24,6 @@ const StampService = require('sw-sdk-nodejs').StampService; //Libreria para timb
  * @param {*} res   Query de la operacion
  */
 
-// const timboxAuthenticateCtrl = async (req, res) => {
-//   try {
-
-//     console.log(`Authenticating ${user}\n psswd: ${password}\nurl: ${url} ...`)
-//     let obj = {
-//       url : `${url}`,
-//       user: `${user}`,
-//       password: `${password}`,
-//     }
-    
-//     let auth = Authentication.auth(obj);
-    
-//     let callback = (err, data) => {
-//       if(err) {
-//         console.log(err)
-//       } else{
-//         console.log(data)
-//         console.log("Successfully authenticated on Timbox")
-//         let dataToken = data;
-//         handleHttpResponse(res, data);
-
-//       }
-//     };
-//     auth.Token(callback);
-    
-//   } catch (e) {
-//     console.log(e);
-//     handleHttpError(res, "ERROR_Authenticating_Timbox_Credentials");
-//   }
-// };
-
-
-
 
 
 async function timbrarXML_Ctrl(req, res) {
@@ -97,7 +64,7 @@ async function timbrarXML_Ctrl(req, res) {
           }
         };
         let xml = contents;
-        let generatedToken = "T2lYQ0t4L0RHVkR4dHZ5Nkk1VHNEakZ3Y0J4Nk9GODZuRyt4cE1wVm5tbXB3YVZxTHdOdHAwVXY2NTdJb1hkREtXTzE3dk9pMmdMdkFDR2xFWFVPUTQyWFhnTUxGYjdKdG8xQTZWVjFrUDNiOTVrRkhiOGk3RHladHdMaEM0cS8rcklzaUhJOGozWjN0K2h6R3gwQzF0c0g5aGNBYUt6N2srR3VoMUw3amtvPQ.T2lYQ0t4L0RHVkR4dHZ5Nkk1VHNEakZ3Y0J4Nk9GODZuRyt4cE1wVm5tbFlVcU92YUJTZWlHU3pER1kySnlXRTF4alNUS0ZWcUlVS0NhelhqaXdnWTRncklVSWVvZlFZMWNyUjVxYUFxMWFxcStUL1IzdGpHRTJqdS9Zakw2UGQ1MmJPVW1nQ2J3NDk0Tys0ZmorOUlmSjBncDR3UnRpTzBnNUd5UUVDUG5VZGNsR0dYM1hnb3QvQmo0dDFGb3JFeWlPbkVaeWhualVFaVp2aStaOWkycXBWWno3ZG1QTlphdTN6YldzOGJpSnJOMDVnb252bThPQ1g3TTBoemhnTnlXYWZyRENOWEx3STFjbm9WZ3hSSml3TDFyNWo4bDhRcGRMTmdOU3pMeVJDUnlydVh4SFQzRGZ5dEp0c3JGRTBiY25pQ2tJRlh2Sm9Fb1NOS2ZqS0Nic1VCUkJjVmVKN2ROYWtQdHBBdnN3Z3F4VGF6MktrQWRpcExlOFhFVTlmL0pYVEFqQUV2cmVSZjQ5Znh0azdsZWtvSGdLcld0SnpYRFptbGZJeGlyUGhCdWdSWnBYUE42T01MNDY0bEJHL0E1Y1JyUGc4YW9xa3MwWHpVZHNzbERuMG9icG1uUHVoREVvdkNLejRHVTRRV0l6OHdWU0FSQVMyeFZhUVNSZ3Z0YW1oS28yZ3BsVDVaUDNod2phVVJ3PT0.qKssaiuXRMEbdNx-_dXGoTRtnLKPRg78OidoMWm1gxk"
+        let generatedToken = "T2lYQ0t4L0RHVkR4dHZ5Nkk1VHNEakZ3Y0J4Nk9GODZuRyt4cE1wVm5tbXB3YVZxTHdOdHAwVXY2NTdJb1hkREtXTzE3dk9pMmdMdkFDR2xFWFVPUTQyWFhnTUxGYjdKdG8xQTZWVjFrUDNiOTVrRkhiOGk3RHladHdMaEM0cS8rcklzaUhJOGozWjN0K2h6R3gwQzF0c0g5aGNBYUt6N2srR3VoMUw3amtvPQ.T2lYQ0t4L0RHVkR4dHZ5Nkk1VHNEakZ3Y0J4Nk9GODZuRyt4cE1wVm5tbFlVcU92YUJTZWlHU3pER1kySnlXRTF4alNUS0ZWcUlVS0NhelhqaXdnWTRncklVSWVvZlFZMWNyUjVxYUFxMWFxcStUL1IzdGpHRTJqdS9Zakw2UGQ1MmJPVW1nQ2J3NDk0Tys0ZmorOUlmSjBncDR3UnRpTzBnNUd5UUVDUG5VZGNsR0dYM1hnb3QvQmo0dDFGb3JFeWlPbkVaeWhualVFaVp2aStaOWkycXBWWno3ZG1QTlphdTN6YldzOGJpSnJOMDVnb252bThPQ1g3TTBoemhnTnlXYWZyRENOWEx3STFjbm9WZ3hSSml3TDFyNWo4bDhRcGRMTmdOU3pMeVJDUnlydVh4SFQzRGZ5dEp0c3JGRTBiY25pQ2tJRlh2Sm9Fb1NOS2ZqS0Nic1VCUkJjVmVKN2ROYWtQdHBBdnN3Z3F4VGF6MktrQWRpcExlOFhFVTlmZ240OVZzNGttK0tZL2Q4RHVVNWd5cGs2ZzF2K2VKRERjczQxMlJLYmpkMFBmWlRmemJjWTdRQzgwRGhRREJNZExZRGc5T09uTUZxVnR2RDZMTm45MDh4VEZhZWIwV21SbmYxTXhFTXVGbnhTQXNLY3MzSmp5dGdMbGgwSk1zTHFVRlM2Qlp2OHVNVnR2RldaUzl2bkpRPT0.pJHa8xo4QhF9Lf-u8SKxc6KSnGLz3jwD4zGXrG1cXUU"
         let params = { url : `${url}`, token: generatedToken }; // Set the appropriate parameters
         let stamp = StampService.Set(params);
         stamp.StampV4(xml, callback);

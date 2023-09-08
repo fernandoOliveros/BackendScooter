@@ -48,10 +48,12 @@ const Viaje = sequelize.define(
     createdAt: {
       type: DataTypes.DATE,
       allowNull: false,
+      defaultValue: sequelize.literal('CURRENT_TIMESTAMP'), // Use the current timestamp as the default value
     },
+
   },
   {
-    timestamps: false,
+    timestamps: false, // Set timestamps option to false
     tableName: "tbl_viaje",
   }
 );
