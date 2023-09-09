@@ -84,6 +84,29 @@ async function getAutotransporteInfo(id_Unidad){
   }
 }
 
+async function getRemolqueInfo(id_Remolque){
+  try {
+    let query =
+      `SELECT tbl_remolques.st_Placa, cat_tiporemolque.st_ClaveRemolque  FROM tbl_remolques
+      LEFT JOIN cat_tiporemolque 
+      ON tbl_remolques.id_TipoRemolque = cat_tiporemolque.id_TipoRemolque
+      WHERE tbl_remolques.id_Remolque = :id `;
+
+    let RemolqueInformation = await sequelize.query(query, {
+      replacements: { id: `${id_Remolque}` },
+      type: QueryTypes.SELECT,
+    });
+    // Process the query result
+    //console.log(RemolqueInformation)
+    return RemolqueInformation;
+  } catch (error) {
+    console.error('Error querying SQL table tbl_remolques:', error);
+    
+  }
+}
+
+
+
 
 async function createTimestampedXmlFile(xml) {
   //var timestamp = Date.now();
@@ -110,13 +133,55 @@ async function getLocalidad(id_localidad){
       type: QueryTypes.SELECT,
     });
     // Process the query result
-    console.log(`c_localidad is ${c_localidad}`); // Access the returned rows
+    // console.log(`c_localidad is ${c_localidad}`); // Access the returned rows
 
     let firstRowValue = c_localidad[0].c_Localidad;
-    console.log(`First row value: ${firstRowValue}`);
+    // console.log(`First row value: ${firstRowValue}`);
     return firstRowValue;
   } catch (error) {
     console.error('Error querying SQL table:', error);
+  }
+}
+async function getClaveProdServCFDI(id_ClaveProdServCFDI){
+  try {
+    console.log("Entering getClaveProdServCFDI")
+    let query =
+      `SELECT c_ClaveProdServ FROM cat_cfdi_prodserv WHERE id_ClaveProdServCFDI = :id`;
+    let c_ClaveProdServCFDI = await sequelize.query(query, {
+      replacements: { id: `${id_ClaveProdServCFDI}` },
+      type: QueryTypes.SELECT,
+    });
+
+    console.log(`c_ClaveProdServCFDI is ${c_ClaveProdServCFDI}`); // Access the returned rows
+
+    let firstRowValue = c_ClaveProdServCFDI[0].c_ClaveProdServ;
+
+    console.log(`First row value c_ClaveProdServCFDI: ${firstRowValue}`);
+    return firstRowValue;
+  } catch (e) {
+    console.error('Error querying SQL table cat_cfdi_prodserv:', e);
+
+  }
+}
+
+async function getClaveUnidad(id_ClaveUnidadPeso){
+  try {
+    // Query the SQL table
+
+    let query =
+      `SELECT st_ClaveUnidad FROM cat_claveunidadpeso WHERE id_ClaveUnidadPeso = :id`;
+    let st_ClaveUnidad = await sequelize.query(query, {
+      replacements: { id: `${id_ClaveUnidadPeso}` },
+      type: QueryTypes.SELECT,
+    });
+    // Process the query result
+    console.log(`st_ClaveUnidad is ${st_ClaveUnidad}`); // Access the returned rows
+
+    let firstRowValue = st_ClaveUnidad[0].st_ClaveUnidad;
+    console.log(`First row value: ${firstRowValue}`);
+    return firstRowValue;
+  } catch (error) {
+    console.error('Error querying SQL table cat_claveunidadpeso:', error);
   }
 }
 
@@ -264,10 +329,25 @@ async function updateTableCFDI(xmlFileName, id_CFDI_database){
                     id: `${id_CFDI_database}`},
       type: QueryTypes.UPDATE,
     });    
-
-    
   } catch (error) {
     console.log("Unable to update the tbl_cfdi table", error)
+  }
+} 
+
+
+async function readCat_claveproductoservicio_CP(id_ClaveProducto){
+  try {
+    let query =
+    `SELECT st_ClaveProducto, st_DescripcionProducto  FROM cat_claveproductoservicio WHERE id_ClaveProducto= :id ;` ;
+    const ProductoServicioInformation = await sequelize.query(query, {
+      replacements: { 
+        id: `${id_ClaveProducto}`},
+      type: QueryTypes.SELECT,
+    });    
+    //console.log("ProductoServicioInformation query", ProductoServicioInformation)
+    return ProductoServicioInformation;
+  } catch (error) {
+    console.log("Unable to query the the CARTA PORTE cat_claveproductoservicio", error)
   }
 } 
 
@@ -303,7 +383,10 @@ async function createXmlCtrl(req, res) {
     const i_Importe = body.i_Importe;
     const dec_TotalDistRec = body.dec_TotalDistRec;
     const st_RemitenteRFC = body.st_RemitenteRFC;
-    //TO DELETE??
+    const c_ClaveProdServ = await getClaveProdServCFDI(body.id_ClaveProdServCFDI);
+    const st_ClaveUnidadPeso = await getClaveUnidad(body.id_ClaveUnidadPeso);
+    
+    
     //const date_FechaSalida = body.date_FechaSalida;
     //const st_DestinatarioRFC = body.st_DestinatarioRFC;
     //const st_FechaHoraLlegada = body.st_FechaHoraLlegada;
@@ -311,11 +394,11 @@ async function createXmlCtrl(req, res) {
 
     const Autotransporte = req.body.Mercancias[0].Autotransporte;
   
-    console.log(`Autotransporte ${JSON.stringify(Autotransporte)} end of query \n\n end`)
+    // console.log(`Autotransporte ${JSON.stringify(Autotransporte)} end of query \n\n end`)
       
     let UnidadInformation =  await getAutotransporteInfo(Autotransporte.id_Unidad);
     
-    console.log(`query inside the function unidadinformation ${JSON.stringify(UnidadInformation)} end of query \n\n end`)
+    //console.log(`query inside the function unidadinformation ${JSON.stringify(UnidadInformation)} end of query \n\n end`)
 
     /******QUERYING DATA RECEIVED FROM JSON, TO POST REAL VALUES ON XML******/
     let st_TipoComprobante = await tiposComprobantesModel.findOne({
@@ -431,10 +514,10 @@ async function createXmlCtrl(req, res) {
         "cfdi:Conceptos": [{
           "cfdi:Concepto": [{
             $: {
-              ClaveProdServ: "78101800",
+              ClaveProdServ: `${c_ClaveProdServ}`,
               NoIdentificacion: "UT421511",
               Cantidad: "1",
-              ClaveUnidad: "H87",
+              ClaveUnidad: `${st_ClaveUnidadPeso}`,
               Unidad: "Pieza",
               Descripcion: "Transporte de carga por carretera",
               ValorUnitario: "0.00",
@@ -519,6 +602,62 @@ async function createXmlCtrl(req, res) {
 
     console.log(`Length of Ubicaciones array: ${ubicacionesLength}`);
 
+    // for (let i = 0; i < ubicacionesLength; i++) {
+    //   const ubicacion = ubicaciones[i];
+    //   if (ubicacion.TipoUbicacion === "Origen") {
+    //     // Perform the action for "TipoUbicacion" equal to "Origen"
+    //     console.log(`Processing TipoUbicacion ${i} equal to 'Origen':`);
+    //     ubicacionesArray.push({
+    //       $: {
+    //         // Ubicacion properties here
+    //         TipoUbicacion: "Origen",
+    //         RFCRemitenteDestinatario: `${ubicaciones[i].st_RemitenteRFC}`,
+    //         FechaHoraSalidaLlegada: `${ubicaciones[i].date_FechaSalida}`,
+    //         NombreRemitenteDestinatario: `${ubicaciones[i].st_RemitenteNombre}`,
+    //       },
+    //       "cartaporte20:Domicilio": {
+    //         $: {
+    //           // Domicilio properties here
+    //           Calle: `${ubicaciones[i].Domicilio.st_Calle}`,
+    //           Colonia: `${await getColonia(ubicaciones[i].Domicilio.id_Colonia)}`,
+    //           Localidad: `${await getLocalidad(ubicaciones[i].Domicilio.id_Localidad)}`,
+    //           Municipio: `${await getMunicipio(ubicaciones[i].Domicilio.id_Municipio)}`,
+    //           Estado: `${await getEstado(ubicaciones[i].Domicilio.id_Estado)}`,
+    //           Pais: "MEX",
+    //           CodigoPostal: `${await getCodigoPostal(ubicaciones[i].Domicilio.c_codigoPostal)}`,
+    //         },
+    //       }
+    //     });
+    //   } else {
+    //     console.log(`Processing 'TipoUbicacion' ${i} equal to 'Destino'`);
+    //     ubicacionesArray.push({
+    //       $: {
+    //         // Ubicacion properties here
+            
+    //         TipoUbicacion: "Destino",
+    //         RFCRemitenteDestinatario: `${ubicaciones[i].st_DestinatarioRFC}`,
+    //         FechaHoraSalidaLlegada: `${ubicaciones[i].st_FechaHoraLlegada}`,
+    //         IDUbicacion: `DE00000${i}`,
+    //         DistanciaRecorrida: `${ubicaciones[i].DistanciaRecorrida}`,
+    //       },
+    //       "cartaporte20:Domicilio": {
+    //         $: {
+    //           // Domicilio properties here
+    //           Calle: `${ubicaciones[i].Domicilio.st_Calle}`,
+    //           Colonia: `${await getColonia(ubicaciones[i].Domicilio.id_Colonia)}`,
+    //           Localidad: `${await getLocalidad(ubicaciones[i].Domicilio.id_Localidad)}`,
+    //           Municipio: `${await getMunicipio(ubicaciones[i].Domicilio.id_Municipio)}`,
+    //           Estado: `${await getEstado(ubicaciones[i].Domicilio.id_Estado)}`,
+    //           Pais: "MEX",
+    //           CodigoPostal: `${await getCodigoPostal(ubicaciones[i].Domicilio.c_codigoPostal)}`,
+    //         },
+    //       }
+          
+    //     });
+    //   }
+    let origenCounter = 1;
+    let destinoCounter = 1;
+    
     for (let i = 0; i < ubicacionesLength; i++) {
       const ubicacion = ubicaciones[i];
       if (ubicacion.TipoUbicacion === "Origen") {
@@ -530,8 +669,9 @@ async function createXmlCtrl(req, res) {
             TipoUbicacion: "Origen",
             RFCRemitenteDestinatario: `${ubicaciones[i].st_RemitenteRFC}`,
             FechaHoraSalidaLlegada: `${ubicaciones[i].date_FechaSalida}`,
-            IDUbicacion: `${ubicaciones[i].st_IdUbicacion}`,
+            IDUbicacion: `OR${String(origenCounter).padStart(6, '0')}`,
             NombreRemitenteDestinatario: `${ubicaciones[i].st_RemitenteNombre}`,
+
           },
           "cartaporte20:Domicilio": {
             $: {
@@ -544,8 +684,9 @@ async function createXmlCtrl(req, res) {
               Pais: "MEX",
               CodigoPostal: `${await getCodigoPostal(ubicaciones[i].Domicilio.c_codigoPostal)}`,
             },
-          }
+          },
         });
+        origenCounter++;
       } else {
         console.log(`Processing 'TipoUbicacion' ${i} equal to 'Destino'`);
         ubicacionesArray.push({
@@ -554,6 +695,7 @@ async function createXmlCtrl(req, res) {
             TipoUbicacion: "Destino",
             RFCRemitenteDestinatario: `${ubicaciones[i].st_DestinatarioRFC}`,
             FechaHoraSalidaLlegada: `${ubicaciones[i].st_FechaHoraLlegada}`,
+            IDUbicacion: `DE${String(destinoCounter).padStart(6, '0')}`,
             DistanciaRecorrida: `${ubicaciones[i].DistanciaRecorrida}`,
           },
           "cartaporte20:Domicilio": {
@@ -567,21 +709,26 @@ async function createXmlCtrl(req, res) {
               Pais: "MEX",
               CodigoPostal: `${await getCodigoPostal(ubicaciones[i].Domicilio.c_codigoPostal)}`,
             },
-          }
+          },
         });
+        destinoCounter++;
       }
     }
+    
+      // for (i=0; i<=(ubicacionesLength); i++){
+      //   let ubicacion_id = ubicaciones[i];
+
+      //   ubicacionesArray.push({
+      //     $: {
+      //       IDUbicacion: `OR00000${i+1}`,
+      //     }
+      // }
+    //}
 
     var mercanciasArray =
       JsonStructureCFDI["cfdi:Comprobante"]["cfdi:Complemento"][
         "cartaporte20:CartaPorte"
       ]["cartaporte20:Mercancias"]["cartaporte20:Mercancia"];
-
-    var autotransporteArray =
-      JsonStructureCFDI["cfdi:Comprobante"]["cfdi:Complemento"][
-        "cartaporte20:CartaPorte"
-      ]["cartaporte20:Mercancias"]["cartaporte20:Autotransporte"];
-
 
 
       // const autotransportes = req.body.Mercancias.Autotransportes;
@@ -591,38 +738,53 @@ async function createXmlCtrl(req, res) {
 
     const mercancias = req.body.Mercancias;
     const mercanciasLength = mercancias.length;
-    console.log(`Length of Mercancias array: ${mercanciasLength}`);
-
+    //console.log(`\n\nLength of Mercancias array: ${mercanciasLength}`);
+    //console.log(mercancias)
+    let aux_counter_direccion=0;
     for (let i = 0; i < mercanciasLength; i++) {
-      const mercancia = mercancias[i];
+      let ID_DirOrigen=  ubicacionesArray[aux_counter_direccion]["$"]["IDUbicacion"];
+      let ID_DirDestino=  ubicacionesArray[aux_counter_direccion+1]["$"]["IDUbicacion"];
+      const mercancia_json_info = mercancias[i];
+      // console.log(mercancias[i])
+      //console.log(`Length of Mercancias[i] array: ${mercancias[i].length}`);
+    
+      const mercancia = await readCat_claveproductoservicio_CP(mercancias[i].id_ClaveProducto)
       // Perform the action for teach mercancia" equal to "Origen"
-      console.log(`Pushing mercancia number ${i}: ${mercancia}`);
+      let mercancia_queried = mercancia.pop()
+      // console.log(` mercancia lenght ${i}: ${mercancia.length}`);
+      // console.log(mercancia.pop())
+      let ClaveProducto = mercancia_queried.st_ClaveProducto
+      let DescripcionProducto = mercancia_queried.st_DescripcionProducto
+
+      // console.log("st_ClaveProducto", ClaveProducto)
       mercanciasArray.push({
         $: {
           // Mercancia properties here
-          BienesTransp: `${mercancias[i].BienesTransp}`,
-          Descripcion: `${mercancias[i].Descripcion}`,
-          Cantidad: `${mercancias[i].Cantidad}`,
-          ClaveUnidad: `${mercancias[i].ClaveUnidad}`,
-          PesoEnKg: `${mercancias[i].PesoEnKg}`,
-          MaterialPeligroso: `${mercancias[i].MaterialPeligroso}`,
+          BienesTransp: `${ClaveProducto}`,
+          Descripcion: `${DescripcionProducto}`, 
+          //Cantidad: `${ mercancia_json_info.Cantidad}`,
+          //ClaveUnidad: `${mercancias[i].ClaveUnidad}`,
+          //PesoEnKg: `${mercancias[i].PesoEnKg}`,
+          //MaterialPeligroso: `${mercancias[i].MaterialPeligroso}`,
         },
         "cartaporte20:CantidadTransporta": {
           $: {
             // Domicilio properties here
-            Cantidad: `${mercancias[i].CantidadTransporta.Cantidad}`,
-            IDOrigen: `${mercancias[i].CantidadTransporta.IDOrigen}`,
-            IDDestino: `${mercancias[i].CantidadTransporta.IDDestino}`,
+            Cantidad: `${mercancia_json_info.CantidadTransporta.Cantidad}`,
+            IDOrigen: `${ID_DirOrigen}`,
+            IDDestino: `${ID_DirDestino}`,
           },
         }
       })
+      aux_counter_direccion=aux_counter_direccion+2;
+      //console.log("\n\n", aux_counter_direccion)
     };
 
     const remolques = req.body.Mercancias[0].Autotransporte.Remolques;
-    console.log(`This is inside the remolques object: ${JSON.stringify(remolques)}`)
+    // console.log(`This is inside the remolques object: ${JSON.stringify(remolques)}`)
 
     const remolquesLength = remolques.length;
-    console.log(`Length of remolques array: ${remolquesLength}`);
+    // console.log(`Length of remolques array: ${remolquesLength}`);
 
     if (remolquesLength<3) {
       JsonStructureCFDI["cfdi:Comprobante"]["cfdi:Complemento"]["cartaporte20:CartaPorte"]["cartaporte20:Mercancias"]["cartaporte20:Autotransporte"]["cartaporte20:Remolques"] = {
@@ -636,14 +798,23 @@ async function createXmlCtrl(req, res) {
       ]["cartaporte20:Mercancias"]["cartaporte20:Autotransporte"]["cartaporte20:Remolques"]["cartaporte20:Remolque"];
   
       for (let i = 0; i < remolquesLength; i++) {
-        const remolque = remolques[i];
-        console.log(`Pushing remolque number ${i}: ${remolque}`);
+        //console.log(remolques[i].id_Remolque)
+        const remolqueInformation = await getRemolqueInfo(remolques[i].id_Remolque)
+        //const remolque = remolques[i];
+//        console.log(`Pushing remolque id ${i}: ${remolqueInformation}`);
+        //console.log(`remolqueInformation.length: ${remolqueInformation.length}`);
+
+        let tipo_remolque = remolqueInformation[0].st_ClaveRemolque;
+        // console.log("tipo_remolque", tipo_remolque)
+        let placa_remolque = remolqueInformation[0].st_Placa; 
+        // console.log("placa_remolque", placa_remolque)
+
         remolquesArray.push(
           
           { // Mercancia properties here
             $: {
-            Placa: `${remolques[i].st_Placa}`,
-            SubTipoRem: `${remolques[i].st_ClaveRemolque}`,
+            Placa: `${placa_remolque}`,
+            SubTipoRem: `${tipo_remolque}`,
             }
           }
           )

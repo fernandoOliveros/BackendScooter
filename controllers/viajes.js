@@ -69,6 +69,24 @@ const updateViajesCtrl = async (req, res) => {
 // };
 
 
+
+async function getLatestFolio(req, res){
+  try {
+    const id  = parseInt(req.params.id);
+    //console.log("id", id)
+    let query =
+        "SELECT max(`folio_int_viaje`) as `id_latest_folio`  from `tbl_viaje` WHERE `id_Empresa`=:id;";
+    const latest_folio_data = await sequelize.query(query, {
+        replacements: { id: `${id}` },
+        type: QueryTypes.SELECT,
+      });
+    let latest_folio = latest_folio_data.pop();
+    handleHttpResponse(res, latest_folio);
+  } catch (e) {
+    console.log("Probably wrong id_Empresa (inexistent)")
+  }
+}
+
 const deleteViajeCtrl = async (req, res) => {
   try {
     req = matchedData(req);
@@ -126,11 +144,29 @@ const readViajeEmpresaCtrl = async (req, res) => {
 };
 
 
+const readViajeCtrl = async (req, res) => {
+  try {
+    const id = parseInt(req.params.id)
+    const dataEmpresa = await viajeModel.findByPk(id);
+    if (!dataEmpresa) {
+      handleHttpError(res, `No existe viaje con id: ${id}`, 404);
+      return;
+    } else {
+      handleHttpResponse(res, dataEmpresa);
+    }
+  } catch (e) {
+    console.log(e);
+    handleHttpError(res, "ERROR_READ_viaje");
+  }
+};
+
+
 module.exports = {
   createViajeCtrl,
 //  readAllViajesCtrl,
-//  readViajeCtrl,
+ readViajeCtrl,
   updateViajesCtrl,
   deleteViajeCtrl,
-  readViajeEmpresaCtrl
+  readViajeEmpresaCtrl,
+  getLatestFolio
 };

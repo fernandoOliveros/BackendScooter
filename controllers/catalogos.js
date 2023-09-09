@@ -59,6 +59,25 @@ async function readProdServicioCFDICtrl(req, res) {
   }
 }
 
+
+async function readProdServicioCPCtrl(req, res) {
+  try {
+    let sqlQuery = "CALL readAllClaveProdServicioCP()";
+    const dataProdServicio = await sequelize.query(
+      sqlQuery,
+      true,
+      function (error, result) {
+        return result;
+      }
+    );
+    handleHttpResponse(res, dataProdServicio);
+  } catch (e) {
+    console.log(e);
+    handleHttpError(res, "ERROR_READ_readProdServicioCP");
+  }
+}
+
+
 async function readUsosCFDICtrl(req, res) {
   try {
     let sqlQuery = "CALL readAllUsosCFDI()";
@@ -96,6 +115,23 @@ async function readUnidadPesoCFDICtrl(req, res) {
   }
 }
 
+async function readMaterialesPeligrososCtrl(req, res) {
+  try {
+    let sqlQuery = "CALL 	readAllMaterialesPeligrosos()";
+    const dataProdServicio = await sequelize.query(
+      sqlQuery,
+      true,
+      function (error, result) {
+        return result;
+      }
+    );
+    handleHttpResponse(res, dataProdServicio);
+  } catch (e) {
+    console.log(e);
+    handleHttpError(res, "ERROR_READ_readMaterialesPeligrososCtrl-SERVICIO-CFDI");
+  }
+}
+
 
 async function readRegimenFiscalCFDICtrl(req, res) {
   try {
@@ -116,14 +152,14 @@ async function readRegimenFiscalCFDICtrl(req, res) {
 
 
 
-async function timbrarCFDICtrl (req, res){
-  try {
-    console.log("Timbrando...")
-  } catch (e) {
-    console.log(e);
-    handleHttpError(res, "ERROR_TIMBRAR_CFDI")
-  }
-}
+// async function timbrarCFDICtrl (req, res){
+//   try {
+//     console.log("Timbrando...")
+//   } catch (e) {
+//     console.log(e);
+//     handleHttpError(res, "ERROR_TIMBRAR_CFDI")
+//   }
+// }
 
 module.exports = {
   readMonedasCtrl,
@@ -133,5 +169,7 @@ module.exports = {
   readUnidadPesoCFDICtrl,
   readUsosCFDICtrl,
   readRegimenFiscalCFDICtrl,
-  timbrarCFDICtrl
+  // timbrarCFDICtrl,
+  readProdServicioCPCtrl,
+  readMaterialesPeligrososCtrl
 };
