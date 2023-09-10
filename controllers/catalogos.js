@@ -62,7 +62,7 @@ async function readProdServicioCFDICtrl(req, res) {
 
 async function readProdServicioCPCtrl(req, res) {
   try {
-    let sqlQuery = "SELECT * FROM cat_claveproductoservicio";
+    let sqlQuery = "SELECT * FROM cat_claveproductoservicio WHERE 1";
     const dataProdServicio = await sequelize.query(
       sqlQuery,
       true,
@@ -70,7 +70,7 @@ async function readProdServicioCPCtrl(req, res) {
         return result;
       }
     );
-    handleHttpResponse(res, dataProdServicio);
+    handleHttpResponse(res, dataProdServicio[0]);
   } catch (e) {
     console.log(e);
     handleHttpError(res, "ERROR_READ_readProdServicioCP");
@@ -168,15 +168,6 @@ async function readEmbalajesCtrl(req, res) {
 }
 
 
-
-// async function timbrarCFDICtrl (req, res){
-//   try {
-//     console.log("Timbrando...")
-//   } catch (e) {
-//     console.log(e);
-//     handleHttpError(res, "ERROR_TIMBRAR_CFDI")
-//   }
-// }
 
 module.exports = {
   readMonedasCtrl,

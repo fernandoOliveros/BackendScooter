@@ -46,6 +46,9 @@ const {
  */
 
 router.post("/create", validateCartaporte, createCartaPorteCtrl, validatorDirOrigenCartaPorte, createDireccionOrigenCPCtrl, validatorDirDestinoCartaPorte,createDireccionDestinoCPCtrl );
+
+
+
 //router.get("/read", readAllCARTA PORTECtrl);
 //router.get("/read/:id", validatorReadCARTA PORTE, readCARTA PORTECtrl);
 //router.put("/update/:id", [validatorCreateCARTA PORTE, validatorReadCARTA PORTE], updateCARTA PORTECtrl);

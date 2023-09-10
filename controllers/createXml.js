@@ -353,6 +353,7 @@ async function readCat_claveproductoservicio_CP(id_ClaveProducto){
 
 
     /******GETTING VARIABLES VALUES BY ID, SENT BY JSON POST ******/
+
 async function createXmlCtrl(req, res) {
   try {
     //const body =req.body;
@@ -386,11 +387,6 @@ async function createXmlCtrl(req, res) {
     const c_ClaveProdServ = await getClaveProdServCFDI(body.id_ClaveProdServCFDI);
     const st_ClaveUnidadPeso = await getClaveUnidad(body.id_ClaveUnidadPeso);
     
-    
-    //const date_FechaSalida = body.date_FechaSalida;
-    //const st_DestinatarioRFC = body.st_DestinatarioRFC;
-    //const st_FechaHoraLlegada = body.st_FechaHoraLlegada;
-
 
     const Autotransporte = req.body.Mercancias[0].Autotransporte;
   
@@ -401,12 +397,19 @@ async function createXmlCtrl(req, res) {
     //console.log(`query inside the function unidadinformation ${JSON.stringify(UnidadInformation)} end of query \n\n end`)
 
     /******QUERYING DATA RECEIVED FROM JSON, TO POST REAL VALUES ON XML******/
-    let st_TipoComprobante = await tiposComprobantesModel.findOne({
+    let c_TipoDeComprobante = await tiposComprobantesModel.findOne({
       where: {
         id_TipoComprobante
       },
-      attributes: ["st_TipoComprobante"],
+      attributes: ["c_TipoDeComprobante"],
     });
+
+    if (c_TipoDeComprobante=="T"){
+      console.log("c_TipoDeComprobante is traslado", c_TipoDeComprobante)
+    }else{
+      console.log("c_TipoDeComprobante is ingreso", c_TipoDeComprobante)
+    }
+
 
     let st_TipoMoneda = await tiposMonedasModel.findOne({
       where: {
@@ -457,7 +460,7 @@ async function createXmlCtrl(req, res) {
         and we can access the data values of each column using the dataValues property
     *****/
 
-    st_TipoComprobante = st_TipoComprobante.dataValues.st_TipoComprobante;
+    c_TipoDeComprobante = c_TipoDeComprobante.dataValues.c_TipoDeComprobante;
     st_TipoMoneda = st_TipoMoneda.dataValues.c_Moneda;
     c_RegimenFiscal_emisor = c_RegimenFiscal_emisor.dataValues.c_RegimenFiscal;
     c_RegimenFiscalReceptor = c_RegimenFiscalReceptor.dataValues.c_RegimenFiscal;
@@ -484,7 +487,7 @@ async function createXmlCtrl(req, res) {
           LugarExpedicion: st_LugarExpedicion, //Codigo postal
           NoCertificado: "XXXXXX", //NOS LO OTORGA EL SAT DESPUES DE TIMBRAR CFDI
           Sello: "XXXXXX", //NOS LO OTORGA EL SAT DESPUES DE TIMBRAR CFDI
-          TipoDeComprobante: st_TipoComprobante,
+          TipoDeComprobante: c_TipoDeComprobante,
           Version: "4.0",
           Exportacion: "01", //para CFDI de nomina o pago, siempre debe elegirse la clave 01 (significa NO APLICA)
           Moneda: st_TipoMoneda,
@@ -602,59 +605,6 @@ async function createXmlCtrl(req, res) {
 
     console.log(`Length of Ubicaciones array: ${ubicacionesLength}`);
 
-    // for (let i = 0; i < ubicacionesLength; i++) {
-    //   const ubicacion = ubicaciones[i];
-    //   if (ubicacion.TipoUbicacion === "Origen") {
-    //     // Perform the action for "TipoUbicacion" equal to "Origen"
-    //     console.log(`Processing TipoUbicacion ${i} equal to 'Origen':`);
-    //     ubicacionesArray.push({
-    //       $: {
-    //         // Ubicacion properties here
-    //         TipoUbicacion: "Origen",
-    //         RFCRemitenteDestinatario: `${ubicaciones[i].st_RemitenteRFC}`,
-    //         FechaHoraSalidaLlegada: `${ubicaciones[i].date_FechaSalida}`,
-    //         NombreRemitenteDestinatario: `${ubicaciones[i].st_RemitenteNombre}`,
-    //       },
-    //       "cartaporte20:Domicilio": {
-    //         $: {
-    //           // Domicilio properties here
-    //           Calle: `${ubicaciones[i].Domicilio.st_Calle}`,
-    //           Colonia: `${await getColonia(ubicaciones[i].Domicilio.id_Colonia)}`,
-    //           Localidad: `${await getLocalidad(ubicaciones[i].Domicilio.id_Localidad)}`,
-    //           Municipio: `${await getMunicipio(ubicaciones[i].Domicilio.id_Municipio)}`,
-    //           Estado: `${await getEstado(ubicaciones[i].Domicilio.id_Estado)}`,
-    //           Pais: "MEX",
-    //           CodigoPostal: `${await getCodigoPostal(ubicaciones[i].Domicilio.c_codigoPostal)}`,
-    //         },
-    //       }
-    //     });
-    //   } else {
-    //     console.log(`Processing 'TipoUbicacion' ${i} equal to 'Destino'`);
-    //     ubicacionesArray.push({
-    //       $: {
-    //         // Ubicacion properties here
-            
-    //         TipoUbicacion: "Destino",
-    //         RFCRemitenteDestinatario: `${ubicaciones[i].st_DestinatarioRFC}`,
-    //         FechaHoraSalidaLlegada: `${ubicaciones[i].st_FechaHoraLlegada}`,
-    //         IDUbicacion: `DE00000${i}`,
-    //         DistanciaRecorrida: `${ubicaciones[i].DistanciaRecorrida}`,
-    //       },
-    //       "cartaporte20:Domicilio": {
-    //         $: {
-    //           // Domicilio properties here
-    //           Calle: `${ubicaciones[i].Domicilio.st_Calle}`,
-    //           Colonia: `${await getColonia(ubicaciones[i].Domicilio.id_Colonia)}`,
-    //           Localidad: `${await getLocalidad(ubicaciones[i].Domicilio.id_Localidad)}`,
-    //           Municipio: `${await getMunicipio(ubicaciones[i].Domicilio.id_Municipio)}`,
-    //           Estado: `${await getEstado(ubicaciones[i].Domicilio.id_Estado)}`,
-    //           Pais: "MEX",
-    //           CodigoPostal: `${await getCodigoPostal(ubicaciones[i].Domicilio.c_codigoPostal)}`,
-    //         },
-    //       }
-          
-    //     });
-    //   }
     let origenCounter = 1;
     let destinoCounter = 1;
     
@@ -715,15 +665,6 @@ async function createXmlCtrl(req, res) {
       }
     }
     
-      // for (i=0; i<=(ubicacionesLength); i++){
-      //   let ubicacion_id = ubicaciones[i];
-
-      //   ubicacionesArray.push({
-      //     $: {
-      //       IDUbicacion: `OR00000${i+1}`,
-      //     }
-      // }
-    //}
 
     var mercanciasArray =
       JsonStructureCFDI["cfdi:Comprobante"]["cfdi:Complemento"][
@@ -756,26 +697,40 @@ async function createXmlCtrl(req, res) {
       let ClaveProducto = mercancia_queried.st_ClaveProducto
       let DescripcionProducto = mercancia_queried.st_DescripcionProducto
 
-      // console.log("st_ClaveProducto", ClaveProducto)
       mercanciasArray.push({
         $: {
           // Mercancia properties here
           BienesTransp: `${ClaveProducto}`,
           Descripcion: `${DescripcionProducto}`, 
-          //Cantidad: `${ mercancia_json_info.Cantidad}`,
-          //ClaveUnidad: `${mercancias[i].ClaveUnidad}`,
-          //PesoEnKg: `${mercancias[i].PesoEnKg}`,
-          //MaterialPeligroso: `${mercancias[i].MaterialPeligroso}`,
+          Cantidad: `${ mercancia_json_info.Cantidad}`,
+          ClaveUnidad: `${mercancias[i].ClaveUnidad}`,
+          PesoEnKg: `${mercancias[i].PesoEnKg}`,
+          MaterialPeligroso: `${mercancias[i].MaterialPeligroso}`,
         },
-        "cartaporte20:CantidadTransporta": {
-          $: {
-            // Domicilio properties here
-            Cantidad: `${mercancia_json_info.CantidadTransporta.Cantidad}`,
-            IDOrigen: `${ID_DirOrigen}`,
-            IDDestino: `${ID_DirDestino}`,
-          },
-        }
       })
+
+      // mercanciasArray.push({
+      //   $: {
+      //     // Mercancia properties here
+      //     BienesTransp: `${ClaveProducto}`,
+      //     Descripcion: `${DescripcionProducto}`, 
+      //     //Cantidad: `${ mercancia_json_info.Cantidad}`,
+      //     //ClaveUnidad: `${mercancias[i].ClaveUnidad}`,
+      //     //PesoEnKg: `${mercancias[i].PesoEnKg}`,
+      //     //MaterialPeligroso: `${mercancias[i].MaterialPeligroso}`,
+      //   },
+       
+      //   "cartaporte20:CantidadTransporta": {
+      //     $: {
+      //       // Domicilio properties here
+      //       Cantidad: `${mercancia_json_info.CantidadTransporta.Cantidad}`,
+      //       IDOrigen: `${ID_DirOrigen}`,
+      //       IDDestino: `${ID_DirDestino}`,
+      //     },
+       
+      //   }
+      // })
+
       aux_counter_direccion=aux_counter_direccion+2;
       //console.log("\n\n", aux_counter_direccion)
     };
