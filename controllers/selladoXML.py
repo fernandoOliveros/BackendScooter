@@ -10,6 +10,8 @@ from cryptography.hazmat.primitives.asymmetric import padding, utils
 
 import os
 import OpenSSL.crypto
+contents = os.listdir()
+
 
 current_working_directory=os.getcwd()
 print("Current working directory:", current_working_directory)
@@ -17,46 +19,48 @@ print("Current working directory:", current_working_directory)
 parent_directory = os.path.abspath(os.path.join(current_working_directory, ".."))
 print(f'parent_directory: {parent_directory}')
 
-xml_file_name="cfdi_2023-08-06_16-31-44"
+xml_file_name="cfdi_2023-09-09_15-36-41"
 
 def getCadenaOriginal():
-    # Load the XML source document and XSL stylesheet
-    
-    xml_file_path = r"C:\Users\dsczk\OneDrive\Documents\Proyecto X\Backend bueno\BackendScooter mysql\BackendScooter\storage\documentos\cfdi_2023-08-06_16-31-44.xml"
+    xml_file_path = "cfdi_2023-09-09_15-36-41.xml"
 
-    print(f'xml_file_name {xml_file_path}')
     try:
         xml_doc = etree.parse(xml_file_path)
-        # Now you can work with the parsed XML document
     except FileNotFoundError:
-        print(f"XML file not found {xml_file_name}.")
+        raise Exception(f"XML file not found {xml_file_name}")
+        exit(1)
     except etree.ParseError:
-        print(f"Error parsing XML {xml_file_name}.")
-    xsl_doc = etree.parse('http://www.sat.gob.mx/sitio_internet/cfd/4/cadenaoriginal_4_0/cadenaoriginal_4_0.xslt')
+        raise Exception(f"Error parsing XML {xml_file_name}")
+        exit(1)
 
-    # Create an XSLT transformer
-    transformer = etree.XSLT(xsl_doc)
+    # Rest of your code for XML transformation goes here
 
-    # Perform the transformation
-    result_tree = transformer(xml_doc)
+   
+    if xml_doc is not None:
+        xsl_doc = etree.parse('http://www.sat.gob.mx/sitio_internet/cfd/4/cadenaoriginal_4_0/cadenaoriginal_4_0.xslt')
 
-    # Convert the result tree to a string
-    result_str = str(result_tree)
+        # Create an XSLT transformer
+        transformer = etree.XSLT(xsl_doc)
 
-    # Save the transformed output to a text file
-    output_directory = os.path.join(parent_directory, "BackendScooter mysql", "BackendScooter", "storage", "cadenaOriginal")
-    output_file_path = os.path.join(output_directory, f'cadena_original_{xml_file_name}.txt')
-    output_file_path = os.path.normpath(output_file_path)  # Normalize the path
+        # Perform the transformation
+        result_tree = transformer(xml_doc)
 
-    with open(output_file_path, 'w', encoding='utf-8') as output_file:
-        output_file.write(result_str)
+        # Convert the result tree to a string
+        result_str = str(result_tree)
 
-    print(f"Transformation complete. Transformed output saved to '{output_file_path}'.")
+        # Save the transformed output to a text file
+        output_directory = os.path.join(parent_directory, "BackendScooter mysql", "BackendScooter", "storage", "cadenaOriginal")
+        output_file_path = os.path.join(output_directory, f'cadena_original_{xml_file_name}.txt')
+        output_file_path = os.path.normpath(output_file_path)  # Normalize the path
+        output_file_path = "../storage/cadenaOriginal/"
+        with open(f'{current_working_directory}/cadena_original_{xml_file_name}.txt', 'w', encoding='utf-8') as output_file:
+            output_file.write(result_str)
 
+        print(f"Transformation complete. Transformed output saved to '{current_working_directory}'.")
 
 
 def getSelloShadow():
-
+    print("entering getSelloShadow")
     # Step 1: Convert the certificate to PEM format
     with open("../storage/credentials/CSD_Sucursal_1_EKU9003173C9_20230517_223850.cer", "rb") as cert_file:
         cert_data = cert_file.read()
@@ -82,7 +86,7 @@ def getSelloShadow():
         pem_file.write(private_key_pem)
 
     # Step 3: Generate the Digest using the previously saved cadena original
-    with open(f"../storage/cadenaOriginal/cadena_original_{xml_file_name}.txt", "rb") as cadena_original_file:
+    with open(f"./cadena_original_{xml_file_name}.txt", "rb") as cadena_original_file:
         cadena_original_data = cadena_original_file.read()
 
     digest = hashes.Hash(hashes.SHA256(), backend=default_backend())
@@ -108,7 +112,7 @@ def getSelloShadow():
 def encodeCertificadoBase64():
 
     # Lee el archivo de certificado en formato binario
-    with open("/storage/credentials/CSD_Sucursal_1_EKU9003173C9_20230517_223850.cer", "rb") as cert_file:
+    with open("../storage/credentials/CSD_Sucursal_1_EKU9003173C9_20230517_223850.cer", "rb") as cert_file:
         cert_data = cert_file.read()
 
     # Codifica los datos del certificado en formato base64
@@ -121,5 +125,15 @@ def encodeCertificadoBase64():
     print("Certificado codificado en base64 y guardado en 'storage/credencials/certificado_base64.txt'.")
 
 
+# Call the function with the XML file path
+xml_file_path = r"C:\Users\dsczk\OneDrive\Documents\Proyecto X\Backend bueno\BackendScooter mysql\BackendScooter\storage\documentos\cfdi_2023-09-09_15-36-41.xml"
+# try:
+#     getCadenaOriginal(xml_file_path)
+# except Exception as e:
+#     print(str(e))
+    # exit(1)
 getCadenaOriginal()
-#getSelloShadow()
+
+getSelloShadow()
+
+#encodeCertificadoBase64()

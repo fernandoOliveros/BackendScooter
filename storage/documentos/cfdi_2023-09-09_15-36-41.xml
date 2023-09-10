@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<cfdi:Comprobante xmlns:cfdi="http://www.sat.gob.mx/cfd/4" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:cartaporte20="http://www.sat.gob.mx/CartaPorte20" xsi:schemaLocation="http://www.sat.gob.mx/cfd/4 http://www.sat.gob.mx/sitio_internet/cfd/4/cfdv40.xsd http://www.sat.gob.mx/CartaPorte20 http://www.sat.gob.mx/sitio_internet/cfd/CartaPorte/CartaPorte20.xsd" Certificado="MIIFsDCCA5igAwIBAgIUMzAwMDEwMDAwMDA1MDAwMDM0MTYwDQYJKoZIhvcNAQELBQAwggErMQ8wDQYDVQQDDAZBQyBVQVQxLjAsBgNVBAoMJVNFUlZJQ0lPIERFIEFETUlOSVNUUkFDSU9OIFRSSUJVVEFSSUExGjAYBgNVBAsMEVNBVC1JRVMgQXV0aG9yaXR5MSgwJgYJKoZIhvcNAQkBFhlvc2Nhci5tYXJ0aW5lekBzYXQuZ29iLm14MR0wGwYDVQQJDBQzcmEgY2VycmFkYSBkZSBjYWxpejEOMAwGA1UEEQwFMDYzNzAxCzAJBgNVBAYTAk1YMRkwFwYDVQQIDBBDSVVEQUQgREUgTUVYSUNPMREwDwYDVQQHDAhDT1lPQUNBTjERMA8GA1UELRMIMi41LjQuNDUxJTAjBgkqhkiG9w0BCQITFnJlc3BvbnNhYmxlOiBBQ0RNQS1TQVQwHhcNMjMwNTE4MTE0MzUxWhcNMjcwNTE4MTE0MzUxWjCB1zEnMCUGA1UEAxMeRVNDVUVMQSBLRU1QRVIgVVJHQVRFIFNBIERFIENWMScwJQYDVQQpEx5FU0NVRUxBIEtFTVBFUiBVUkdBVEUgU0EgREUgQ1YxJzAlBgNVBAoTHkVTQ1VFTEEgS0VNUEVSIFVSR0FURSBTQSBERSBDVjElMCMGA1UELRMcRUtVOTAwMzE3M0M5IC8gVkFEQTgwMDkyN0RKMzEeMBwGA1UEBRMVIC8gVkFEQTgwMDkyN0hTUlNSTDA1MRMwEQYDVQQLEwpTdWN1cnNhbCAxMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAtmecO6n2GS0zL025gbHGQVxznPDICoXzR2uUngz4DqxVUC/w9cE6FxSiXm2ap8Gcjg7wmcZfm85EBaxCx/0J2u5CqnhzIoGCdhBPuhWQnIh5TLgj/X6uNquwZkKChbNe9aeFirU/JbyN7Egia9oKH9KZUsodiM/pWAH00PCtoKJ9OBcSHMq8Rqa3KKoBcfkg1ZrgueffwRLws9yOcRWLb02sDOPzGIm/jEFicVYt2Hw1qdRE5xmTZ7AGG0UHs+unkGjpCVeJ+BEBn0JPLWVvDKHZAQMj6s5Bku35+d/MyATkpOPsGT/VTnsouxekDfikJD1f7A1ZpJbqDpkJnss3vQIDAQABox0wGzAMBgNVHRMBAf8EAjAAMAsGA1UdDwQEAwIGwDANBgkqhkiG9w0BAQsFAAOCAgEAFaUgj5PqgvJigNMgtrdXZnbPfVBbukAbW4OGnUhNrA7SRAAfv2BSGk16PI0nBOr7qF2mItmBnjgEwk+DTv8Zr7w5qp7vleC6dIsZFNJoa6ZndrE/f7KO1CYruLXr5gwEkIyGfJ9NwyIagvHHMszzyHiSZIA850fWtbqtythpAliJ2jF35M5pNS+YTkRB+T6L/c6m00ymN3q9lT1rB03YywxrLreRSFZOSrbwWfg34EJbHfbFXpCSVYdJRfiVdvHnewN0r5fUlPtR9stQHyuqewzdkyb5jTTw02D2cUfL57vlPStBj7SEi3uOWvLrsiDnnCIxRMYJ2UA2ktDKHk+zWnsDmaeleSzonv2CHW42yXYPCvWi88oE1DJNYLNkIjua7MxAnkNZbScNw01A6zbLsZ3y8G6eEYnxSTRfwjd8EP4kdiHNJftm7Z4iRU7HOVh79/lRWB+gd171s3d/mI9kte3MRy6V8MMEMCAnMboGpaooYwgAmwclI2XZCczNWXfhaWe0ZS5PmytD/GDpXzkX0oEgY9K/uYo5V77NdZbGAjmyi8cE2B2ogvyaN2XfIInrZPgEffJ4AB7kFA2mwesdLOCh0BLD9itmCve3A1FGR4+stO2ANUoiI3w3Tv2yQSg4bjeDlJ08lXaaFCLW2peEXMXjQUk7fmpb5MNuOUTW6BE=" Fecha="2023-09-09T21:36:40" Folio="CP-1" LugarExpedicion="56605" NoCertificado="30001000000500003416" Sello="bd6x0hKyqaoiQ4D+pR0GHKFbjeL05fbwc4NWr8pPGLM2xp47sNSSZ5TUeywEwYnC55qHav7y6qP+n9IqnVKh/E7a0SGAdyOmBIAcsaisIKAi2LoSpLpo+GKd+cBCYlQcWNm2X+MUNHGTKsv8NY09bPUYK5IWED6lrKaQVUvOr6z68hGJNfvEE1cUmgKBnyEIYNF3HJvwUf5zWLxncdtHW3i1eROBP8h/LlFTPq5RYE6bQjQ3/r4Sm7xjg8MxdtDuijlJaaixbT3LRASBpnzjklsGkdFXZgO8dV8Txyo+0U2QBn1L+JSapMsf9avTUIBSoh4Y2WbmplIa3mjdGCseKg==" TipoDeComprobante="T" Version="4.0" Exportacion="01" Moneda="MXN" SubTotal="0" Total="0" Serie="Serie">
+  <cfdi:Emisor Rfc="EKU9003173C9" Nombre="ESCUELA KEMPER URGATE" RegimenFiscal="601"/>
+  <cfdi:Receptor Rfc="EKU9003173C9" Nombre="ESCUELA KEMPER URGATE" DomicilioFiscalReceptor="15654" RegimenFiscalReceptor="610" UsoCFDI="G03"/>
+  <cfdi:Conceptos>
+    <cfdi:Concepto ClaveProdServ="78101600" NoIdentificacion="UT421511" Cantidad="1" ClaveUnidad="H87" Unidad="Pieza" Descripcion="Transporte de carga por carretera" ValorUnitario="0.00" ObjetoImp="04" Importe="0.00"/>
+  </cfdi:Conceptos>
+  <cfdi:Complemento>
+    <cartaporte20:CartaPorte Version="2.0" TranspInternac="No" TotalDistRec="70.00">
+       <cartaporte20:Ubicaciones>
+        <cartaporte20:Ubicacion TipoUbicacion="Origen" RFCRemitenteDestinatario="EKU9003173C9" FechaHoraSalidaLlegada="2021-11-01T01:00:00" IDUbicacion="OR000001" NombreRemitenteDestinatario="SAUL HDZ">
+          <cartaporte20:Domicilio Calle="San Bartolome" Colonia="5008" Localidad="23" Municipio="025" Estado="MEX" Pais="MEX" CodigoPostal="56605" />
+        </cartaporte20:Ubicacion>
+        <cartaporte20:Ubicacion TipoUbicacion="Destino" RFCRemitenteDestinatario="HECS000901UW6" FechaHoraSalidaLlegada="2022-03-04T13:23:00" IDUbicacion="DE000001" DistanciaRecorrida="278">
+          <cartaporte20:Domicilio Calle="San Bartolome" Colonia="5008" Localidad="23" Municipio="025" Estado="MEX" Pais="MEX" CodigoPostal="56605" />
+        </cartaporte20:Ubicacion>
+        <cartaporte20:Ubicacion TipoUbicacion="Origen" RFCRemitenteDestinatario="EKU9003173C9" FechaHoraSalidaLlegada="2021-11-01T01:00:00" IDUbicacion="OR000002" NombreRemitenteDestinatario="SAUL Segundo origen">
+          <cartaporte20:Domicilio Calle="San Bartolome" Colonia="5008" Localidad="23" Municipio="025" Estado="MEX" Pais="MEX" CodigoPostal="56605" />
+        </cartaporte20:Ubicacion>
+        <cartaporte20:Ubicacion TipoUbicacion="Destino" RFCRemitenteDestinatario="HECS000901UW6" FechaHoraSalidaLlegada="2022-03-04T13:23:00" IDUbicacion="DE000002" DistanciaRecorrida="278">
+          <cartaporte20:Domicilio Calle="San Bartolome" Colonia="5008" Localidad="23" Municipio="025" Estado="MEX" Pais="MEX" CodigoPostal="56605" />
+        </cartaporte20:Ubicacion>
+      </cartaporte20:Ubicaciones>
+      <cartaporte20:Mercancias PesoBrutoTotal="1.0" UnidadPeso="XBX" NumTotalMercancias="1">
+        <cartaporte20:Mercancia BienesTransp="10101507" Descripcion="Ovejas">
+          <cartaporte20:CantidadTransporta Cantidad="56" IDOrigen="OR000001" IDDestino="DE000001"/>
+        </cartaporte20:Mercancia>
+        <cartaporte20:Mercancia BienesTransp="10101511" Descripcion="Cerdos">
+          <cartaporte20:CantidadTransporta Cantidad="10" IDOrigen="OR000002" IDDestino="DE000002"/>
+        </cartaporte20:Mercancia>
+        <cartaporte20:Autotransporte PermSCT="TPXX00" NumPermisoSCT="PERMISO-4-21">
+          <cartaporte20:IdentificacionVehicular ConfigVehicular="TPXX00" PlacaVM="PLACA98" AnioModeloVM="2019"/>
+          <cartaporte20:Seguros AseguraCarga="Seguros" AseguraRespCivil="Seguros" PolizaRespCivil="123456789"/>
+          <cartaporte20:Remolques>
+            <cartaporte20:Remolque Placa="12345" SubTipoRem="CTR003"/>
+            <cartaporte20:Remolque Placa="DON123" SubTipoRem="CTR003"/>
+          </cartaporte20:Remolques>
+        </cartaporte20:Autotransporte>
+      </cartaporte20:Mercancias>
+     <cartaporte20:FiguraTransporte>
+        <cartaporte20:TiposFigura TipoFigura="01" RFCFigura="HECS000901UW6" NumLicencia="NUMLICENCIA-SAUL" NombreFigura="Lucas Bravo Madrigal">
+          <cartaporte20:Domicilio Calle="San Bartolome" Municipio="025" Estado="MEX" Pais="MEX" Colonia="5008" Localidad="23" CodigoPostal="56605" />
+        </cartaporte20:TiposFigura>
+      </cartaporte20:FiguraTransporte>
+    </cartaporte20:CartaPorte>
+  </cfdi:Complemento>
+</cfdi:Comprobante>
