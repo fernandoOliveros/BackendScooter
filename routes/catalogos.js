@@ -11,7 +11,8 @@ const {
   //timbrarCFDICtrl,
   readRegimenFiscalCFDICtrl,
   readProdServicioCPCtrl,
-  readMaterialesPeligrososCtrl
+  readMaterialesPeligrososCtrl,
+  readEmbalajesCtrl
 } = require("../controllers/catalogos");
 
 /**
@@ -37,6 +38,8 @@ router.get("/readUnidadPesoCFDI/", readUnidadPesoCFDICtrl);
 router.get("/readUsoCFDI/", readUsosCFDICtrl);
 router.get("/readRegimenFiscalCFDI/", readRegimenFiscalCFDICtrl );
 router.get("/readMaterialesPeligrosos/", readMaterialesPeligrososCtrl);
+router.get("/readEmbalajes/", readEmbalajesCtrl);
+
 
 
 
