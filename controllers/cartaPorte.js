@@ -23,6 +23,9 @@ const createCartaPorteCtrl = async (req, res, next ) => {
   }
 };
 
+
+
+
 const updateCartaPorteCtrl = async (req, res) => {
   try {
     const { id } = req.params;

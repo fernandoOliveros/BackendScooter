@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<cfdi:Comprobante xmlns:cfdi="http://www.sat.gob.mx/cfd/4" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:cartaporte20="http://www.sat.gob.mx/CartaPorte20" xsi:schemaLocation="http://www.sat.gob.mx/cfd/4 http://www.sat.gob.mx/sitio_internet/cfd/4/cfdv40.xsd http://www.sat.gob.mx/CartaPorte20 http://www.sat.gob.mx/sitio_internet/cfd/CartaPorte/CartaPorte20.xsd" Certificado="XXXXXX" Fecha="2023-09-10T21:05:46.109Z" Folio="CP-1" LugarExpedicion="56605" NoCertificado="XXXXXX" Sello="XXXXXX" TipoDeComprobante="I" Version="4.0" Exportacion="01" Moneda="MXN" SubTotal="0" Total="0" Serie="Serie">
+  <cfdi:Emisor Rfc="EKU9003173C9" Nombre="LUCAS BRAVO ROSAS" RegimenFiscal="601"/>
+  <cfdi:Receptor Rfc="DESZ900317310" Nombre="SAUL SA DE CV" DomicilioFiscalReceptor="15654" RegimenFiscalReceptor="610" UsoCFDI="G03"/>
+  <cfdi:Conceptos>
+    <cfdi:Concepto ClaveProdServ="78101600" NoIdentificacion="UT421511" Cantidad="1" ClaveUnidad="Tu" Unidad="Pieza" Descripcion="Transporte de carga por carretera" ValorUnitario="0.00" ObjetoImp="04" Importe="0.00"/>
+  </cfdi:Conceptos>
+  <cfdi:Complemento>
+    <cartaporte20:CartaPorte Version="2.0" TranspInternac="No" TotalDistRec="70.00">
+      <cartaporte20:Ubicaciones>
+        <cartaporte20:Ubicacion TipoUbicacion="Origen" RFCRemitenteDestinatario="BLABLA" FechaHoraSalidaLlegada="2021-11-01T01:00:00" IDUbicacion="OR000001" NombreRemitenteDestinatario="SAUL HDZ">
+          <cartaporte20:Domicilio Calle="San Bartolome" Colonia="0001" Localidad="06" Municipio="001" Estado="DUR" Pais="MEX" CodigoPostal="01100"/>
+        </cartaporte20:Ubicacion>
+        <cartaporte20:Ubicacion TipoUbicacion="Destino" RFCRemitenteDestinatario="XOJI740919U48" FechaHoraSalidaLlegada="2022-03-04T13:23" IDUbicacion="DE000001" DistanciaRecorrida="278">
+          <cartaporte20:Domicilio Calle="San Bartolome" Colonia="0001" Localidad="01" Municipio="001" Estado="AGU" Pais="MEX" CodigoPostal="01090"/>
+        </cartaporte20:Ubicacion>
+        <cartaporte20:Ubicacion TipoUbicacion="Origen" RFCRemitenteDestinatario="BLABLA" FechaHoraSalidaLlegada="2021-11-01T01:00:00" IDUbicacion="OR000002" NombreRemitenteDestinatario="SAUL Segundo origen">
+          <cartaporte20:Domicilio Calle="San Bartolome" Colonia="0001" Localidad="01" Municipio="001" Estado="DUR" Pais="MEX" CodigoPostal="01160"/>
+        </cartaporte20:Ubicacion>
+        <cartaporte20:Ubicacion TipoUbicacion="Destino" RFCRemitenteDestinatario="XOJI740919U48" FechaHoraSalidaLlegada="2022-03-04T13:23" IDUbicacion="DE000002" DistanciaRecorrida="278">
+          <cartaporte20:Domicilio Calle="San Bartolome" Colonia="0001" Localidad="01" Municipio="001" Estado="AGU" Pais="MEX" CodigoPostal="01050"/>
+        </cartaporte20:Ubicacion>
+      </cartaporte20:Ubicaciones>
+      <cartaporte20:Mercancias PesoBrutoTotal="1.0" UnidadPeso="XBX" NumTotalMercancias="1">
+        <cartaporte20:Mercancia BienesTransp="10101507" Descripcion="Ovejas" Cantidad="1.0" ClaveUnidad="undefined" PesoEnKg="1.0" MaterialPeligroso="No"/>
+        <cartaporte20:Mercancia BienesTransp="10101511" Descripcion="Cerdos" Cantidad="2.0" ClaveUnidad="KG" PesoEnKg="2.0" MaterialPeligroso="Si"/>
+        <cartaporte20:Autotransporte PermSCT="TPXX00" NumPermisoSCT="PERMISO-4-21">
+          <cartaporte20:IdentificacionVehicular ConfigVehicular="TPXX00" PlacaVM="PLACA98" AnioModeloVM="2019"/>
+          <cartaporte20:Seguros AseguraCarga="Seguros" AseguraRespCivil="Seguros" PolizaRespCivil="123456789"/>
+          <cartaporte20:Remolques>
+            <cartaporte20:Remolque Placa="12345" SubTipoRem="CTR003"/>
+            <cartaporte20:Remolque Placa="DON123" SubTipoRem="CTR003"/>
+          </cartaporte20:Remolques>
+        </cartaporte20:Autotransporte>
+      </cartaporte20:Mercancias>
+      <cartaporte20:FiguraTransporte>
+        <cartaporte20:TiposFigura TipoFigura="02" RFCFigura="1111111" NumLicencia="NUMLICENCIA-SAUL" NombreFigura="Lucas Bravo Madrigal">
+          <cartaporte20:Domicilio Calle="null" Municipio="null" Estado="null" Pais="null" Colonia="null" Localidad="null" CodigoPostal="null"/>
+        </cartaporte20:TiposFigura>
+      </cartaporte20:FiguraTransporte>
+    </cartaporte20:CartaPorte>
+  </cfdi:Complemento>
+</cfdi:Comprobante>

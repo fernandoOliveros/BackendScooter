@@ -407,7 +407,7 @@ async function createXmlCtrl(req, res) {
     if (c_TipoDeComprobante=="T"){
       console.log("c_TipoDeComprobante is traslado", c_TipoDeComprobante)
     }else{
-      console.log("c_TipoDeComprobante is ingreso", c_TipoDeComprobante)
+      console.log("c_TipoDeComprobante is ingreso, do something")
     }
 
 

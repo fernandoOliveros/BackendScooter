@@ -19,10 +19,10 @@ print("Current working directory:", current_working_directory)
 parent_directory = os.path.abspath(os.path.join(current_working_directory, ".."))
 print(f'parent_directory: {parent_directory}')
 
-xml_file_name="cfdi_2023-09-09_15-36-41"
+xml_file_name="bckpcfdi_2023-08-06_16-31-44"
 
 def getCadenaOriginal():
-    xml_file_path = "cfdi_2023-09-09_15-36-41.xml"
+    xml_file_path = "bckpcfdi_2023-08-06_16-31-44.xml"
 
     try:
         xml_doc = etree.parse(xml_file_path)
