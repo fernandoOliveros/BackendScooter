@@ -26,8 +26,16 @@ const models = {
   cartaPorteModel :require(`${pathDB}/cartaPorte`),
   direccionOrigenCPModel :require(`${pathDB}/direccionOrigenCP`),
   direccionDestinoCPModel :require(`${pathDB}/direccionDestinoCP`),
-  viajeModel :require(`${pathDB}/viajes`)
+  viajeModel :require(`${pathDB}/viajes`),
+  unidadCFDIModel :require(`${pathDB}/unidadCFDI`),
+  objImpModel :require(`${pathDB}/objImp`),
+  impuestoModel :require(`${pathDB}/tipoImpuesto`),
+  tipofactorModel :require(`${pathDB}/tipoFactor`)
+  
 
+  
+
+  
   
   
 

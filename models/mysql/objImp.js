@@ -1,26 +1,27 @@
 const { sequelize } = require("../../config/mysql");
 const { DataTypes } = require("sequelize");
 
-const Moneda = sequelize.define(
-  "cat_moneda",
+const Comprobante = sequelize.define(
+  "cat_objetoimp",
   {
-    id_Moneda: {
+    id_ObjetoImp: {
       type: DataTypes.NUMBER,
       primaryKey: true,
       autoIncrement: true,
     },
-    c_Moneda: {
+    st_descripcion: {
       type: DataTypes.STRING,
   },
-  st_Descripcion: {
+  c_ObjetoImp: {
     type: DataTypes.STRING,
-},
+},},
 
-},
+
+  
   {
     timestamps: false, //se debe especificar para cada modelo, o especificar globalmente desde /../../config/mysql
-    tableName: 'cat_moneda'
+    tableName: 'cat_objetoimp'
   }
 );
 
-module.exports = Moneda;
+module.exports = Comprobante;

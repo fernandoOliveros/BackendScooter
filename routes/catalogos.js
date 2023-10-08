@@ -13,7 +13,10 @@ const {
   readProdServicioCPCtrl,
   readMaterialesPeligrososCtrl,
   readEmbalajesCtrl,
-  readUnidadPesoCPCtrl
+  readUnidadPesoCPCtrl, //checar
+  readTipoImpuestosCtrl,
+  readObjetoImpuestoCtrl,
+  readTipoFactorCtrl
 } = require("../controllers/catalogos");
 
 /**
@@ -42,6 +45,12 @@ router.get("/readUsoCFDI/", readUsosCFDICtrl);
 router.get("/readRegimenFiscalCFDI/", readRegimenFiscalCFDICtrl );
 router.get("/readMaterialesPeligrosos/", readMaterialesPeligrososCtrl);
 router.get("/readEmbalajes/", readEmbalajesCtrl);
+router.get("/readTipoImpuestos/", readTipoImpuestosCtrl);
+router.get("/readObjetoImpuesto/", readObjetoImpuestoCtrl);
+router.get("/readTipoFactor/", readTipoFactorCtrl);
+
+
+
 
 
 

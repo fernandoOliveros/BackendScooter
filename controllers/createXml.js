@@ -18,25 +18,20 @@ const {
 } = require("express-validator");
 var xml2js = require("xml2js");
 
+const xmlbuilder = require('xmlbuilder');
+
 /******Se invocan las tablas/modelos necesarias para los queries*********/
 const {
-  tiposComprobantesModel
+  tiposComprobantesModel,
+  tiposMonedasModel,
+  regimenFiscalModel,
+  metodoPagosModel,
+  formaPagosModel,
+  usosCFDIModel,
+  unidadCFDIModel,
+  objImpModel,
 } = require("../models");
-const {
-  tiposMonedasModel
-} = require("../models");
-const {
-  regimenFiscalModel
-} = require("../models");
-const {
-  metodoPagosModel
-} = require("../models");
-const {
-  formaPagosModel
-} = require("../models");
-const {
-  usosCFDIModel
-} = require("../models");
+
 
 /******Install the fs  library to  create the file cfdi_YYYY-MM-DD_HH-mm-ss.xml*********/
 var fs = require("fs");
@@ -152,11 +147,11 @@ async function getClaveProdServCFDI(id_ClaveProdServCFDI){
       type: QueryTypes.SELECT,
     });
 
-    console.log(`c_ClaveProdServCFDI is ${c_ClaveProdServCFDI}`); // Access the returned rows
+    // console.log(`c_ClaveProdServCFDI is ${c_ClaveProdServCFDI}`); // Access the returned rows
 
     let firstRowValue = c_ClaveProdServCFDI[0].c_ClaveProdServ;
 
-    console.log(`First row value c_ClaveProdServCFDI: ${firstRowValue}`);
+    // console.log(`First row value c_ClaveProdServCFDI: ${firstRowValue}`);
     return firstRowValue;
   } catch (e) {
     console.error('Error querying SQL table cat_cfdi_prodserv:', e);
@@ -350,6 +345,109 @@ async function readCat_claveproductoservicio_CP(id_ClaveProducto){
     console.log("Unable to query the the CARTA PORTE cat_claveproductoservicio", error)
   }
 } 
+
+
+async function getClaveTipoMoneda(id_Moneda){
+  try {
+
+    const dataTipoMoneda = await tiposMonedasModel.findByPk(id_Moneda);
+
+    let c_Moneda=dataTipoMoneda.dataValues.c_Moneda;
+    console.log("dataTipoMoneda", c_Moneda)
+    return c_Moneda;
+  } catch (error) {
+    console.log("Unable to query the the tipo moneda table", error)
+  }
+} 
+
+
+
+async function getClaveTipoComprobante(id_TipoComprobante){
+  try {
+
+    const dataTipoComprobante = await tiposComprobantesModel.findByPk(id_TipoComprobante);
+
+    let c_TipoDeComprobante= dataTipoComprobante.dataValues.c_TipoDeComprobante;
+    // console.log("dataTipoMoneda", c_Moneda)
+    return c_TipoDeComprobante;
+  } catch (error) {
+    console.log("Unable to query the the tipo comprobante table", error)
+  }
+}
+
+async function getClaveUsoCFDI(id_TipoComprobante){
+  try {
+
+    const dataTipoComprobante = await usosCFDIModel.findByPk(id_TipoComprobante);
+
+    let c_TipoDeComprobante= dataTipoComprobante.dataValues.c_UsoCFDI;
+    // console.log("dataTipoMoneda", c_Moneda)
+    return c_TipoDeComprobante;
+  } catch (error) {
+    console.log("Unable to query the the tipo comprobante table", error)
+  }
+}
+
+async function getClaveFormaPago(id_TipoComprobante){
+  try {
+
+    const dataTipoComprobante = await formaPagosModel.findByPk(id_TipoComprobante);
+
+    let c_TipoDeComprobante= dataTipoComprobante.dataValues.c_FormaPago;
+    // console.log("dataTipoMoneda", c_Moneda)
+    return c_TipoDeComprobante;
+  } catch (error) {
+    console.log("Unable to query the the tipo comprobante table", error)
+  }
+}
+
+
+async function getClaveMetodoPago(id_MetodoPago){
+  try {
+
+    const dataTipoComprobante = await metodoPagosModel.findByPk(id_MetodoPago);
+
+    let c_TipoDeComprobante= dataTipoComprobante.dataValues.c_MetodoPago;
+    // console.log("dataTipoMoneda", c_Moneda)
+    return c_TipoDeComprobante;
+  } catch (error) {
+    console.log("Unable to query the the tipo comprobante table", error)
+  }
+}
+
+async function getClaveUnidadCFDI(id_ClaveUnidadPeso){
+  try {
+    console.log("\n",id_ClaveUnidadPeso)
+    const dataTipoComprobante = await unidadCFDIModel.findByPk(id_ClaveUnidadPeso);
+    // console.log("\n\ndataTipoComprobante", dataTipoComprobante)
+
+    let dataUnidadCFDI= dataTipoComprobante.dataValues;
+
+    return dataUnidadCFDI;
+  } catch (error) {
+    console.log("Unable to query the dataUnidadCFDI table", error)
+  }
+}
+
+
+async function getClaveObjetoImp(id_ObjetoImp){
+  try {
+
+    const dataTipoComprobante = await objImpModel.findByPk(id_ObjetoImp);
+
+    let dataUnidadCFDI= dataTipoComprobante.dataValues.c_ObjetoImp;
+    //  console.log("\n\ndataTipoMoneda", dataUnidadCFDI)
+    return dataUnidadCFDI;
+  } catch (error) {
+    console.log("Unable to query the table objetoImp table", error)
+  }
+}
+
+
+
+
+
+
 
 
     /******GETTING VARIABLES VALUES BY ID, SENT BY JSON POST ******/
@@ -866,8 +964,207 @@ async function createXmlCtrl(req, res) {
     console.log("Login error: " + e);
     //handleHttpError(res, "ERROR_CREATE_XML");
   }
+  
+}
+
+async function createXmlCtrlFromDB(req, res){
+  try {
+    //console.log("createXmlCtrlFromDB")
+    const id= parseInt(req.params.id)
+    //console.log(`El id ESSSS ${id}`)
+
+    const dataCFDI = await cfdiModel.findByPk(id);
+    const tipoCFDI = dataCFDI.dataValues.id_TipoComprobante;
+    let rawXML;
+
+    switch (tipoCFDI){
+      case 1:
+        console.log("Creating ingreso CFDI ")
+        rawXML = await populateXMLIngresoCFDI(dataCFDI.dataValues)
+        break;
+      case 2:
+        console.log("Creating Traslado CFDI ")
+        break;
+      default:
+        handleHttpError(res, "ERROR_TYPE_OF_CFDI_NOT_SPECIFIED")
+        console.log('Specify the type of CFDI either Ingreso,Egreso,traslado,etc.');
+    }
+    let xmlFileName = await createTimestampedXmlFile(rawXML);
+
+    handleHttpResponse(res, rawXML )  
+
+
+  } catch (e) {
+    handleHttpError(res, "ERROR_CREATING_CFDI_FROM_DB", e)
+
+  }
+
+}
+
+async function populateXMLIngresoCFDI(retrievedValues) {
+  try {
+    console.log("retrievedValues", retrievedValues);
+
+    let c_moneda = await getClaveTipoMoneda(retrievedValues.id_Moneda);
+    let c_UsoCFDI = await getClaveUsoCFDI(retrievedValues.id_UsoCFDI);
+    let c_FormaPago = await getClaveFormaPago(retrievedValues.id_FormaPago)
+
+    let c_MetodoPago = await getClaveMetodoPago(retrievedValues.id_MetodoPago);
+    
+    let c_prodServCFDI= await getClaveProdServCFDI(retrievedValues.id_ClaveProdServCFDI)
+    let dataUnidadCFDI = await getClaveUnidadCFDI(retrievedValues.id_ClaveUnidadPesoCFDI)
+
+    let c_ObjetoImp = await getClaveObjetoImp(retrievedValues.id_ObjetoImp)
+    
+    let st_DescripcionConcepto = retrievedValues.st_DescripcionConcepto;
+    let dec_ImporteConcepto = retrievedValues.dec_ImporteConcepto;
+    let dec_ValorUnitarioConcepto = retrievedValues.dec_ValorUnitarioConcepto;
+
+    /**Apartado para Impuestos */
+    let dec_BaseTraslado = retrievedValues.dec_BaseTraslado;
+    let c_ImpuestoTraslado = retrievedValues.c_ImpuestoTraslado;
+
+    let st_TipoFactorTraslado = retrievedValues.st_TipoFactorTraslado;
+    let dec_TasaOCuotaTraslado = retrievedValues.dec_TasaOCuotaTraslado;
+
+    
+    
+
+    const currentDate = new Date();
+
+    const year = currentDate.getFullYear();
+    const month = String(currentDate.getMonth() + 1).padStart(2, '0'); // Months are zero-based
+    const day = String(currentDate.getDate()).padStart(2, '0');
+    const hours = String(currentDate.getHours()).padStart(2, '0');
+    const minutes = String(currentDate.getMinutes()).padStart(2, '0');
+    const seconds = String(currentDate.getSeconds()).padStart(2, '0');
+
+    const formattedDate = `${year}-${month}-${day}T${hours}:${minutes}:${seconds}`;
+
+
+
+    let c_TipoDeComprobante = await getClaveTipoComprobante(retrievedValues.id_TipoComprobante);
+    
+
+    const xml = xmlbuilder.create('cfdi:Comprobante', {
+      version: '1.0',
+      encoding: 'UTF-8',
+      headless: false, // Set headless to false to include the XML declaration
+    });
+
+    // Include the XML declaration manually
+    xml.dec({ version: '1.0', encoding: 'UTF-8' });
+
+    xml.att('xmlns:cfdi', 'http://www.sat.gob.mx/cfd/4');
+    xml.att('xmlns:xsi', 'http://www.w3.org/2001/XMLSchema-instance');
+    xml.att('xmlns:cartaporte20', 'http://www.sat.gob.mx/CartaPorte20');
+    xml.att('xsi:schemaLocation', 'http://www.sat.gob.mx/cfd/4 http://www.sat.gob.mx/sitio_internet/cfd/4/cfdv40.xsd http://www.sat.gob.mx/CartaPorte20 http://www.sat.gob.mx/sitio_internet/cfd/CartaPorte/CartaPorte20.xsd');
+    
+    
+
+    // Add more XML namespaces and attributes as needed
+
+    // Add dynamic retrievedValues to the XML structure
+    xml.att('Fecha', formattedDate);
+    //xml.att('Folio', retrievedValues.Folio);
+    xml.att('LugarExpedicion', retrievedValues.st_LugarExpedicion);
+    xml.att('TipoDeComprobante', c_TipoDeComprobante);
+    xml.att('NoCertificado', "");
+    xml.att('Sello', "");
+    xml.att('Certificado', "");
+    xml.att('Version', "4.0");
+    xml.att('Exportacion', "");
+    xml.att('Moneda', c_moneda);
+    xml.att('FormaPago', c_FormaPago);
+    xml.att('MetodoPago', c_MetodoPago);
+
+    xml.att('SubTotal', retrievedValues.dec_SubTotal);
+    xml.att('Total', retrievedValues.dec_Total);
+    xml.att('Serie', "Serie");
+
+
+
+
+
+    // Add more dynamic retrievedValues attributes here
+
+    // Add Emisor element
+    const emisor = xml.ele('cfdi:Emisor');
+    emisor.att('Rfc', retrievedValues.st_RFC_emisor);
+    emisor.att('Nombre', retrievedValues.st_nombre_emisor);
+    emisor.att('RegimenFiscal', retrievedValues.id_RegimenFiscal_emisor);
+   
+
+    // Add more Emisor attributes as needed
+
+    // Add Receptor element
+    const receptor = xml.ele('cfdi:Receptor');
+    receptor.att('Rfc', retrievedValues.st_RFC_receptor);
+    receptor.att('Nombre', retrievedValues.st_nombre_receptor);
+    receptor.att('RegimenFiscal', retrievedValues.id_RegimenFiscalReceptor);
+    receptor.att('DomicilioFiscalReceptor', retrievedValues.id_DomicilioFiscalReceptor);
+    receptor.att('UsoCFDI', c_UsoCFDI);
+
+
+
+    // Add more Receptor attributes as needed
+
+    // Add Conceptos element
+    const conceptos = xml.ele('cfdi:Conceptos');
+    const concepto = conceptos.ele('cfdi:Concepto');
+    concepto.att('ClaveProdServ', c_prodServCFDI);
+    concepto.att('Cantidad', "1");
+    concepto.att('ClaveUnidad', dataUnidadCFDI.c_ClaveUnidad);
+    concepto.att('Unidad', dataUnidadCFDI.st_Nombre);
+    concepto.att('ObjetoImp',     c_ObjetoImp    );
+    concepto.att('Descripcion',     st_DescripcionConcepto    );
+
+    concepto.att('Importe',     dec_ImporteConcepto    );
+    concepto.att('ValorUnitario',     dec_ValorUnitarioConcepto    );
+    
+    if (retrievedValues.dec_BaseTraslado != null) {
+      // Add Impuestos element inside Concepto
+      
+      const impuestos = concepto.ele('cfdi:Impuestos');
+      
+
+      // Add subelements inside Impuestos
+      const traslados = impuestos.ele("cfdi:Traslados");
+      const traslado = traslados.ele("cfd:Traslado");
+      traslado.att("Base", dec_BaseTraslado);
+      traslado.att("Impuesto", c_ImpuestoTraslado);
+      traslado.att("TipoFactor", st_TipoFactorTraslado);
+      traslado.att("TasaOCuota", dec_TasaOCuotaTraslado);
+
+    }else if (retrievedValues.dec_BaseRetencion != null){
+      console.log("There is an retencion impuesto")
+     
+      const impuestos = concepto.ele('cfdi:Impuestos');
+
+
+      const retenciones = impuestos.ele("cfdi:Retenciones");
+      const retencion = retenciones.ele("cfd:Retencion");
+      retencion.att("Base", dec_Baseretencion);
+      retencion.att("Impuesto", c_Impuestoretencion);
+      retencion.att("TipoFactor", st_TipoFactorretencion);
+      retencion.att("TasaOCuota", dec_TasaOCuotaretencion);
+
+      
+    }
+      // concepto.att('NoIdentificacion', retrievedValues.NoIdentificacion);
+      // Add more Concepto attributes as needed
+
+    // Convert XML to string
+    const xmlString = xml.end({ pretty: true });
+
+    // res.set('Content-Type', 'text/xml');
+    return xmlString;
+  } catch (error) {
+    console.log(error);
+  }
 }
 
 module.exports = {
   createXmlCtrl,
+  createXmlCtrlFromDB,
 };

@@ -23,16 +23,6 @@ const createUnidadCtrl = async (req, res) => {
 
 const updateUnidadesCtrl = async (req, res) => {
   try {
-    /*const { id, ...body } = matchedData(req); //splits the request into two objects, id and body
-    const dataUnidad = await unidadesModel.findByPk(id);
-    if (!dataUnidad) {
-      handleHttpError(res, `No existe unidad con id: ${id}`, 404);
-      return;
-    }
-    const dataUpdateUnidad = await unidadesModel.update(body, {
-      where: { id_Unidad: id },
-    });
-    handleHttpResponse(res, dataUpdateUnidad);*/
     let id_Unidad = parseInt(req.params.id);
     const { body } = req; //splits the request into two objects, id and body
     let query =

@@ -20,7 +20,7 @@ const {
 } = require("../controllers/cfdi");
 
 
-const { createXmlCtrl } = require('../controllers/createXml');
+const { createXmlCtrl, createXmlCtrlFromDB } = require('../controllers/createXml');
 
 
 /**
@@ -32,7 +32,12 @@ const { createXmlCtrl } = require('../controllers/createXml');
  * Delete CFDI: http://localhost:5000/api/cfdi/delete/:id
  */
 
-router.post("/create", validatorCreateCFDI, createCFDICtrl, validatorXml, createXmlCtrl);
+//router.post("/create", validatorCreateCFDI, createCFDICtrl, validatorXml, createXmlCtrl);
+router.post("/create", validatorCreateCFDI, createCFDICtrl);
+
+router.get("/create/:id", createXmlCtrlFromDB);
+
+
 //router.get("/read", readAllCFDICtrl);
 //router.get("/read/:id", validatorReadCFDI, readCFDICtrl);
 //router.put("/update/:id", [validatorCreateCFDI, validatorReadCFDI], updateCFDICtrl);

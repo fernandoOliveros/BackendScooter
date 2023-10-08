@@ -11,7 +11,13 @@ const Comprobante = sequelize.define(
     },
     st_TipoComprobante: {
       type: DataTypes.STRING,
-  },},
+  },
+  c_TipoDeComprobante: {
+    type: DataTypes.STRING,
+},},
+
+
+  
   {
     timestamps: false, //se debe especificar para cada modelo, o especificar globalmente desde /../../config/mysql
     tableName: 'cat_tipocomprobante'

@@ -2,7 +2,10 @@ const { handleHttpResponse } = require("../utils/handleResponse");
 const { handleHttpError } = require("../utils/handleError");
 const { sequelize } = require("../config/mysql");
 //const { QueryTypes } = require("sequelize");
-const { exec } = require('child_process');
+const { exec } = require('child_process'); // DELETE PROBABLY
+const {impuestoModel,objImpModel, tipofactorModel} = require("../models")
+
+
 
 async function readMonedasCtrl(req, res) {
   try {
@@ -206,6 +209,44 @@ async function readUnidadPesoCPCtrl(req, res) {
   }
 }
 
+async function readTipoImpuestosCtrl(req, res) {
+  try {
+    const dataProdServicio =  await impuestoModel.findAll();
+
+    handleHttpResponse(res, dataProdServicio);
+  } catch (e) {
+    console.log(e);
+    handleHttpError(res, "ERROR_READ_readTipoImpuestos");
+  }
+}
+
+async function readObjetoImpuestoCtrl(req, res) {
+  try {
+    const dataProdServicio =  await objImpModel.findAll();
+
+    handleHttpResponse(res, dataProdServicio);
+  } catch (e) {
+    console.log(e);
+    handleHttpError(res, "ERROR_READ_readTipoImpuestos");
+  }
+}
+
+
+async function readTipoFactorCtrl(req, res) {
+  try {
+    const dataProdServicio =  await tipofactorModel.findAll();
+
+    handleHttpResponse(res, dataProdServicio);
+  } catch (e) {
+    console.log(e);
+    handleHttpError(res, "ERROR_READ_readTipoImpuestos");
+  }
+}
+
+
+
+
+
 
 module.exports = {
   readMonedasCtrl,
@@ -219,5 +260,9 @@ module.exports = {
   readProdServicioCPCtrl,
   readMaterialesPeligrososCtrl,
   readEmbalajesCtrl,
-  readUnidadPesoCPCtrl
+  readUnidadPesoCPCtrl,
+  readTipoImpuestosCtrl,
+  readObjetoImpuestoCtrl,
+  readTipoFactorCtrl,
+
 };

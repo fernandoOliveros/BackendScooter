@@ -12,13 +12,17 @@ const { QueryTypes } = require("sequelize");
 // CREATE
 const createCFDICtrl = async (req, res, next) => {
   try {
-    //req.some_variable="SOME STRING"
-    console.log("\n IT'S INSIDE THE CONTROLLER controllers/cfdi.createCFDICtrl")    
-    const body = matchedData(req); //la data del request venga curada
+    console.log("\n IT'S INSIDE THE CONTROLLER controllers/cfdi/createCFDICtrl")    
+    //const body = matchedData(req); //la data del request venga curada
+    const body =req.body; //la data del request venga curada
+
+    // console.log("\n\n before creating the body", body);
     
     const cfdi = await cfdiModel.create(body);
-      req.id_CFDI_database = cfdi.dataValues.id_CFDI;
-    next(); // call the next middleware or route handler
+    handleHttpResponse(res, cfdi)
+
+    //   req.id_CFDI_database = cfdi.dataValues.id_CFDI;
+    // next(); // call the next middleware or route handler
   } catch (err) {
     console.error(err);
     handleHttpError(res, "ERROR_CREATE_CFDI")
