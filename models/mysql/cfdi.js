@@ -13,6 +13,10 @@ const CFDI = sequelize.define(
       type: DataTypes.INTEGER,
       allowNull: false,
     },
+    st_nombreCrudoXML: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
     st_RFC_emisor: {
       type: DataTypes.STRING,
       allowNull: false,
@@ -29,17 +33,6 @@ const CFDI = sequelize.define(
       type: DataTypes.STRING,
       allowNull: false,
     },
-    
-    id_ClaveUnidadPesoCFDI: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-    },
-    
-    id_ObjetoImp: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-    },
-
     id_Moneda: {
       type: DataTypes.INTEGER,
       allowNull: true,
@@ -52,14 +45,6 @@ const CFDI = sequelize.define(
       type: DataTypes.INTEGER,
       allowNull: true,
     },
-    id_ClaveProdServCFDI: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-    },
-    // id_ClaveUnidadPeso: {
-    //   type: DataTypes.BIGINT,
-    //   allowNull: true,
-    // },
     id_UsoCFDI: {
       type: DataTypes.INTEGER,
       allowNull: false,
@@ -76,10 +61,6 @@ const CFDI = sequelize.define(
       type: DataTypes.INTEGER,
       allowNull: false,
     },
-    id_TipoViaje: {
-      type: DataTypes.INTEGER,
-      allowNull: true,
-    },
     dec_Total: {
       type: DataTypes.DECIMAL,
       allowNull: true,
@@ -88,69 +69,22 @@ const CFDI = sequelize.define(
       type: DataTypes.DECIMAL,
       allowNull: true,
     },
-    dec_ImporteConcepto: {
-      type: DataTypes.DECIMAL,
-      allowNull: true,
-    },
-    dec_ValorUnitarioConcepto: {
-      type: DataTypes.DECIMAL,
-      allowNull: true,
-    },
-    st_DescripcionConcepto: {
-      type: DataTypes.DECIMAL,
-      allowNull: true,
-    },
-    
-    /**TODO: MODULO DE TRASLADO | IMPUESTOS */
-
-    dec_BaseTraslado: {
-      type: DataTypes.DECIMAL,
-      allowNull: true,
-    },
-    c_ImpuestoTraslado: {
-      type: DataTypes.STRING,
-      allowNull: true,
-    },
-    dec_ImporteTraslado: {
-      type: DataTypes.DECIMAL,
-      allowNull: true,
-    },
-    st_TipoFactorTraslado: {
-      type: DataTypes.STRING,
-      allowNull: true,
-    },
-    dec_TasaOCuotaTraslado: {
-      type: DataTypes.DECIMAL,
-      allowNull: true,
-    },
-
-    /**TODO: MODULO DE RETENCION | IMPUESTOS */
-    dec_BaseRetencion: {
-      type: DataTypes.DECIMAL,
-      allowNull: true,
-    },
-    c_ImpuestoRetencion: {
-      type: DataTypes.STRING,
-      allowNull: true,
-    },
-    dec_ImporteRetencion: {
-      type: DataTypes.DECIMAL,
-      allowNull: true,
-    },
-    st_TipoFactorRetencion: {
-      type: DataTypes.STRING,
-      allowNull: true,
-    },
-    dec_TasaOCuotaRetencion: {
-      type: DataTypes.DECIMAL,
-      allowNull: true,
-    },
-
-    
     st_nombreCrudoXML: {
       type: DataTypes.STRING,
       allowNull: true,
     },
+    st_LugarExpedicion: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    st_CondicionesPago: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+
+
+
+    
 
     /*createdAt: {
       type: DataTypes.DATE,

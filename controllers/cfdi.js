@@ -12,8 +12,6 @@ const { QueryTypes } = require("sequelize");
 // CREATE
 const createCFDICtrl = async (req, res, next) => {
   try {
-    console.log("\n IT'S INSIDE THE CONTROLLER controllers/cfdi/createCFDICtrl")    
-    //const body = matchedData(req); //la data del request venga curada
     const body =req.body; //la data del request venga curada
 
     // console.log("\n\n before creating the body", body);
@@ -21,9 +19,7 @@ const createCFDICtrl = async (req, res, next) => {
     const cfdi = await cfdiModel.create(body);
     handleHttpResponse(res, cfdi)
 
-    //   req.id_CFDI_database = cfdi.dataValues.id_CFDI;
-    // next(); // call the next middleware or route handler
-  } catch (err) {
+   } catch (err) {
     console.error(err);
     handleHttpError(res, "ERROR_CREATE_CFDI")
   }
@@ -31,10 +27,17 @@ const createCFDICtrl = async (req, res, next) => {
 
 
 // READ ALL
-const readAllCFDICtrl = async (req, res) => {
+const readAllByEmpresaCFDICtrl = async (req, res) => {
   try {
-    const cfdiList = await CFDI.findAll();
-    res.json({ success: true, data: cfdiList });
+    console.log("test")
+    let id_Empresa=req.params.id;
+    let query = "    SELECT * FROM tbl_cfdi  WHERE id_Empresa = :id"
+      const result = await sequelize.query(query, {
+          replacements: { id: `${id_Empresa}` },
+        type: sequelize.QueryTypes.SELECT, // Use the appropriate type
+      });
+    handleHttpResponse(res, result)
+
   } catch (err) {
     console.error(err);
     res.status(500).json({ success: false, message: 'Server Error' });
@@ -87,7 +90,7 @@ const deleteCFDICtrl = async (req, res) => {
 
 module.exports = {
   createCFDICtrl,
-  readAllCFDICtrl,
+  readAllByEmpresaCFDICtrl,
   readCFDICtrl,
   updateCFDICtrl,
   deleteCFDICtrl,

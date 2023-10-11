@@ -30,12 +30,14 @@ const models = {
   unidadCFDIModel :require(`${pathDB}/unidadCFDI`),
   objImpModel :require(`${pathDB}/objImp`),
   impuestoModel :require(`${pathDB}/tipoImpuesto`),
-  tipofactorModel :require(`${pathDB}/tipoFactor`)
-  
+  tipofactorModel :require(`${pathDB}/tipoFactor`),
+  prodServCFDIModel :require(`${pathDB}/prodServCFDI`)
 
   
 
   
+
+    
   
   
 

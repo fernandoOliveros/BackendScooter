@@ -13,7 +13,7 @@ const {
 
 const {
   createCFDICtrl,
-  readAllCFDICtrl,
+  readAllByEmpresaCFDICtrl,
   readCFDICtrl,
   updateCFDICtrl,
   deleteCFDICtrl,
@@ -38,9 +38,9 @@ router.post("/create", validatorCreateCFDI, createCFDICtrl);
 router.get("/create/:id", createXmlCtrlFromDB);
 
 
-//router.get("/read", readAllCFDICtrl);
+router.get("/readAllByEmpresa/:id", readAllByEmpresaCFDICtrl);
 //router.get("/read/:id", validatorReadCFDI, readCFDICtrl);
-//router.put("/update/:id", [validatorCreateCFDI, validatorReadCFDI], updateCFDICtrl);
+router.put("/update/:id", updateCFDICtrl);
 //router.delete("/delete/:id", validatorReadCFDI, deleteCFDICtrl);
 
 module.exports = router;
