@@ -39,7 +39,7 @@ router.get("/create/:id", createXmlCtrlFromDB);
 
 
 router.get("/readAllByEmpresa/:id", readAllByEmpresaCFDICtrl);
-//router.get("/read/:id", validatorReadCFDI, readCFDICtrl);
+router.get("/read/:id", readCFDICtrl);
 router.put("/update/:id", updateCFDICtrl);
 //router.delete("/delete/:id", validatorReadCFDI, deleteCFDICtrl);
 

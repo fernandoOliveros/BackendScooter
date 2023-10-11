@@ -47,11 +47,15 @@ const readAllByEmpresaCFDICtrl = async (req, res) => {
 // READ
 const readCFDICtrl = async (req, res) => {
   try {
-    const cfdi = await CFDI.findByPk(req.params.id);
-    if (!cfdi) {
-      return res.status(404).json({ success: false, message: 'CFDI not found' });
-    }
-    res.json({ success: true, data: cfdi });
+    let id_cfdi = req.params.id
+    let query = "SELECT tbl_cfdi.*, tbl_prodserv_cfdi.* FROM tbl_cfdi LEFT JOIN tbl_prodserv_cfdi ON tbl_cfdi.id_CFDI = tbl_prodserv_cfdi.id_CFDI WHERE tbl_cfdi.id_CFDI =  :id"
+    const result = await sequelize.query(query, {
+        replacements: { id: `${id_cfdi}` },
+        type: sequelize.QueryTypes.SELECT, // Use the appropriate type
+      });
+
+    handleHttpResponse(res, result)
+
   } catch (err) {
     console.error(err);
     res.status(500).json({ success: false, message: 'Server Error' });
