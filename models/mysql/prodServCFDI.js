@@ -7,12 +7,19 @@ const CFDI = sequelize.define(
     id_CFDI: {
       type: DataTypes.INTEGER,
       primaryKey: true,
+      allowNull: false,
+
       //autoIncrement: true,
     },
     id_ClaveProdServCFDI:{
       type: DataTypes.INTEGER,
       primaryKey: true,
+      allowNull: false,
+
     },
+
+
+
     id_ClaveUnidadPesoCFDI: {
       type: DataTypes.INTEGER,
       allowNull: false,

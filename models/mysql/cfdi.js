@@ -8,6 +8,8 @@ const CFDI = sequelize.define(
       type: DataTypes.INTEGER,
       primaryKey: true,
       autoIncrement: true,
+      allowNull: false,
+
     },
     id_Empresa: {
       type: DataTypes.INTEGER,

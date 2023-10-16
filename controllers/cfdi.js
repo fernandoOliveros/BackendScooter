@@ -44,24 +44,42 @@ const readAllByEmpresaCFDICtrl = async (req, res) => {
   }
 };
 
-// READ
 const readCFDICtrl = async (req, res) => {
   try {
-    let id_cfdi = req.params.id
-    let query = "SELECT tbl_cfdi.*, tbl_prodserv_cfdi.* FROM tbl_cfdi LEFT JOIN tbl_prodserv_cfdi ON tbl_cfdi.id_CFDI = tbl_prodserv_cfdi.id_CFDI WHERE tbl_cfdi.id_CFDI =  :id"
-    const result = await sequelize.query(query, {
-        replacements: { id: `${id_cfdi}` },
-        type: sequelize.QueryTypes.SELECT, // Use the appropriate type
+    const id_cfdi = req.params.id;
+
+    // First query to select columns from tbl_cfdi to get id_CFDI
+    const query1 = "SELECT id_CFDI FROM tbl_cfdi WHERE id_CFDI = :id";
+    const result1 = await sequelize.query(query1, {
+      replacements: { id: id_cfdi },
+      type: sequelize.QueryTypes.SELECT,
+    });
+
+    // Check if id_CFDI was found in the first query
+    if (result1 && result1.length > 0) {
+      // Use the id_CFDI from the first query in the second query
+      const id_CFDI = result1[0].id_CFDI;
+
+      // Second query to select columns from both tbl_cfdi and tbl_prodserv_cfdi
+      const query2 = "SELECT tbl_cfdi.*, tbl_prodserv_cfdi.* FROM tbl_cfdi LEFT JOIN tbl_prodserv_cfdi ON tbl_cfdi.id_CFDI = tbl_prodserv_cfdi.id_CFDI WHERE tbl_cfdi.id_CFDI = :id";
+      const result2 = await sequelize.query(query2, {
+        replacements: { id: id_CFDI },
+        type: sequelize.QueryTypes.SELECT,
       });
 
-    handleHttpResponse(res, result)
+      // Combine the results
+      const combinedResult = { ...result2[0], id_CFDI };
 
+      handleHttpResponse(res, combinedResult);
+    } else {
+      // Handle the case where id_CFDI wasn't found
+      res.status(404).json({ success: false, message: 'Record not found' });
+    }
   } catch (err) {
     console.error(err);
     res.status(500).json({ success: false, message: 'Server Error' });
   }
 };
-
 // UPDATE
 const updateCFDICtrl = async (req, res) => {
   try {
