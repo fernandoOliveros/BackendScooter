@@ -975,6 +975,7 @@ async function createXmlCtrlFromDB(req, res){
 
     const dataCFDI = await cfdiModel.findByPk(id);
     const tipoCFDI = dataCFDI.dataValues.id_TipoComprobante;
+    
     let rawXML;
 
     switch (tipoCFDI){

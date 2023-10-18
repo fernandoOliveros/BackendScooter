@@ -62,15 +62,19 @@ const readCFDICtrl = async (req, res) => {
 
       // Second query to select columns from both tbl_cfdi and tbl_prodserv_cfdi
       const query2 = "SELECT tbl_cfdi.*, tbl_prodserv_cfdi.* FROM tbl_cfdi LEFT JOIN tbl_prodserv_cfdi ON tbl_cfdi.id_CFDI = tbl_prodserv_cfdi.id_CFDI WHERE tbl_cfdi.id_CFDI = :id";
+
       const result2 = await sequelize.query(query2, {
         replacements: { id: id_CFDI },
         type: sequelize.QueryTypes.SELECT,
       });
-
       // Combine the results
-      const combinedResult = { ...result2[0], id_CFDI };
+      const newArray = result2.map((item) => {
+        // Transform 'item' and return the result
+      return { ...item, id_CFDI };
+      });
 
-      handleHttpResponse(res, combinedResult);
+
+      handleHttpResponse(res, newArray);
     } else {
       // Handle the case where id_CFDI wasn't found
       res.status(404).json({ success: false, message: 'Record not found' });
