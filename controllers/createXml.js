@@ -1,24 +1,16 @@
 /***
  * IMPORTANDO LIBRERIAS PARA HACER QUERIES
  */
-const {
-  sequelize
-} = require("../config/mysql");
-const {
-  QueryTypes
-} = require("sequelize");
-const {
-  handleHttpResponse
-} = require("../utils/handleResponse");
-const {
-  handleHttpError
-} = require("../utils/handleError");
-const {
-  matchedData
-} = require("express-validator");
+const { sequelize } = require("../config/mysql");
+const { QueryTypes } = require("sequelize");
+const { handleHttpResponse } = require("../utils/handleResponse");
+const { handleHttpError } = require("../utils/handleError");
+const { matchedData } = require("express-validator");
 var xml2js = require("xml2js");
 
-const xmlbuilder = require('xmlbuilder');
+const { readCFDICtrl } = require("../controllers/cfdi");
+
+const xmlbuilder = require("xmlbuilder");
 
 /******Se invocan las tablas/modelos necesarias para los queries*********/
 const {
@@ -32,17 +24,14 @@ const {
   objImpModel,
 } = require("../models");
 
-
 /******Install the fs  library to  create the file cfdi_YYYY-MM-DD_HH-mm-ss.xml*********/
 var fs = require("fs");
 const moment = require("moment"); // Install the moment library to format the date and time
 const { cfdiModel } = require("../models");
 
-
-async function validate_DomicilioFigura(id_Operador){
+async function validate_DomicilioFigura(id_Operador) {
   try {
-    let query =
-      `SELECT tbl_dir_operadores.id_Dir_Operador FROM tbl_operadores
+    let query = `SELECT tbl_dir_operadores.id_Dir_Operador FROM tbl_operadores
       LEFT JOIN tbl_dir_operadores on tbl_dir_operadores.id_Operador = tbl_operadores.id_Operador
        WHERE tbl_operadores.id_Operador = :id`;
     let id_Domicilio = await sequelize.query(query, {
@@ -52,17 +41,14 @@ async function validate_DomicilioFigura(id_Operador){
     // Process the query result
     console.log(`id_Domicilio lenght is ${id_Domicilio.length}`); // Access the returned rows
     return id_Domicilio.length;
-    
   } catch (error) {
-    console.error('Error querying SQL table tbl_unidades:', error);
-    
+    console.error("Error querying SQL table tbl_unidades:", error);
   }
 }
 
-async function getAutotransporteInfo(id_Unidad){
+async function getAutotransporteInfo(id_Unidad) {
   try {
-    let query =
-      `SELECT tbl_unidades.*, cat_tipopermiso.st_Clave  FROM tbl_unidades
+    let query = `SELECT tbl_unidades.*, cat_tipopermiso.st_Clave  FROM tbl_unidades
       LEFT JOIN cat_tipopermiso ON tbl_unidades.id_TipoPermiso = cat_tipopermiso.id_TipoPermiso
       WHERE tbl_unidades.id_Unidad = :id `;
 
@@ -72,17 +58,14 @@ async function getAutotransporteInfo(id_Unidad){
     });
     // Process the query result
     return UnidadInformation;
-    
   } catch (error) {
-    console.error('Error querying SQL table tbl_unidades:', error);
-    
+    console.error("Error querying SQL table tbl_unidades:", error);
   }
 }
 
-async function getRemolqueInfo(id_Remolque){
+async function getRemolqueInfo(id_Remolque) {
   try {
-    let query =
-      `SELECT tbl_remolques.st_Placa, cat_tiporemolque.st_ClaveRemolque  FROM tbl_remolques
+    let query = `SELECT tbl_remolques.st_Placa, cat_tiporemolque.st_ClaveRemolque  FROM tbl_remolques
       LEFT JOIN cat_tiporemolque 
       ON tbl_remolques.id_TipoRemolque = cat_tiporemolque.id_TipoRemolque
       WHERE tbl_remolques.id_Remolque = :id `;
@@ -95,13 +78,9 @@ async function getRemolqueInfo(id_Remolque){
     //console.log(RemolqueInformation)
     return RemolqueInformation;
   } catch (error) {
-    console.error('Error querying SQL table tbl_remolques:', error);
-    
+    console.error("Error querying SQL table tbl_remolques:", error);
   }
 }
-
-
-
 
 async function createTimestampedXmlFile(xml) {
   //var timestamp = Date.now();
@@ -116,13 +95,11 @@ async function createTimestampedXmlFile(xml) {
   return xmlFileName;
 }
 
-
-async function getLocalidad(id_localidad){
+async function getLocalidad(id_localidad) {
   try {
     // Query the SQL table
 
-    let query =
-      `SELECT c_Localidad FROM cat_localidad WHERE id_Localidad = :id`;
+    let query = `SELECT c_Localidad FROM cat_localidad WHERE id_Localidad = :id`;
     let c_localidad = await sequelize.query(query, {
       replacements: { id: `${id_localidad}` },
       type: QueryTypes.SELECT,
@@ -134,14 +111,13 @@ async function getLocalidad(id_localidad){
     // console.log(`First row value: ${firstRowValue}`);
     return firstRowValue;
   } catch (error) {
-    console.error('Error querying SQL table:', error);
+    console.error("Error querying SQL table:", error);
   }
 }
-async function getClaveProdServCFDI(id_ClaveProdServCFDI){
+async function getClaveProdServCFDI(id_ClaveProdServCFDI) {
   try {
-    console.log("Entering getClaveProdServCFDI")
-    let query =
-      `SELECT c_ClaveProdServ FROM cat_cfdi_prodserv WHERE id_ClaveProdServCFDI = :id`;
+    console.log("Entering getClaveProdServCFDI");
+    let query = `SELECT c_ClaveProdServ FROM cat_cfdi_prodserv WHERE id_ClaveProdServCFDI = :id`;
     let c_ClaveProdServCFDI = await sequelize.query(query, {
       replacements: { id: `${id_ClaveProdServCFDI}` },
       type: QueryTypes.SELECT,
@@ -154,17 +130,15 @@ async function getClaveProdServCFDI(id_ClaveProdServCFDI){
     // console.log(`First row value c_ClaveProdServCFDI: ${firstRowValue}`);
     return firstRowValue;
   } catch (e) {
-    console.error('Error querying SQL table cat_cfdi_prodserv:', e);
-
+    console.error("Error querying SQL table cat_cfdi_prodserv:", e);
   }
 }
 
-async function getClaveUnidad(id_ClaveUnidadPeso){
+async function getClaveUnidad(id_ClaveUnidadPeso) {
   try {
     // Query the SQL table
 
-    let query =
-      `SELECT st_ClaveUnidad FROM cat_claveunidadpeso WHERE id_ClaveUnidadPeso = :id`;
+    let query = `SELECT st_ClaveUnidad FROM cat_claveunidadpeso WHERE id_ClaveUnidadPeso = :id`;
     let st_ClaveUnidad = await sequelize.query(query, {
       replacements: { id: `${id_ClaveUnidadPeso}` },
       type: QueryTypes.SELECT,
@@ -176,17 +150,15 @@ async function getClaveUnidad(id_ClaveUnidadPeso){
     console.log(`First row value: ${firstRowValue}`);
     return firstRowValue;
   } catch (error) {
-    console.error('Error querying SQL table cat_claveunidadpeso:', error);
+    console.error("Error querying SQL table cat_claveunidadpeso:", error);
   }
 }
 
-
-async function getColonia(id_colonia){
+async function getColonia(id_colonia) {
   try {
     // Query the SQL table
 
-    let query =
-      `SELECT c_Colonia FROM cat_colonia WHERE id_colonia = :id`;
+    let query = `SELECT c_Colonia FROM cat_colonia WHERE id_colonia = :id`;
     let c_colonia = await sequelize.query(query, {
       replacements: { id: `${id_colonia}` },
       type: QueryTypes.SELECT,
@@ -195,18 +167,15 @@ async function getColonia(id_colonia){
     let firstRowValue = c_colonia[0].c_Colonia;
     return firstRowValue;
   } catch (error) {
-    console.error('Error querying SQL table cat_colonia:', error);
+    console.error("Error querying SQL table cat_colonia:", error);
   }
-
 }
 
-
-async function getEstado(id_estado){
+async function getEstado(id_estado) {
   try {
     // Query the SQL table
 
-    let query =
-      `SELECT c_Estado FROM cat_estado WHERE id_Estado = :id`;
+    let query = `SELECT c_Estado FROM cat_estado WHERE id_Estado = :id`;
     let c_Estado = await sequelize.query(query, {
       replacements: { id: `${id_estado}` },
       type: QueryTypes.SELECT,
@@ -215,18 +184,15 @@ async function getEstado(id_estado){
     let firstRowValue = c_Estado[0].c_Estado;
     return firstRowValue;
   } catch (error) {
-    console.error('Error querying SQL table cat_estado:', error);
+    console.error("Error querying SQL table cat_estado:", error);
   }
 }
 
-
-
-async function getMunicipio(id_municipio){
+async function getMunicipio(id_municipio) {
   try {
     // Query the SQL table
 
-    let query =
-      `SELECT c_Municipio FROM cat_municipio WHERE id_Municipio = :id`;
+    let query = `SELECT c_Municipio FROM cat_municipio WHERE id_Municipio = :id`;
     let c_Municipio = await sequelize.query(query, {
       replacements: { id: `${id_municipio}` },
       type: QueryTypes.SELECT,
@@ -235,17 +201,15 @@ async function getMunicipio(id_municipio){
     let firstRowValue = c_Municipio[0].c_Municipio;
     return firstRowValue;
   } catch (error) {
-    console.error('Error querying SQL table cat_municipio:', error);
+    console.error("Error querying SQL table cat_municipio:", error);
   }
 }
 
-
-async function getCodigoPostal(id_codigopostal){
+async function getCodigoPostal(id_codigopostal) {
   try {
     // Query the SQL table
 
-    let query =
-      `SELECT c_codigoPostal FROM cat_codigo_postal WHERE id_codigoPostal = :id`;
+    let query = `SELECT c_codigoPostal FROM cat_codigo_postal WHERE id_codigoPostal = :id`;
     let c_codigoPostal = await sequelize.query(query, {
       replacements: { id: `${id_codigopostal}` },
       type: QueryTypes.SELECT,
@@ -254,36 +218,33 @@ async function getCodigoPostal(id_codigopostal){
     let firstRowValue = c_codigoPostal[0].c_codigoPostal;
     return firstRowValue;
   } catch (error) {
-    console.error('Error querying SQL table cat_codigo_Postal:', error);
+    console.error("Error querying SQL table cat_codigo_Postal:", error);
   }
 }
 
-
-
-async function getIdTipoFigura(id_TipoFigura){
+async function getIdTipoFigura(id_TipoFigura) {
   try {
     // Query catalog of tipos de figura by the id given on the postman request
-    let query =
-      `SELECT st_ClaveFiguraTransporte FROM cat_tipofigura WHERE id_TipoFigura = :id`;
+    let query = `SELECT st_ClaveFiguraTransporte FROM cat_tipofigura WHERE id_TipoFigura = :id`;
     let st_ClaveFiguraTransporte_query_result = await sequelize.query(query, {
       replacements: { id: `${id_TipoFigura}` },
       type: QueryTypes.SELECT,
     });
-    
+
     // Process the query result
-    let firstRowValue_TipoFigura = st_ClaveFiguraTransporte_query_result[0].st_ClaveFiguraTransporte;
+    let firstRowValue_TipoFigura =
+      st_ClaveFiguraTransporte_query_result[0].st_ClaveFiguraTransporte;
     return firstRowValue_TipoFigura;
   } catch (error) {
-    throw new Error(`Fixed ERROR: Failed to query the catalog cat_tipofigura: ${error.message}\nsurely you're inserting an id that doesn't match the ids on the catalog`);
+    throw new Error(
+      `Fixed ERROR: Failed to query the catalog cat_tipofigura: ${error.message}\nsurely you're inserting an id that doesn't match the ids on the catalog`
+    );
   }
 }
 
-
-
-async function getOperadorInformation(id_Operador){
+async function getOperadorInformation(id_Operador) {
   try {
-    let query =
-    `SELECT tbl_operadores.*, cat_tipofigura.st_ClaveFiguraTransporte, cat_estado.c_Estado, cat_estado.c_Pais,
+    let query = `SELECT tbl_operadores.*, cat_tipofigura.st_ClaveFiguraTransporte, cat_estado.c_Estado, cat_estado.c_Pais,
     cat_municipio.c_Municipio , tbl_dir_operadores.c_codigoPostal,tbl_dir_operadores.st_Calle, 
     cat_colonia.c_colonia, cat_localidad.c_Localidad
     FROM tbl_operadores
@@ -298,159 +259,150 @@ async function getOperadorInformation(id_Operador){
     const [OperadorInformation] = await sequelize.query(query, {
       replacements: { id: `${id_Operador}` },
       type: QueryTypes.SELECT,
-    });    
+    });
 
-//    console.log(`query inside the function operadorinfo ${JSON.stringify(OperadorInformation)} end of query \n\n end`)
+    //    console.log(`query inside the function operadorinfo ${JSON.stringify(OperadorInformation)} end of query \n\n end`)
     // Process the query result
     return OperadorInformation;
-
   } catch (error) {
-    throw new Error(`Fixed ERROR: Failed to query the catalog tbl_operadores: ${error.message}\nsurely you're inserting an id that doesn't match `);
-    
+    throw new Error(
+      `Fixed ERROR: Failed to query the catalog tbl_operadores: ${error.message}\nsurely you're inserting an id that doesn't match `
+    );
   }
-
-
 }
 
-// function to update table tbl_cfdi on st_nombreCrudoXML column with the name of the raw XML to stamp  
-async function updateTableCFDI(xmlFileName, id_CFDI_database){
+// function to update table tbl_cfdi on st_nombreCrudoXML column with the name of the raw XML to stamp
+async function updateTableCFDI(xmlFileName, id_CFDI_database) {
   try {
-    let query =
-    `UPDATE tbl_cfdi  SET  st_nombreCrudoXML= :xmlFileName WHERE id_CFDI= :id ;` ;
+    let query = `UPDATE tbl_cfdi  SET  st_nombreCrudoXML= :xmlFileName WHERE id_CFDI= :id ;`;
     const OperadorInformation = await sequelize.query(query, {
-      replacements: { 
+      replacements: {
         //st_nombreCrudoXML: `${xmlFileName}`,
         xmlFileName,
-                    id: `${id_CFDI_database}`},
+        id: `${id_CFDI_database}`,
+      },
       type: QueryTypes.UPDATE,
-    });    
+    });
   } catch (error) {
-    console.log("Unable to update the tbl_cfdi table", error)
+    console.log("Unable to update the tbl_cfdi table", error);
   }
-} 
+}
 
-
-async function readCat_claveproductoservicio_CP(id_ClaveProducto){
+async function readCat_claveproductoservicio_CP(id_ClaveProducto) {
   try {
-    let query =
-    `SELECT st_ClaveProducto, st_DescripcionProducto  FROM cat_claveproductoservicio WHERE id_ClaveProducto= :id ;` ;
+    let query = `SELECT st_ClaveProducto, st_DescripcionProducto  FROM cat_claveproductoservicio WHERE id_ClaveProducto= :id ;`;
     const ProductoServicioInformation = await sequelize.query(query, {
-      replacements: { 
-        id: `${id_ClaveProducto}`},
+      replacements: {
+        id: `${id_ClaveProducto}`,
+      },
       type: QueryTypes.SELECT,
-    });    
+    });
     //console.log("ProductoServicioInformation query", ProductoServicioInformation)
     return ProductoServicioInformation;
   } catch (error) {
-    console.log("Unable to query the the CARTA PORTE cat_claveproductoservicio", error)
+    console.log(
+      "Unable to query the the CARTA PORTE cat_claveproductoservicio",
+      error
+    );
   }
-} 
+}
 
-
-async function getClaveTipoMoneda(id_Moneda){
+async function getClaveTipoMoneda(id_Moneda) {
   try {
-
     const dataTipoMoneda = await tiposMonedasModel.findByPk(id_Moneda);
 
-    let c_Moneda=dataTipoMoneda.dataValues.c_Moneda;
-    console.log("dataTipoMoneda", c_Moneda)
+    let c_Moneda = dataTipoMoneda.dataValues.c_Moneda;
+    console.log("dataTipoMoneda", c_Moneda);
     return c_Moneda;
   } catch (error) {
-    console.log("Unable to query the the tipo moneda table", error)
-  }
-} 
-
-
-
-async function getClaveTipoComprobante(id_TipoComprobante){
-  try {
-
-    const dataTipoComprobante = await tiposComprobantesModel.findByPk(id_TipoComprobante);
-
-    let c_TipoDeComprobante= dataTipoComprobante.dataValues.c_TipoDeComprobante;
-    // console.log("dataTipoMoneda", c_Moneda)
-    return c_TipoDeComprobante;
-  } catch (error) {
-    console.log("Unable to query the the tipo comprobante table", error)
+    console.log("Unable to query the the tipo moneda table", error);
   }
 }
 
-async function getClaveUsoCFDI(id_TipoComprobante){
+async function getClaveTipoComprobante(id_TipoComprobante) {
   try {
+    const dataTipoComprobante = await tiposComprobantesModel.findByPk(
+      id_TipoComprobante
+    );
 
-    const dataTipoComprobante = await usosCFDIModel.findByPk(id_TipoComprobante);
-
-    let c_TipoDeComprobante= dataTipoComprobante.dataValues.c_UsoCFDI;
+    let c_TipoDeComprobante =
+      dataTipoComprobante.dataValues.c_TipoDeComprobante;
     // console.log("dataTipoMoneda", c_Moneda)
     return c_TipoDeComprobante;
   } catch (error) {
-    console.log("Unable to query the the tipo comprobante table", error)
+    console.log("Unable to query the the tipo comprobante table", error);
   }
 }
 
-async function getClaveFormaPago(id_TipoComprobante){
+async function getClaveUsoCFDI(id_TipoComprobante) {
   try {
+    const dataTipoComprobante = await usosCFDIModel.findByPk(
+      id_TipoComprobante
+    );
 
-    const dataTipoComprobante = await formaPagosModel.findByPk(id_TipoComprobante);
-
-    let c_TipoDeComprobante= dataTipoComprobante.dataValues.c_FormaPago;
+    let c_TipoDeComprobante = dataTipoComprobante.dataValues.c_UsoCFDI;
     // console.log("dataTipoMoneda", c_Moneda)
     return c_TipoDeComprobante;
   } catch (error) {
-    console.log("Unable to query the the tipo comprobante table", error)
+    console.log("Unable to query the the tipo comprobante table", error);
   }
 }
 
-
-async function getClaveMetodoPago(id_MetodoPago){
+async function getClaveFormaPago(id_TipoComprobante) {
   try {
+    const dataTipoComprobante = await formaPagosModel.findByPk(
+      id_TipoComprobante
+    );
 
+    let c_TipoDeComprobante = dataTipoComprobante.dataValues.c_FormaPago;
+    // console.log("dataTipoMoneda", c_Moneda)
+    return c_TipoDeComprobante;
+  } catch (error) {
+    console.log("Unable to query the the tipo comprobante table", error);
+  }
+}
+
+async function getClaveMetodoPago(id_MetodoPago) {
+  try {
     const dataTipoComprobante = await metodoPagosModel.findByPk(id_MetodoPago);
 
-    let c_TipoDeComprobante= dataTipoComprobante.dataValues.c_MetodoPago;
+    let c_TipoDeComprobante = dataTipoComprobante.dataValues.c_MetodoPago;
     // console.log("dataTipoMoneda", c_Moneda)
     return c_TipoDeComprobante;
   } catch (error) {
-    console.log("Unable to query the the tipo comprobante table", error)
+    console.log("Unable to query the the tipo comprobante table", error);
   }
 }
 
-async function getClaveUnidadCFDI(id_ClaveUnidadPeso){
+async function getClaveUnidadCFDI(id_ClaveUnidadPeso) {
   try {
-    console.log("\n",id_ClaveUnidadPeso)
-    const dataTipoComprobante = await unidadCFDIModel.findByPk(id_ClaveUnidadPeso);
+    console.log("\n", id_ClaveUnidadPeso);
+    const dataTipoComprobante = await unidadCFDIModel.findByPk(
+      id_ClaveUnidadPeso
+    );
     // console.log("\n\ndataTipoComprobante", dataTipoComprobante)
 
-    let dataUnidadCFDI= dataTipoComprobante.dataValues;
+    let dataUnidadCFDI = dataTipoComprobante.dataValues;
 
     return dataUnidadCFDI;
   } catch (error) {
-    console.log("Unable to query the dataUnidadCFDI table", error)
+    console.log("Unable to query the dataUnidadCFDI table", error);
   }
 }
 
-
-async function getClaveObjetoImp(id_ObjetoImp){
+async function getClaveObjetoImp(id_ObjetoImp) {
   try {
-
     const dataTipoComprobante = await objImpModel.findByPk(id_ObjetoImp);
 
-    let dataUnidadCFDI= dataTipoComprobante.dataValues.c_ObjetoImp;
+    let dataUnidadCFDI = dataTipoComprobante.dataValues.c_ObjetoImp;
     //  console.log("\n\ndataTipoMoneda", dataUnidadCFDI)
     return dataUnidadCFDI;
   } catch (error) {
-    console.log("Unable to query the table objetoImp table", error)
+    console.log("Unable to query the table objetoImp table", error);
   }
 }
 
-
-
-
-
-
-
-
-    /******GETTING VARIABLES VALUES BY ID, SENT BY JSON POST ******/
+/******GETTING VARIABLES VALUES BY ID, SENT BY JSON POST ******/
 
 async function createXmlCtrl(req, res) {
   try {
@@ -458,8 +410,9 @@ async function createXmlCtrl(req, res) {
     const body = req.body; //la data del request venga curada
     const id_CFDI_database = req.id_CFDI_database;
 
-
-   console.log(`Fixed ERROR: Failed to query the catalog tbl_operadores: ${id_CFDI_database}\n`)
+    console.log(
+      `Fixed ERROR: Failed to query the catalog tbl_operadores: ${id_CFDI_database}\n`
+    );
     // console.log(
     //   "THIS IS THE BODY AT createXmlCtrl",
     //   body,
@@ -482,53 +435,55 @@ async function createXmlCtrl(req, res) {
     const i_Importe = body.i_Importe;
     const dec_TotalDistRec = body.dec_TotalDistRec;
     const st_RemitenteRFC = body.st_RemitenteRFC;
-    const c_ClaveProdServ = await getClaveProdServCFDI(body.id_ClaveProdServCFDI);
+    const c_ClaveProdServ = await getClaveProdServCFDI(
+      body.id_ClaveProdServCFDI
+    );
     const st_ClaveUnidadPeso = await getClaveUnidad(body.id_ClaveUnidadPeso);
-    
 
     const Autotransporte = req.body.Mercancias[0].Autotransporte;
-  
+
     // console.log(`Autotransporte ${JSON.stringify(Autotransporte)} end of query \n\n end`)
-      
-    let UnidadInformation =  await getAutotransporteInfo(Autotransporte.id_Unidad);
-    
+
+    let UnidadInformation = await getAutotransporteInfo(
+      Autotransporte.id_Unidad
+    );
+
     //console.log(`query inside the function unidadinformation ${JSON.stringify(UnidadInformation)} end of query \n\n end`)
 
     /******QUERYING DATA RECEIVED FROM JSON, TO POST REAL VALUES ON XML******/
     let c_TipoDeComprobante = await tiposComprobantesModel.findOne({
       where: {
-        id_TipoComprobante
+        id_TipoComprobante,
       },
       attributes: ["c_TipoDeComprobante"],
     });
 
-    if (c_TipoDeComprobante=="T"){
-      console.log("c_TipoDeComprobante is traslado", c_TipoDeComprobante)
-    }else{
-      console.log("c_TipoDeComprobante is ingreso, do something")
+    if (c_TipoDeComprobante == "T") {
+      console.log("c_TipoDeComprobante is traslado", c_TipoDeComprobante);
+    } else {
+      console.log("c_TipoDeComprobante is ingreso, do something");
     }
-
 
     let st_TipoMoneda = await tiposMonedasModel.findOne({
       where: {
-        id_Moneda: id_TipoMoneda
+        id_Moneda: id_TipoMoneda,
       },
       attributes: ["c_Moneda"],
     });
     let c_RegimenFiscal_emisor = await regimenFiscalModel.findOne({
       where: {
-        id_RegimenFiscal: id_RegimenFiscal_emisor
+        id_RegimenFiscal: id_RegimenFiscal_emisor,
       },
       //attributes: ['c_RegimenFiscal']
     });
     let c_RegimenFiscalReceptor = await regimenFiscalModel.findOne({
       where: {
-        id_RegimenFiscal: id_RegimenFiscalReceptor
+        id_RegimenFiscal: id_RegimenFiscalReceptor,
       },
     });
     let c_MetodoPago = await metodoPagosModel.findOne({
       where: {
-        id_MetodoPago: id_MetodoPago
+        id_MetodoPago: id_MetodoPago,
       },
     });
     /*let c_FormaPago= await formaPagosModel.findOne({
@@ -536,7 +491,7 @@ async function createXmlCtrl(req, res) {
         });*/
     let c_UsoCFDI = await usosCFDIModel.findOne({
       where: {
-        id_UsoCFDI
+        id_UsoCFDI,
       },
     });
 
@@ -544,7 +499,8 @@ async function createXmlCtrl(req, res) {
      * WE NEED TO SANITIZE THE INPUT THOUGH!
      **/
     let st_ObjetoImp = await sequelize.query(
-      "SELECT c_ObjetoImp FROM c_ObjetoImp WHERE id_ObjetoImp = ?", {
+      "SELECT c_ObjetoImp FROM c_ObjetoImp WHERE id_ObjetoImp = ?",
+      {
         replacements: [id_ObjetoImp],
         type: sequelize.QueryTypes.SELECT,
       }
@@ -561,7 +517,8 @@ async function createXmlCtrl(req, res) {
     c_TipoDeComprobante = c_TipoDeComprobante.dataValues.c_TipoDeComprobante;
     st_TipoMoneda = st_TipoMoneda.dataValues.c_Moneda;
     c_RegimenFiscal_emisor = c_RegimenFiscal_emisor.dataValues.c_RegimenFiscal;
-    c_RegimenFiscalReceptor = c_RegimenFiscalReceptor.dataValues.c_RegimenFiscal;
+    c_RegimenFiscalReceptor =
+      c_RegimenFiscalReceptor.dataValues.c_RegimenFiscal;
     c_MetodoPago = c_MetodoPago.dataValues.c_MetodoPago;
     c_UsoCFDI = c_UsoCFDI.dataValues.c_UsoCFDI;
 
@@ -570,15 +527,15 @@ async function createXmlCtrl(req, res) {
     const st_Fecha = date.toISOString();
 
     //console.log("test", c_FormaPago);
-    
-    
+
     var JsonStructureCFDI = {
       "cfdi:Comprobante": {
         $: {
           "xmlns:cfdi": "http://www.sat.gob.mx/cfd/4",
           "xmlns:xsi": "http://www.w3.org/2001/XMLSchema-instance",
           "xmlns:cartaporte20": "http://www.sat.gob.mx/CartaPorte20",
-          "xsi:schemaLocation": "http://www.sat.gob.mx/cfd/4 http://www.sat.gob.mx/sitio_internet/cfd/4/cfdv40.xsd http://www.sat.gob.mx/CartaPorte20 http://www.sat.gob.mx/sitio_internet/cfd/CartaPorte/CartaPorte20.xsd",
+          "xsi:schemaLocation":
+            "http://www.sat.gob.mx/cfd/4 http://www.sat.gob.mx/sitio_internet/cfd/4/cfdv40.xsd http://www.sat.gob.mx/CartaPorte20 http://www.sat.gob.mx/sitio_internet/cfd/CartaPorte/CartaPorte20.xsd",
           Certificado: "XXXXXX", //NOS LO OTORGA EL SAT DESPUES DE TIMBRAR CFDI
           Fecha: st_Fecha,
           Folio: "CP-1", //uno hasta 40                caracteres alfanuméricos, creo que lo podemos armar nosotros mismos
@@ -612,19 +569,21 @@ async function createXmlCtrl(req, res) {
             UsoCFDI: c_UsoCFDI,
           },
         },
-        "cfdi:Conceptos": [{
-          "cfdi:Concepto": [{
-            $: {
-              ClaveProdServ: `${c_ClaveProdServ}`,
-              NoIdentificacion: "UT421511",
-              Cantidad: "1",
-              ClaveUnidad: `${st_ClaveUnidadPeso}`,
-              Unidad: "Pieza",
-              Descripcion: "Transporte de carga por carretera",
-              ValorUnitario: "0.00",
-              ObjetoImp: st_ObjetoImp,
-              Importe: i_Importe,
-              /**En este campo se deberá registrar el importe del impuesto
+        "cfdi:Conceptos": [
+          {
+            "cfdi:Concepto": [
+              {
+                $: {
+                  ClaveProdServ: `${c_ClaveProdServ}`,
+                  NoIdentificacion: "UT421511",
+                  Cantidad: "1",
+                  ClaveUnidad: `${st_ClaveUnidadPeso}`,
+                  Unidad: "Pieza",
+                  Descripcion: "Transporte de carga por carretera",
+                  ValorUnitario: "0.00",
+                  ObjetoImp: st_ObjetoImp,
+                  Importe: i_Importe,
+                  /**En este campo se deberá registrar el importe del impuesto
                     trasladado que aplica al concepto, el cual será el resultado de
                     multiplicar el valor de la base por la tasa.
 
@@ -633,9 +592,11 @@ async function createXmlCtrl(req, res) {
                     Tasa: 0.16
                     Importe: 1,600.00
               **/
-            },
-          }, ],
-        }, ],
+                },
+              },
+            ],
+          },
+        ],
         "cfdi:Complemento": {
           "cartaporte20:CartaPorte": {
             $: {
@@ -656,7 +617,7 @@ async function createXmlCtrl(req, res) {
               "cartaporte20:Autotransporte": {
                 $: {
                   PermSCT: `${UnidadInformation[0].st_Clave}`,
-                  NumPermisoSCT: `${UnidadInformation[0].st_PermisoSCT}`
+                  NumPermisoSCT: `${UnidadInformation[0].st_PermisoSCT}`,
                 },
 
                 "cartaporte20:IdentificacionVehicular": {
@@ -677,10 +638,9 @@ async function createXmlCtrl(req, res) {
               },
             },
             "cartaporte20:FiguraTransporte": {
-              "cartaporte20:TiposFigura": []
+              "cartaporte20:TiposFigura": [],
             },
           },
-
         },
       },
     };
@@ -705,7 +665,7 @@ async function createXmlCtrl(req, res) {
 
     let origenCounter = 1;
     let destinoCounter = 1;
-    
+
     for (let i = 0; i < ubicacionesLength; i++) {
       const ubicacion = ubicaciones[i];
       if (ubicacion.TipoUbicacion === "Origen") {
@@ -717,20 +677,27 @@ async function createXmlCtrl(req, res) {
             TipoUbicacion: "Origen",
             RFCRemitenteDestinatario: `${ubicaciones[i].st_RemitenteRFC}`,
             FechaHoraSalidaLlegada: `${ubicaciones[i].date_FechaSalida}`,
-            IDUbicacion: `OR${String(origenCounter).padStart(6, '0')}`,
+            IDUbicacion: `OR${String(origenCounter).padStart(6, "0")}`,
             NombreRemitenteDestinatario: `${ubicaciones[i].st_RemitenteNombre}`,
-
           },
           "cartaporte20:Domicilio": {
             $: {
               // Domicilio properties here
               Calle: `${ubicaciones[i].Domicilio.st_Calle}`,
-              Colonia: `${await getColonia(ubicaciones[i].Domicilio.id_Colonia)}`,
-              Localidad: `${await getLocalidad(ubicaciones[i].Domicilio.id_Localidad)}`,
-              Municipio: `${await getMunicipio(ubicaciones[i].Domicilio.id_Municipio)}`,
+              Colonia: `${await getColonia(
+                ubicaciones[i].Domicilio.id_Colonia
+              )}`,
+              Localidad: `${await getLocalidad(
+                ubicaciones[i].Domicilio.id_Localidad
+              )}`,
+              Municipio: `${await getMunicipio(
+                ubicaciones[i].Domicilio.id_Municipio
+              )}`,
               Estado: `${await getEstado(ubicaciones[i].Domicilio.id_Estado)}`,
               Pais: "MEX",
-              CodigoPostal: `${await getCodigoPostal(ubicaciones[i].Domicilio.c_codigoPostal)}`,
+              CodigoPostal: `${await getCodigoPostal(
+                ubicaciones[i].Domicilio.c_codigoPostal
+              )}`,
             },
           },
         });
@@ -743,81 +710,90 @@ async function createXmlCtrl(req, res) {
             TipoUbicacion: "Destino",
             RFCRemitenteDestinatario: `${ubicaciones[i].st_DestinatarioRFC}`,
             FechaHoraSalidaLlegada: `${ubicaciones[i].st_FechaHoraLlegada}`,
-            IDUbicacion: `DE${String(destinoCounter).padStart(6, '0')}`,
+            IDUbicacion: `DE${String(destinoCounter).padStart(6, "0")}`,
             DistanciaRecorrida: `${ubicaciones[i].DistanciaRecorrida}`,
           },
           "cartaporte20:Domicilio": {
             $: {
               // Domicilio properties here
               Calle: `${ubicaciones[i].Domicilio.st_Calle}`,
-              Colonia: `${await getColonia(ubicaciones[i].Domicilio.id_Colonia)}`,
-              Localidad: `${await getLocalidad(ubicaciones[i].Domicilio.id_Localidad)}`,
-              Municipio: `${await getMunicipio(ubicaciones[i].Domicilio.id_Municipio)}`,
+              Colonia: `${await getColonia(
+                ubicaciones[i].Domicilio.id_Colonia
+              )}`,
+              Localidad: `${await getLocalidad(
+                ubicaciones[i].Domicilio.id_Localidad
+              )}`,
+              Municipio: `${await getMunicipio(
+                ubicaciones[i].Domicilio.id_Municipio
+              )}`,
               Estado: `${await getEstado(ubicaciones[i].Domicilio.id_Estado)}`,
               Pais: "MEX",
-              CodigoPostal: `${await getCodigoPostal(ubicaciones[i].Domicilio.c_codigoPostal)}`,
+              CodigoPostal: `${await getCodigoPostal(
+                ubicaciones[i].Domicilio.c_codigoPostal
+              )}`,
             },
           },
         });
         destinoCounter++;
       }
     }
-    
 
     var mercanciasArray =
       JsonStructureCFDI["cfdi:Comprobante"]["cfdi:Complemento"][
         "cartaporte20:CartaPorte"
       ]["cartaporte20:Mercancias"]["cartaporte20:Mercancia"];
 
-
-      // const autotransportes = req.body.Mercancias.Autotransportes;
-      // const mercanciasLength = mercancias.length;
-      // console.log(`Length of Mercancias array: ${mercanciasLength}`);
-  
+    // const autotransportes = req.body.Mercancias.Autotransportes;
+    // const mercanciasLength = mercancias.length;
+    // console.log(`Length of Mercancias array: ${mercanciasLength}`);
 
     const mercancias = req.body.Mercancias;
     const mercanciasLength = mercancias.length;
     //console.log(`\n\nLength of Mercancias array: ${mercanciasLength}`);
     //console.log(mercancias)
-    let aux_counter_direccion=0;
+    let aux_counter_direccion = 0;
     for (let i = 0; i < mercanciasLength; i++) {
-      let ID_DirOrigen=  ubicacionesArray[aux_counter_direccion]["$"]["IDUbicacion"];
-      let ID_DirDestino=  ubicacionesArray[aux_counter_direccion+1]["$"]["IDUbicacion"];
+      let ID_DirOrigen =
+        ubicacionesArray[aux_counter_direccion]["$"]["IDUbicacion"];
+      let ID_DirDestino =
+        ubicacionesArray[aux_counter_direccion + 1]["$"]["IDUbicacion"];
       const mercancia_json_info = mercancias[i];
       // console.log(mercancias[i])
       //console.log(`Length of Mercancias[i] array: ${mercancias[i].length}`);
-    
-      const mercancia = await readCat_claveproductoservicio_CP(mercancias[i].id_ClaveProducto)
+
+      const mercancia = await readCat_claveproductoservicio_CP(
+        mercancias[i].id_ClaveProducto
+      );
       // Perform the action for teach mercancia" equal to "Origen"
-      let mercancia_queried = mercancia.pop()
+      let mercancia_queried = mercancia.pop();
       // console.log(` mercancia lenght ${i}: ${mercancia.length}`);
       // console.log(mercancia.pop())
-      let ClaveProducto = mercancia_queried.st_ClaveProducto
-      let DescripcionProducto = mercancia_queried.st_DescripcionProducto
+      let ClaveProducto = mercancia_queried.st_ClaveProducto;
+      let DescripcionProducto = mercancia_queried.st_DescripcionProducto;
 
       mercanciasArray.push({
         $: {
           // Mercancia properties here
           BienesTransp: `${ClaveProducto}`,
-          Descripcion: `${DescripcionProducto}`, 
-          Cantidad: `${ mercancia_json_info.Cantidad}`,
+          Descripcion: `${DescripcionProducto}`,
+          Cantidad: `${mercancia_json_info.Cantidad}`,
           ClaveUnidad: `${mercancias[i].ClaveUnidad}`,
           PesoEnKg: `${mercancias[i].PesoEnKg}`,
           MaterialPeligroso: `${mercancias[i].MaterialPeligroso}`,
         },
-      })
+      });
 
       // mercanciasArray.push({
       //   $: {
       //     // Mercancia properties here
       //     BienesTransp: `${ClaveProducto}`,
-      //     Descripcion: `${DescripcionProducto}`, 
+      //     Descripcion: `${DescripcionProducto}`,
       //     //Cantidad: `${ mercancia_json_info.Cantidad}`,
       //     //ClaveUnidad: `${mercancias[i].ClaveUnidad}`,
       //     //PesoEnKg: `${mercancias[i].PesoEnKg}`,
       //     //MaterialPeligroso: `${mercancias[i].MaterialPeligroso}`,
       //   },
-       
+
       //   "cartaporte20:CantidadTransporta": {
       //     $: {
       //       // Domicilio properties here
@@ -825,13 +801,13 @@ async function createXmlCtrl(req, res) {
       //       IDOrigen: `${ID_DirOrigen}`,
       //       IDDestino: `${ID_DirDestino}`,
       //     },
-       
+
       //   }
       // })
 
-      aux_counter_direccion=aux_counter_direccion+2;
+      aux_counter_direccion = aux_counter_direccion + 2;
       //console.log("\n\n", aux_counter_direccion)
-    };
+    }
 
     const remolques = req.body.Mercancias[0].Autotransporte.Remolques;
     // console.log(`This is inside the remolques object: ${JSON.stringify(remolques)}`)
@@ -839,167 +815,173 @@ async function createXmlCtrl(req, res) {
     const remolquesLength = remolques.length;
     // console.log(`Length of remolques array: ${remolquesLength}`);
 
-    if (remolquesLength<3) {
-      JsonStructureCFDI["cfdi:Comprobante"]["cfdi:Complemento"]["cartaporte20:CartaPorte"]["cartaporte20:Mercancias"]["cartaporte20:Autotransporte"]["cartaporte20:Remolques"] = {
-        "cartaporte20:Remolque": [], // puede tener 0-2 remolques
-      };
-      console.log("entering conditional remolquesLength")
-      
-      var remolquesArray =
+    if (remolquesLength < 3) {
       JsonStructureCFDI["cfdi:Comprobante"]["cfdi:Complemento"][
         "cartaporte20:CartaPorte"
-      ]["cartaporte20:Mercancias"]["cartaporte20:Autotransporte"]["cartaporte20:Remolques"]["cartaporte20:Remolque"];
-  
+      ]["cartaporte20:Mercancias"]["cartaporte20:Autotransporte"][
+        "cartaporte20:Remolques"
+      ] = {
+        "cartaporte20:Remolque": [], // puede tener 0-2 remolques
+      };
+      console.log("entering conditional remolquesLength");
+
+      var remolquesArray =
+        JsonStructureCFDI["cfdi:Comprobante"]["cfdi:Complemento"][
+          "cartaporte20:CartaPorte"
+        ]["cartaporte20:Mercancias"]["cartaporte20:Autotransporte"][
+          "cartaporte20:Remolques"
+        ]["cartaporte20:Remolque"];
+
       for (let i = 0; i < remolquesLength; i++) {
         //console.log(remolques[i].id_Remolque)
-        const remolqueInformation = await getRemolqueInfo(remolques[i].id_Remolque)
+        const remolqueInformation = await getRemolqueInfo(
+          remolques[i].id_Remolque
+        );
         //const remolque = remolques[i];
-//        console.log(`Pushing remolque id ${i}: ${remolqueInformation}`);
+        //        console.log(`Pushing remolque id ${i}: ${remolqueInformation}`);
         //console.log(`remolqueInformation.length: ${remolqueInformation.length}`);
 
         let tipo_remolque = remolqueInformation[0].st_ClaveRemolque;
         // console.log("tipo_remolque", tipo_remolque)
-        let placa_remolque = remolqueInformation[0].st_Placa; 
+        let placa_remolque = remolqueInformation[0].st_Placa;
         // console.log("placa_remolque", placa_remolque)
 
-        remolquesArray.push(
-          
-          { // Mercancia properties here
-            $: {
+        remolquesArray.push({
+          // Mercancia properties here
+          $: {
             Placa: `${placa_remolque}`,
             SubTipoRem: `${tipo_remolque}`,
-            }
-          }
-          )
-      };
-    }else if(remolquesLength==0){
-      console.log("There are no remolques to add.")
-    }else{
-      throw new Error(`Fixed ERROR: You can only a maximum of 2 remolques, you're tring to add ${remolquesLength + 1} remolques. `)
+          },
+        });
+      }
+    } else if (remolquesLength == 0) {
+      console.log("There are no remolques to add.");
+    } else {
+      throw new Error(
+        `Fixed ERROR: You can only a maximum of 2 remolques, you're tring to add ${
+          remolquesLength + 1
+        } remolques. `
+      );
     }
-      
 
-    
     var TiposFiguraArray =
-    JsonStructureCFDI["cfdi:Comprobante"]["cfdi:Complemento"][
-      "cartaporte20:CartaPorte"
-    ]["cartaporte20:FiguraTransporte"]["cartaporte20:TiposFigura"];
-  const TiposFigura = req.body.FiguraTransporte;
-  
-  //console.log(`this is the domicilio of figura transport ${JSON.stringify(req.body.FiguraTransporte[0].Domicilio)}`);
-  
-  let validateLength_DomicilioFigura = await validate_DomicilioFigura(TiposFigura[0].id_Operador);
-  let OperadorInformation =  await getOperadorInformation(TiposFigura[0].id_Operador);
+      JsonStructureCFDI["cfdi:Comprobante"]["cfdi:Complemento"][
+        "cartaporte20:CartaPorte"
+      ]["cartaporte20:FiguraTransporte"]["cartaporte20:TiposFigura"];
+    const TiposFigura = req.body.FiguraTransporte;
 
-  //console.log(`this is operador info ${JSON.stringify(OperadorInformation)}`);
+    //console.log(`this is the domicilio of figura transport ${JSON.stringify(req.body.FiguraTransporte[0].Domicilio)}`);
 
-  if (validateLength_DomicilioFigura > 0) {
-    console.log("it exists a domicilio of Operador");
-  
-    //const tipoAutotransporte = req.body.FiguraTransporte[0].Domicilio;
-    //let id_tipoFiguraOperador = await getIdTipoFigura(TiposFigura[0].id_TipoFigura);    
+    let validateLength_DomicilioFigura = await validate_DomicilioFigura(
+      TiposFigura[0].id_Operador
+    );
+    let OperadorInformation = await getOperadorInformation(
+      TiposFigura[0].id_Operador
+    );
 
-    const NombreFigura = OperadorInformation.st_Nombre;
-    const RFCFigura = OperadorInformation.st_RFC; 
+    //console.log(`this is operador info ${JSON.stringify(OperadorInformation)}`);
 
-    TiposFiguraArray.push({
-      $: {
-        TipoFigura: `${OperadorInformation.st_ClaveFiguraTransporte}`,
-        RFCFigura: `${RFCFigura}`,
-        NumLicencia: `${OperadorInformation.st_NumLicencia}`,
-        NombreFigura: `${NombreFigura} ${ OperadorInformation.st_ApellidoP} ${ OperadorInformation.st_ApellidoM}`,
-      },
-      "cartaporte20:Domicilio": {
+    if (validateLength_DomicilioFigura > 0) {
+      console.log("it exists a domicilio of Operador");
+
+      //const tipoAutotransporte = req.body.FiguraTransporte[0].Domicilio;
+      //let id_tipoFiguraOperador = await getIdTipoFigura(TiposFigura[0].id_TipoFigura);
+
+      const NombreFigura = OperadorInformation.st_Nombre;
+      const RFCFigura = OperadorInformation.st_RFC;
+
+      TiposFiguraArray.push({
         $: {
-          Calle: `${OperadorInformation.st_Calle}`,
-          Municipio: `${OperadorInformation.c_Municipio}`,
-          Estado: `${OperadorInformation.c_Estado}`,
-          Pais: `${OperadorInformation.c_Pais}`,
-          Colonia: `${OperadorInformation.c_colonia}`,
-          Localidad: `${OperadorInformation.c_Localidad}`,
-          CodigoPostal: `${OperadorInformation.c_codigoPostal}`
-        }
-      }
-    });
-  } else {
-    console.log(`Pushing TiposFigura number`);
+          TipoFigura: `${OperadorInformation.st_ClaveFiguraTransporte}`,
+          RFCFigura: `${RFCFigura}`,
+          NumLicencia: `${OperadorInformation.st_NumLicencia}`,
+          NombreFigura: `${NombreFigura} ${OperadorInformation.st_ApellidoP} ${OperadorInformation.st_ApellidoM}`,
+        },
+        "cartaporte20:Domicilio": {
+          $: {
+            Calle: `${OperadorInformation.st_Calle}`,
+            Municipio: `${OperadorInformation.c_Municipio}`,
+            Estado: `${OperadorInformation.c_Estado}`,
+            Pais: `${OperadorInformation.c_Pais}`,
+            Colonia: `${OperadorInformation.c_colonia}`,
+            Localidad: `${OperadorInformation.c_Localidad}`,
+            CodigoPostal: `${OperadorInformation.c_codigoPostal}`,
+          },
+        },
+      });
+    } else {
+      console.log(`Pushing TiposFigura number`);
 
-    TiposFiguraArray.push({
-      $: {
-        TipoFigura: `${OperadorInformation.st_ClaveFiguraTransporte}`,
-        RFCFigura: `${OperadorInformation.st_RFC}`,
-        NumLicencia: `${OperadorInformation.st_NumLicencia}`,
-        NombreFigura: `${NombreFigura} ${ OperadorInformation.st_ApellidoP} ${ OperadorInformation.st_ApellidoM}`,
-      
-      }
-    });
-  }
-  
-
-
-
-
+      TiposFiguraArray.push({
+        $: {
+          TipoFigura: `${OperadorInformation.st_ClaveFiguraTransporte}`,
+          RFCFigura: `${OperadorInformation.st_RFC}`,
+          NumLicencia: `${OperadorInformation.st_NumLicencia}`,
+          NombreFigura: `${NombreFigura} ${OperadorInformation.st_ApellidoP} ${OperadorInformation.st_ApellidoM}`,
+        },
+      });
+    }
 
     var xmlRaw = builder.buildObject(JsonStructureCFDI, options);
     //console.log(`this is generated raw XML${xmlRaw}`);
 
     let xmlFileName = await createTimestampedXmlFile(xmlRaw);
-    updateTableCFDI(xmlFileName.slice(0, -4), id_CFDI_database)
-    
-    //const cfdi = await cfdiModel.find(body);
+    updateTableCFDI(xmlFileName.slice(0, -4), id_CFDI_database);
 
+    //const cfdi = await cfdiModel.find(body);
 
     handleHttpResponse(res, {
       xmlRaw: `${xmlRaw}`,
       xmlFileName: `${xmlFileName}`,
     });
-
   } catch (e) {
     console.error(e);
     res.status(500).json({
       success: false,
-      message: "Server Error"
+      message: "Server Error",
     });
 
     console.log("Login error: " + e);
     //handleHttpError(res, "ERROR_CREATE_XML");
   }
-  
 }
 
-async function createXmlCtrlFromDB(req, res){
+async function createXmlCtrlFromDB(req, res) {
   try {
-    //console.log("createXmlCtrlFromDB")
-    const id= parseInt(req.params.id)
-    //console.log(`El id ESSSS ${id}`)
+    const id_CFDI_DB = parseInt(req.params.id);
+    console.log(id_CFDI_DB);
+    const dataCFDI = await readCFDICtrl(req, res, id_CFDI_DB);
 
-    const dataCFDI = await cfdiModel.findByPk(id);
-    const tipoCFDI = dataCFDI.dataValues.id_TipoComprobante;
     
-    let rawXML;
+    
+    const rawXMLArray = await Promise.all(
+      dataCFDI.map(async (eachCFDI_Row) => {
+        console.log(eachCFDI_Row);
+        const tipoCFDI = eachCFDI_Row.id_TipoComprobante;
+        let rawXML;
+        switch (tipoCFDI) {
+          case 1:
+            console.log("Creating ingreso CFDI ");
+            rawXML = await populateXMLIngresoCFDI(eachCFDI_Row);
+            break;
+          case 2:
+            console.log("Creating Traslado CFDI ");
+            break;
+          default:
+            console.log(
+              "Specify the type of CFDI either Ingreso, Egreso, traslado, etc."
+            );
+        }
+        return rawXML;
+      })
+    );
 
-    switch (tipoCFDI){
-      case 1:
-        console.log("Creating ingreso CFDI ")
-        rawXML = await populateXMLIngresoCFDI(dataCFDI.dataValues)
-        break;
-      case 2:
-        console.log("Creating Traslado CFDI ")
-        break;
-      default:
-        handleHttpError(res, "ERROR_TYPE_OF_CFDI_NOT_SPECIFIED")
-        console.log('Specify the type of CFDI either Ingreso,Egreso,traslado,etc.');
-    }
-    let xmlFileName = await createTimestampedXmlFile(rawXML);
-
-    handleHttpResponse(res, rawXML )  
-
-
+    // Now 'rawXMLArray' contains all the 'rawXML' values
+    let rawXML =  rawXMLArray;
+    handleHttpResponse(res, rawXML);
   } catch (e) {
-    handleHttpError(res, "ERROR_CREATING_CFDI_FROM_DB", e)
-
+    handleHttpError(res, "ERROR_CREATING_CFDI_FROM_DB", e);
   }
-
 }
 
 async function populateXMLIngresoCFDI(retrievedValues) {
@@ -1008,15 +990,19 @@ async function populateXMLIngresoCFDI(retrievedValues) {
 
     let c_moneda = await getClaveTipoMoneda(retrievedValues.id_Moneda);
     let c_UsoCFDI = await getClaveUsoCFDI(retrievedValues.id_UsoCFDI);
-    let c_FormaPago = await getClaveFormaPago(retrievedValues.id_FormaPago)
+    let c_FormaPago = await getClaveFormaPago(retrievedValues.id_FormaPago);
 
     let c_MetodoPago = await getClaveMetodoPago(retrievedValues.id_MetodoPago);
-    
-    let c_prodServCFDI= await getClaveProdServCFDI(retrievedValues.id_ClaveProdServCFDI)
-    let dataUnidadCFDI = await getClaveUnidadCFDI(retrievedValues.id_ClaveUnidadPesoCFDI)
 
-    let c_ObjetoImp = await getClaveObjetoImp(retrievedValues.id_ObjetoImp)
-    
+    let c_prodServCFDI = await getClaveProdServCFDI(
+      retrievedValues.id_ClaveProdServCFDI
+    );
+    let dataUnidadCFDI = await getClaveUnidadCFDI(
+      retrievedValues.id_ClaveUnidadPesoCFDI
+    );
+
+    let c_ObjetoImp = await getClaveObjetoImp(retrievedValues.id_ObjetoImp);
+
     let st_DescripcionConcepto = retrievedValues.st_DescripcionConcepto;
     let dec_ImporteConcepto = retrievedValues.dec_ImporteConcepto;
     let dec_ValorUnitarioConcepto = retrievedValues.dec_ValorUnitarioConcepto;
@@ -1028,106 +1014,98 @@ async function populateXMLIngresoCFDI(retrievedValues) {
     let st_TipoFactorTraslado = retrievedValues.st_TipoFactorTraslado;
     let dec_TasaOCuotaTraslado = retrievedValues.dec_TasaOCuotaTraslado;
 
-    
-    
-
     const currentDate = new Date();
 
     const year = currentDate.getFullYear();
-    const month = String(currentDate.getMonth() + 1).padStart(2, '0'); // Months are zero-based
-    const day = String(currentDate.getDate()).padStart(2, '0');
-    const hours = String(currentDate.getHours()).padStart(2, '0');
-    const minutes = String(currentDate.getMinutes()).padStart(2, '0');
-    const seconds = String(currentDate.getSeconds()).padStart(2, '0');
+    const month = String(currentDate.getMonth() + 1).padStart(2, "0"); // Months are zero-based
+    const day = String(currentDate.getDate()).padStart(2, "0");
+    const hours = String(currentDate.getHours()).padStart(2, "0");
+    const minutes = String(currentDate.getMinutes()).padStart(2, "0");
+    const seconds = String(currentDate.getSeconds()).padStart(2, "0");
 
     const formattedDate = `${year}-${month}-${day}T${hours}:${minutes}:${seconds}`;
 
+    let c_TipoDeComprobante = await getClaveTipoComprobante(
+      retrievedValues.id_TipoComprobante
+    );
 
-
-    let c_TipoDeComprobante = await getClaveTipoComprobante(retrievedValues.id_TipoComprobante);
-    
-
-    const xml = xmlbuilder.create('cfdi:Comprobante', {
-      version: '1.0',
-      encoding: 'UTF-8',
+    const xml = xmlbuilder.create("cfdi:Comprobante", {
+      version: "1.0",
+      encoding: "UTF-8",
       headless: false, // Set headless to false to include the XML declaration
     });
 
     // Include the XML declaration manually
-    xml.dec({ version: '1.0', encoding: 'UTF-8' });
+    xml.dec({ version: "1.0", encoding: "UTF-8" });
 
-    xml.att('xmlns:cfdi', 'http://www.sat.gob.mx/cfd/4');
-    xml.att('xmlns:xsi', 'http://www.w3.org/2001/XMLSchema-instance');
-    xml.att('xmlns:cartaporte20', 'http://www.sat.gob.mx/CartaPorte20');
-    xml.att('xsi:schemaLocation', 'http://www.sat.gob.mx/cfd/4 http://www.sat.gob.mx/sitio_internet/cfd/4/cfdv40.xsd http://www.sat.gob.mx/CartaPorte20 http://www.sat.gob.mx/sitio_internet/cfd/CartaPorte/CartaPorte20.xsd');
-    
-    
+    xml.att("xmlns:cfdi", "http://www.sat.gob.mx/cfd/4");
+    xml.att("xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance");
+    xml.att("xmlns:cartaporte20", "http://www.sat.gob.mx/CartaPorte20");
+    xml.att(
+      "xsi:schemaLocation",
+      "http://www.sat.gob.mx/cfd/4 http://www.sat.gob.mx/sitio_internet/cfd/4/cfdv40.xsd http://www.sat.gob.mx/CartaPorte20 http://www.sat.gob.mx/sitio_internet/cfd/CartaPorte/CartaPorte20.xsd"
+    );
 
     // Add more XML namespaces and attributes as needed
 
     // Add dynamic retrievedValues to the XML structure
-    xml.att('Fecha', formattedDate);
+    xml.att("Fecha", formattedDate);
     //xml.att('Folio', retrievedValues.Folio);
-    xml.att('LugarExpedicion', retrievedValues.st_LugarExpedicion);
-    xml.att('TipoDeComprobante', c_TipoDeComprobante);
-    xml.att('NoCertificado', "");
-    xml.att('Sello', "");
-    xml.att('Certificado', "");
-    xml.att('Version', "4.0");
-    xml.att('Exportacion', "");
-    xml.att('Moneda', c_moneda);
-    xml.att('FormaPago', c_FormaPago);
-    xml.att('MetodoPago', c_MetodoPago);
+    xml.att("LugarExpedicion", retrievedValues.st_LugarExpedicion);
+    xml.att("TipoDeComprobante", c_TipoDeComprobante);
+    xml.att("NoCertificado", "");
+    xml.att("Sello", "");
+    xml.att("Certificado", "");
+    xml.att("Version", "4.0");
+    xml.att("Exportacion", "");
+    xml.att("Moneda", c_moneda);
+    xml.att("FormaPago", c_FormaPago);
+    xml.att("MetodoPago", c_MetodoPago);
 
-    xml.att('SubTotal', retrievedValues.dec_SubTotal);
-    xml.att('Total', retrievedValues.dec_Total);
-    xml.att('Serie', "Serie");
-
-
-
-
+    xml.att("SubTotal", retrievedValues.dec_SubTotal);
+    xml.att("Total", retrievedValues.dec_Total);
+    xml.att("Serie", "Serie");
 
     // Add more dynamic retrievedValues attributes here
 
     // Add Emisor element
-    const emisor = xml.ele('cfdi:Emisor');
-    emisor.att('Rfc', retrievedValues.st_RFC_emisor);
-    emisor.att('Nombre', retrievedValues.st_nombre_emisor);
-    emisor.att('RegimenFiscal', retrievedValues.id_RegimenFiscal_emisor);
-   
+    const emisor = xml.ele("cfdi:Emisor");
+    emisor.att("Rfc", retrievedValues.st_RFC_emisor);
+    emisor.att("Nombre", retrievedValues.st_nombre_emisor);
+    emisor.att("RegimenFiscal", retrievedValues.id_RegimenFiscal_emisor);
 
     // Add more Emisor attributes as needed
 
     // Add Receptor element
-    const receptor = xml.ele('cfdi:Receptor');
-    receptor.att('Rfc', retrievedValues.st_RFC_receptor);
-    receptor.att('Nombre', retrievedValues.st_nombre_receptor);
-    receptor.att('RegimenFiscal', retrievedValues.id_RegimenFiscalReceptor);
-    receptor.att('DomicilioFiscalReceptor', retrievedValues.id_DomicilioFiscalReceptor);
-    receptor.att('UsoCFDI', c_UsoCFDI);
-
-
+    const receptor = xml.ele("cfdi:Receptor");
+    receptor.att("Rfc", retrievedValues.st_RFC_receptor);
+    receptor.att("Nombre", retrievedValues.st_nombre_receptor);
+    receptor.att("RegimenFiscal", retrievedValues.id_RegimenFiscalReceptor);
+    receptor.att(
+      "DomicilioFiscalReceptor",
+      retrievedValues.id_DomicilioFiscalReceptor
+    );
+    receptor.att("UsoCFDI", c_UsoCFDI);
 
     // Add more Receptor attributes as needed
 
     // Add Conceptos element
-    const conceptos = xml.ele('cfdi:Conceptos');
-    const concepto = conceptos.ele('cfdi:Concepto');
-    concepto.att('ClaveProdServ', c_prodServCFDI);
-    concepto.att('Cantidad', "1");
-    concepto.att('ClaveUnidad', dataUnidadCFDI.c_ClaveUnidad);
-    concepto.att('Unidad', dataUnidadCFDI.st_Nombre);
-    concepto.att('ObjetoImp',     c_ObjetoImp    );
-    concepto.att('Descripcion',     st_DescripcionConcepto    );
+    const conceptos = xml.ele("cfdi:Conceptos");
+    const concepto = conceptos.ele("cfdi:Concepto");
+    concepto.att("ClaveProdServ", c_prodServCFDI);
+    concepto.att("Cantidad", "1");
+    concepto.att("ClaveUnidad", dataUnidadCFDI.c_ClaveUnidad);
+    concepto.att("Unidad", dataUnidadCFDI.st_Nombre);
+    concepto.att("ObjetoImp", c_ObjetoImp);
+    concepto.att("Descripcion", st_DescripcionConcepto);
 
-    concepto.att('Importe',     dec_ImporteConcepto    );
-    concepto.att('ValorUnitario',     dec_ValorUnitarioConcepto    );
-    
+    concepto.att("Importe", dec_ImporteConcepto);
+    concepto.att("ValorUnitario", dec_ValorUnitarioConcepto);
+
     if (retrievedValues.dec_BaseTraslado != null) {
       // Add Impuestos element inside Concepto
-      
-      const impuestos = concepto.ele('cfdi:Impuestos');
-      
+
+      const impuestos = concepto.ele("cfdi:Impuestos");
 
       // Add subelements inside Impuestos
       const traslados = impuestos.ele("cfdi:Traslados");
@@ -1136,12 +1114,10 @@ async function populateXMLIngresoCFDI(retrievedValues) {
       traslado.att("Impuesto", c_ImpuestoTraslado);
       traslado.att("TipoFactor", st_TipoFactorTraslado);
       traslado.att("TasaOCuota", dec_TasaOCuotaTraslado);
+    } else if (retrievedValues.dec_BaseRetencion != null) {
+      console.log("There is an retencion impuesto");
 
-    }else if (retrievedValues.dec_BaseRetencion != null){
-      console.log("There is an retencion impuesto")
-     
-      const impuestos = concepto.ele('cfdi:Impuestos');
-
+      const impuestos = concepto.ele("cfdi:Impuestos");
 
       const retenciones = impuestos.ele("cfdi:Retenciones");
       const retencion = retenciones.ele("cfd:Retencion");
@@ -1149,11 +1125,9 @@ async function populateXMLIngresoCFDI(retrievedValues) {
       retencion.att("Impuesto", c_Impuestoretencion);
       retencion.att("TipoFactor", st_TipoFactorretencion);
       retencion.att("TasaOCuota", dec_TasaOCuotaretencion);
-
-      
     }
-      // concepto.att('NoIdentificacion', retrievedValues.NoIdentificacion);
-      // Add more Concepto attributes as needed
+    // concepto.att('NoIdentificacion', retrievedValues.NoIdentificacion);
+    // Add more Concepto attributes as needed
 
     // Convert XML to string
     const xmlString = xml.end({ pretty: true });

@@ -44,10 +44,10 @@ const readAllByEmpresaCFDICtrl = async (req, res) => {
   }
 };
 
-const readCFDICtrl = async (req, res) => {
-  try {
-    const id_cfdi = req.params.id;
 
+const getProdServRelatedToCfdi = async(id_cfdi)=>{
+  try {
+  
     // First query to select columns from tbl_cfdi to get id_CFDI
     const query1 = "SELECT id_CFDI FROM tbl_cfdi WHERE id_CFDI = :id";
     const result1 = await sequelize.query(query1, {
@@ -57,28 +57,48 @@ const readCFDICtrl = async (req, res) => {
 
     // Check if id_CFDI was found in the first query
     if (result1 && result1.length > 0) {
-      // Use the id_CFDI from the first query in the second query
-      const id_CFDI = result1[0].id_CFDI;
+        // Use the id_CFDI from the first query in the second query
+        const id_CFDI = result1[0].id_CFDI;
 
-      // Second query to select columns from both tbl_cfdi and tbl_prodserv_cfdi
-      const query2 = "SELECT tbl_cfdi.*, tbl_prodserv_cfdi.* FROM tbl_cfdi LEFT JOIN tbl_prodserv_cfdi ON tbl_cfdi.id_CFDI = tbl_prodserv_cfdi.id_CFDI WHERE tbl_cfdi.id_CFDI = :id";
+        // Second query to select columns from both tbl_cfdi and tbl_prodserv_cfdi
+        const query2 = "SELECT tbl_cfdi.*, tbl_prodserv_cfdi.* FROM tbl_cfdi LEFT JOIN tbl_prodserv_cfdi ON tbl_cfdi.id_CFDI = tbl_prodserv_cfdi.id_CFDI WHERE tbl_cfdi.id_CFDI = :id";
 
-      const result2 = await sequelize.query(query2, {
-        replacements: { id: id_CFDI },
-        type: sequelize.QueryTypes.SELECT,
-      });
-      // Combine the results
-      const newArray = result2.map((item) => {
-        // Transform 'item' and return the result
-      return { ...item, id_CFDI };
-      });
+        const result2 = await sequelize.query(query2, {
+          replacements: { id: id_CFDI },
+          type: sequelize.QueryTypes.SELECT,
+        });
+        // Combine the results
+        const newArray = result2.map((item) => {
+          // Transform 'item' and return the result
+        return { ...item, id_CFDI };
+        });
+        return newArray;
 
-
-      handleHttpResponse(res, newArray);
-    } else {
-      // Handle the case where id_CFDI wasn't found
-      res.status(404).json({ success: false, message: 'Record not found' });
     }
+  } catch (error) {
+    console.log(error)
+  }
+}
+
+const readCFDICtrl = async (req, res, id_CFDI_DB) => {
+  try {
+    let id_cfdi;
+    let dataCFDI;
+    if (id_CFDI_DB) {
+      id_cfdi = id_CFDI_DB; // Use the parameter 'id_CFDI_DB'
+      dataCFDI = await getProdServRelatedToCfdi(id_CFDI_DB);
+      return dataCFDI;
+    } else if (req.params.id) {
+      id_cfdi = req.params.id; // Use 'req.params.id' from the client request
+      dataCFDI = await getProdServRelatedToCfdi(id_cfdi)
+      // Return a response to the client
+      handleHttpResponse(res, dataCFDI); 
+      return; // Ensure you return to prevent further execution
+    } else {
+      res.status(400).json({ success: false, message: 'Missing ID' });
+      return; // Ensure you return to prevent further execution
+    }
+
   } catch (err) {
     console.error(err);
     res.status(500).json({ success: false, message: 'Server Error' });

@@ -123,10 +123,28 @@ const deleteUnidadCtrl = async (req, res) => {
   }
 };
 
+
+async function readTiposPermisosSCTCtrl(req, res){
+  try {
+      let query =
+        "SELECT * " +
+        "FROM `cat_tipopermiso`" 
+
+      const dataUnidadModified = await sequelize.query(query, {
+        type: QueryTypes.SELECT,
+      });
+
+      handleHttpResponse(res, dataUnidadModified);
+  } catch (e) {
+    handleHttpError(res, "ERROR_READ_UNIDAD");
+  }
+}
+
 module.exports = {
   createUnidadCtrl,
   readAllUnidadesCtrl,
   readUnidadCtrl,
   updateUnidadesCtrl,
   deleteUnidadCtrl,
+  readTiposPermisosSCTCtrl
 };

@@ -10,6 +10,7 @@ const {
   readUnidadCtrl,
   updateUnidadesCtrl,
   deleteUnidadCtrl,
+  readTiposPermisosSCTCtrl
 } = require("../controllers/unidades");
 
 /**
@@ -24,6 +25,8 @@ Delete Unidad: http://localhost:5000/api/unidades/delete/:id
 router.post("/create", validatorUnidades, createUnidadCtrl);
 router.get("/read", readAllUnidadesCtrl);
 router.get("/read/:id", readUnidadCtrl);
+router.get("/readTiposPermisosSCT", readTiposPermisosSCTCtrl);
+
 router.put(
   "/update/:id",
   //validatorReadUnidad,
