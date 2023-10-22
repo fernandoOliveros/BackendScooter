@@ -51,6 +51,9 @@ const Unidad = sequelize.define(
     date_Ecologico: {
       type: DataTypes.DATE,
     },
+    id_TipoPermiso: {
+      type: DataTypes.NUMBER,
+    },
   },
   {
     timestamps: false, //se debe especificar para cada modelo, o especificar globalmente desde /../../config/mysql

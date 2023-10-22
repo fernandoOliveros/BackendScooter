@@ -11,6 +11,7 @@ const validatorUnidades = [
   check("id_Empresa").exists(),
   check("id_TipoUnidad").exists(),
   check("id_Candado").exists(),
+  check("id_TipoPermiso").exists(),
   check("st_Marca").exists(),
   check("st_SubMarca").exists(),
   check("st_PermisoSCT").exists(),
