@@ -22,12 +22,13 @@ const {
   usosCFDIModel,
   unidadCFDIModel,
   objImpModel,
+  cfdiModel,
+  prodServCFDIModel,
 } = require("../models");
 
 /******Install the fs  library to  create the file cfdi_YYYY-MM-DD_HH-mm-ss.xml*********/
 var fs = require("fs");
 const moment = require("moment"); // Install the moment library to format the date and time
-const { cfdiModel } = require("../models");
 
 async function validate_DomicilioFigura(id_Operador) {
   try {
@@ -116,7 +117,6 @@ async function getLocalidad(id_localidad) {
 }
 async function getClaveProdServCFDI(id_ClaveProdServCFDI) {
   try {
-    console.log("Entering getClaveProdServCFDI");
     let query = `SELECT c_ClaveProdServ FROM cat_cfdi_prodserv WHERE id_ClaveProdServCFDI = :id`;
     let c_ClaveProdServCFDI = await sequelize.query(query, {
       replacements: { id: `${id_ClaveProdServCFDI}` },
@@ -312,7 +312,6 @@ async function getClaveTipoMoneda(id_Moneda) {
     const dataTipoMoneda = await tiposMonedasModel.findByPk(id_Moneda);
 
     let c_Moneda = dataTipoMoneda.dataValues.c_Moneda;
-    console.log("dataTipoMoneda", c_Moneda);
     return c_Moneda;
   } catch (error) {
     console.log("Unable to query the the tipo moneda table", error);
@@ -948,86 +947,65 @@ async function createXmlCtrl(req, res) {
 
 async function createXmlCtrlFromDB(req, res) {
   try {
+    console.log("createXmlCtrlFromDB");
     const id_CFDI_DB = parseInt(req.params.id);
-    console.log(id_CFDI_DB);
     const dataCFDI = await readCFDICtrl(req, res, id_CFDI_DB);
+    let id_TipoComprobante = dataCFDI.shift().id_TipoComprobante;
+    let rawXML;
+    switch (id_TipoComprobante) {
+      case 1:
+        console.log("Creating ingreso CFDI ");
+        rawXML = await populateXMLIngresoCFDI(id_CFDI_DB);
+        let xmlFileName = await createTimestampedXmlFile(rawXML);
+        updateTableCFDI(xmlFileName.slice(0, -4), id_TipoComprobante);
+        handleHttpResponse(res, {
+          xmlRaw: `${rawXML}`,
+          xmlFileName: `${xmlFileName}`,
+        });
+        break;
+      case 2:
+        console.log("Creating Traslado CFDI ");
+        break;
+      default:
+        console.log(
+          "Specify the type of CFDI either Ingreso, Egreso, traslado, etc."
+        );
+        return;
+    }
 
-    
-    
-    const rawXMLArray = await Promise.all(
-      dataCFDI.map(async (eachCFDI_Row) => {
-        console.log(eachCFDI_Row);
-        const tipoCFDI = eachCFDI_Row.id_TipoComprobante;
-        let rawXML;
-        switch (tipoCFDI) {
-          case 1:
-            console.log("Creating ingreso CFDI ");
-            rawXML = await populateXMLIngresoCFDI(eachCFDI_Row);
-            break;
-          case 2:
-            console.log("Creating Traslado CFDI ");
-            break;
-          default:
-            console.log(
-              "Specify the type of CFDI either Ingreso, Egreso, traslado, etc."
-            );
-        }
-        return rawXML;
-      })
-    );
+    //Now 'rawXMLArray' contains all the 'rawXML' values
 
-    // Now 'rawXMLArray' contains all the 'rawXML' values
-    let rawXML =  rawXMLArray;
-    handleHttpResponse(res, rawXML);
+    //handleHttpResponse(res, rawXML);
   } catch (e) {
     handleHttpError(res, "ERROR_CREATING_CFDI_FROM_DB", e);
   }
 }
 
-async function populateXMLIngresoCFDI(retrievedValues) {
+async function populateXMLIngresoCFDI(id_CFDI_DB) {
   try {
-    console.log("retrievedValues", retrievedValues);
+    console.log("id_CFDI_DB", id_CFDI_DB);
 
-    let c_moneda = await getClaveTipoMoneda(retrievedValues.id_Moneda);
-    let c_UsoCFDI = await getClaveUsoCFDI(retrievedValues.id_UsoCFDI);
-    let c_FormaPago = await getClaveFormaPago(retrievedValues.id_FormaPago);
-
-    let c_MetodoPago = await getClaveMetodoPago(retrievedValues.id_MetodoPago);
-
-    let c_prodServCFDI = await getClaveProdServCFDI(
-      retrievedValues.id_ClaveProdServCFDI
-    );
-    let dataUnidadCFDI = await getClaveUnidadCFDI(
-      retrievedValues.id_ClaveUnidadPesoCFDI
-    );
-
-    let c_ObjetoImp = await getClaveObjetoImp(retrievedValues.id_ObjetoImp);
-
-    let st_DescripcionConcepto = retrievedValues.st_DescripcionConcepto;
-    let dec_ImporteConcepto = retrievedValues.dec_ImporteConcepto;
-    let dec_ValorUnitarioConcepto = retrievedValues.dec_ValorUnitarioConcepto;
-
-    /**Apartado para Impuestos */
-    let dec_BaseTraslado = retrievedValues.dec_BaseTraslado;
-    let c_ImpuestoTraslado = retrievedValues.c_ImpuestoTraslado;
-
-    let st_TipoFactorTraslado = retrievedValues.st_TipoFactorTraslado;
-    let dec_TasaOCuotaTraslado = retrievedValues.dec_TasaOCuotaTraslado;
-
-    const currentDate = new Date();
-
-    const year = currentDate.getFullYear();
-    const month = String(currentDate.getMonth() + 1).padStart(2, "0"); // Months are zero-based
-    const day = String(currentDate.getDate()).padStart(2, "0");
-    const hours = String(currentDate.getHours()).padStart(2, "0");
-    const minutes = String(currentDate.getMinutes()).padStart(2, "0");
-    const seconds = String(currentDate.getSeconds()).padStart(2, "0");
-
-    const formattedDate = `${year}-${month}-${day}T${hours}:${minutes}:${seconds}`;
-
+    const generalCfdiInfo = await cfdiModel.findByPk(id_CFDI_DB);
+    //    console.log(generalCfdiInfo)
+    //APARTADO DE CFDI GENERAL
+    let c_moneda = await getClaveTipoMoneda(generalCfdiInfo.id_Moneda);
+    let c_UsoCFDI = await getClaveUsoCFDI(generalCfdiInfo.id_UsoCFDI);
+    let c_FormaPago = await getClaveFormaPago(generalCfdiInfo.id_FormaPago);
+    let c_MetodoPago = await getClaveMetodoPago(generalCfdiInfo.id_MetodoPago);
     let c_TipoDeComprobante = await getClaveTipoComprobante(
-      retrievedValues.id_TipoComprobante
+      generalCfdiInfo.id_TipoComprobante
     );
+    const date_FechaCFDI = await getFormattedDate();
+
+    //APARTADO DE PRODUCTOS-SERVICIOS CFDI
+
+    let query = "SELECT * from tbl_prodserv_cfdi WHERE id_CFDI=:id";
+    const prodServCFDI = await sequelize.query(query, {
+      type: QueryTypes.SELECT,
+      replacements : {id: id_CFDI_DB}
+    });
+
+    console.log("lenght of prod-serv", prodServCFDI.length);
 
     const xml = xmlbuilder.create("cfdi:Comprobante", {
       version: "1.0",
@@ -1048,10 +1026,10 @@ async function populateXMLIngresoCFDI(retrievedValues) {
 
     // Add more XML namespaces and attributes as needed
 
-    // Add dynamic retrievedValues to the XML structure
-    xml.att("Fecha", formattedDate);
-    //xml.att('Folio', retrievedValues.Folio);
-    xml.att("LugarExpedicion", retrievedValues.st_LugarExpedicion);
+    // Add dynamic generalCfdiInfo to the XML structure
+    xml.att("Fecha", date_FechaCFDI);
+    //xml.att('Folio', generalCfdiInfo.Folio);
+    xml.att("LugarExpedicion", generalCfdiInfo.st_LugarExpedicion);
     xml.att("TipoDeComprobante", c_TipoDeComprobante);
     xml.att("NoCertificado", "");
     xml.att("Sello", "");
@@ -1062,72 +1040,120 @@ async function populateXMLIngresoCFDI(retrievedValues) {
     xml.att("FormaPago", c_FormaPago);
     xml.att("MetodoPago", c_MetodoPago);
 
-    xml.att("SubTotal", retrievedValues.dec_SubTotal);
-    xml.att("Total", retrievedValues.dec_Total);
+    xml.att("SubTotal", generalCfdiInfo.dec_SubTotal);
+    xml.att("Total", generalCfdiInfo.dec_Total);
     xml.att("Serie", "Serie");
 
-    // Add more dynamic retrievedValues attributes here
+    // Add more dynamic generalCfdiInfo attributes here
 
     // Add Emisor element
     const emisor = xml.ele("cfdi:Emisor");
-    emisor.att("Rfc", retrievedValues.st_RFC_emisor);
-    emisor.att("Nombre", retrievedValues.st_nombre_emisor);
-    emisor.att("RegimenFiscal", retrievedValues.id_RegimenFiscal_emisor);
+    emisor.att("Rfc", generalCfdiInfo.st_RFC_emisor);
+    emisor.att("Nombre", generalCfdiInfo.st_nombre_emisor);
+    emisor.att("RegimenFiscal", generalCfdiInfo.id_RegimenFiscal_emisor);
 
     // Add more Emisor attributes as needed
 
     // Add Receptor element
     const receptor = xml.ele("cfdi:Receptor");
-    receptor.att("Rfc", retrievedValues.st_RFC_receptor);
-    receptor.att("Nombre", retrievedValues.st_nombre_receptor);
-    receptor.att("RegimenFiscal", retrievedValues.id_RegimenFiscalReceptor);
+    receptor.att("Rfc", generalCfdiInfo.st_RFC_receptor);
+    receptor.att("Nombre", generalCfdiInfo.st_nombre_receptor);
+    receptor.att("RegimenFiscal", generalCfdiInfo.id_RegimenFiscalReceptor);
     receptor.att(
       "DomicilioFiscalReceptor",
-      retrievedValues.id_DomicilioFiscalReceptor
+      generalCfdiInfo.id_DomicilioFiscalReceptor
     );
     receptor.att("UsoCFDI", c_UsoCFDI);
 
-    // Add more Receptor attributes as needed
-
     // Add Conceptos element
     const conceptos = xml.ele("cfdi:Conceptos");
-    const concepto = conceptos.ele("cfdi:Concepto");
-    concepto.att("ClaveProdServ", c_prodServCFDI);
-    concepto.att("Cantidad", "1");
-    concepto.att("ClaveUnidad", dataUnidadCFDI.c_ClaveUnidad);
-    concepto.att("Unidad", dataUnidadCFDI.st_Nombre);
-    concepto.att("ObjetoImp", c_ObjetoImp);
-    concepto.att("Descripcion", st_DescripcionConcepto);
+    //apartado para tabla tbl_prodserv_cfdi
 
-    concepto.att("Importe", dec_ImporteConcepto);
-    concepto.att("ValorUnitario", dec_ValorUnitarioConcepto);
+    // Iterate through the results of prodServCFDI query
+    let impuestos;
 
-    if (retrievedValues.dec_BaseTraslado != null) {
-      // Add Impuestos element inside Concepto
+    for (const prodServResult of prodServCFDI) {
+      //apartado para tabla tbl_prodserv_cfdi
+      let c_prodServCFDI = await getClaveProdServCFDI(
+        prodServResult.id_ClaveProdServCFDI
+      );
+      let dataUnidadCFDI = await getClaveUnidadCFDI(
+        prodServResult.id_ClaveUnidadPesoCFDI
+      );
+      let c_ObjetoImp = await getClaveObjetoImp(prodServResult.id_ObjetoImp);
+      let i_Cantidad = prodServResult.i_Cantidad;
 
-      const impuestos = concepto.ele("cfdi:Impuestos");
+      const concepto = conceptos.ele("cfdi:Concepto");
+      concepto.att("ClaveProdServ", c_prodServCFDI);
+      concepto.att("Cantidad", i_Cantidad);
+      concepto.att("ClaveUnidad", dataUnidadCFDI.c_ClaveUnidad);
+      concepto.att("Unidad", dataUnidadCFDI.st_Nombre);
+      concepto.att("ObjetoImp", c_ObjetoImp);
+      concepto.att("Descripcion", prodServResult.st_DescripcionConcepto);
+      concepto.att("Importe", prodServResult.dec_ImporteConcepto);
+      concepto.att("ValorUnitario", prodServResult.dec_ValorUnitarioConcepto);
 
-      // Add subelements inside Impuestos
-      const traslados = impuestos.ele("cfdi:Traslados");
-      const traslado = traslados.ele("cfd:Traslado");
-      traslado.att("Base", dec_BaseTraslado);
-      traslado.att("Impuesto", c_ImpuestoTraslado);
-      traslado.att("TipoFactor", st_TipoFactorTraslado);
-      traslado.att("TasaOCuota", dec_TasaOCuotaTraslado);
-    } else if (retrievedValues.dec_BaseRetencion != null) {
-      console.log("There is an retencion impuesto");
+      console.log(prodServResult);
 
-      const impuestos = concepto.ele("cfdi:Impuestos");
+      let hasImpuestos = false;
 
-      const retenciones = impuestos.ele("cfdi:Retenciones");
-      const retencion = retenciones.ele("cfd:Retencion");
-      retencion.att("Base", dec_Baseretencion);
-      retencion.att("Impuesto", c_Impuestoretencion);
-      retencion.att("TipoFactor", st_TipoFactorretencion);
-      retencion.att("TasaOCuota", dec_TasaOCuotaretencion);
+      if (prodServResult.id_TipoFactorTraslado != null) {
+        console.log("There is an traslado impuesto");
+
+        let ImpuestoTrasladoInformation = await getClaveImpuesto(
+          prodServResult.id_ImpuestoTraslado
+        );
+        let c_ImpuestoTraslado = ImpuestoTrasladoInformation.shift().c_Impuesto;
+        let c_TipoFactor = await getClaveTipoFactor(
+          prodServResult.id_TipoFactorRetencion);
+        // Create the Impuestos element for the first Traslado
+        if (!hasImpuestos) {
+          impuestos = concepto.ele("cfdi:Impuestos");
+          hasImpuestos = true;
+        }
+        const traslados = impuestos.ele("cfdi:Traslados");
+        const traslado = traslados.ele("cfd:Traslado");
+
+        traslado.att("Base", prodServResult.dec_BaseTraslado);
+        traslado.att("Impuesto", c_ImpuestoTraslado);
+        traslado.att("TipoFactor", c_TipoFactor);
+        traslado.att("TasaOCuota", prodServResult.dec_TasaOCuotaTraslado);
+       
+      
+      }
+
+
+
+      if (prodServResult.dec_BaseRetencion != null) {
+        console.log("There is an retencion impuesto");
+        let dec_BaseRetencion = prodServResult.dec_BaseRetencion;
+
+        let c_TipoFactor = await getClaveTipoFactor(
+          prodServResult.id_TipoFactorTraslado
+        );
+        let ImpuestoretencionInformation = await getClaveImpuesto(
+          prodServResult.id_ImpuestoRetencion
+        );
+        let c_Impuesto = ImpuestoretencionInformation.shift().c_Impuesto;
+
+        let dec_TasaOCuotaretencion = prodServResult.dec_TasaOCuotaRetencion;
+        if (!hasImpuestos) {
+          impuestos = concepto.ele("cfdi:Impuestos");
+          hasImpuestos = true;
+
+        }
+        const retenciones = impuestos.ele("cfdi:Retenciones");
+        const retencion = retenciones.ele("cfd:Retencion");
+        retencion.att("Base", dec_BaseRetencion);
+        retencion.att("Impuesto", c_Impuesto);
+        retencion.att("TipoFactor", c_TipoFactor);
+        retencion.att("TasaOCuota", dec_TasaOCuotaretencion);
+
+       
+      }
     }
-    // concepto.att('NoIdentificacion', retrievedValues.NoIdentificacion);
-    // Add more Concepto attributes as needed
+
+    // concepto.att('NoIdentificacion', generalCfdiInfo.NoIdentificacion);
 
     // Convert XML to string
     const xmlString = xml.end({ pretty: true });
@@ -1139,6 +1165,53 @@ async function populateXMLIngresoCFDI(retrievedValues) {
   }
 }
 
+async function getFormattedDate() {
+  const currentDate = new Date();
+
+  const year = currentDate.getFullYear();
+  const month = String(currentDate.getMonth() + 1).padStart(2, "0"); // Months are zero-based
+  const day = String(currentDate.getDate()).padStart(2, "0");
+  const hours = String(currentDate.getHours()).padStart(2, "0");
+
+  const minutes = String(currentDate.getMinutes()).padStart(2, "0");
+  const seconds = String(currentDate.getSeconds()).padStart(2, "0");
+
+  const formattedDate = `${year}-${month}-${day}T${
+    hours - 1}:${minutes}:${seconds}`;
+  return formattedDate;
+}
+
+async function getClaveImpuesto(id_Impuesto) {
+  try {
+    let query = `SELECT * from cat_impuesto WHERE id_Impuesto=:id`;
+
+    let UnidadInformation = await sequelize.query(query, {
+      replacements: { id: `${id_Impuesto}` },
+      type: QueryTypes.SELECT,
+    });
+    // Process the query result
+    //console.log("UnidadInformation test ", UnidadInformation)
+    return UnidadInformation;
+  } catch (error) {
+    console.error("Error querying SQL table cat_impuesto:", error);
+  }
+}
+
+async function getClaveTipoFactor(id_TipoFactor) {
+  try {
+    let query = `SELECT * from cat_tipofactor WHERE id_TipoFactor=:id`;
+
+    let UnidadInformation = await sequelize.query(query, {
+      replacements: { id: `${id_TipoFactor}` },
+      type: QueryTypes.SELECT,
+    });
+    // Process the query result
+    //console.log("UnidadInformation test ", UnidadInformation)
+    return UnidadInformation.shift().c_TipoFactor;
+  } catch (error) {
+    console.error("Error querying SQL table cat_impuesto:", error);
+  }
+}
 module.exports = {
   createXmlCtrl,
   createXmlCtrlFromDB,

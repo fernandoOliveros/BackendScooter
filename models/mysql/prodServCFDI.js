@@ -11,15 +11,11 @@ const CFDI = sequelize.define(
 
       //autoIncrement: true,
     },
-    id_ClaveProdServCFDI:{
+    id_ClaveProdServCFDI: {
       type: DataTypes.INTEGER,
       primaryKey: true,
       allowNull: false,
-
     },
-
-
-
     id_ClaveUnidadPesoCFDI: {
       type: DataTypes.INTEGER,
       allowNull: false,
@@ -39,11 +35,12 @@ const CFDI = sequelize.define(
     st_DescripcionConcepto: {
       type: DataTypes.DECIMAL,
       allowNull: true,
-    },    
+    },
+    i_Cantidad: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
 
-
-    
-    
     /**TODO: MODULO DE TRASLADO | IMPUESTOS */
     id_ImpuestoTraslado: {
       type: DataTypes.INTEGER,
@@ -65,7 +62,6 @@ const CFDI = sequelize.define(
       type: DataTypes.DECIMAL,
       allowNull: true,
     },
-    
 
     /**TODO: MODULO DE RETENCION | IMPUESTOS */
     id_ImpuestoRetencion: {
@@ -88,7 +84,6 @@ const CFDI = sequelize.define(
       type: DataTypes.DECIMAL,
       allowNull: true,
     },
-    
 
     /*createdAt: {
       type: DataTypes.DATE,
@@ -102,7 +97,7 @@ const CFDI = sequelize.define(
   {
     timestamps: true,
     tableName: "tbl_prodserv_cfdi",
-    timezone: 'Mexico_City' // Set timezone to Mexico City***
+    timezone: "Mexico_City", // Set timezone to Mexico City***
   }
 );
 
