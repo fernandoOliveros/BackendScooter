@@ -110,7 +110,6 @@ def getSelloShadow():
         sello_file.write(base64_encoded_seal)
 
 def encodeCertificadoBase64():
-
     # Lee el archivo de certificado en formato binario
     with open("../storage/credentials/CSD_Sucursal_1_EKU9003173C9_20230517_223850.cer", "rb") as cert_file:
         cert_data = cert_file.read()

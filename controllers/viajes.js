@@ -123,14 +123,7 @@ const readViajeEmpresaCtrl = async (req, res) => {
       return;
     } else {
       let query =
-        "SELECT `viaje`.*, `empresa`.`id_Empresa`" +
-        "FROM `tbl_viaje` as `viaje`" +
-        "INNER JOIN  `tbl_empresas` as `empresa`" +
-        "ON `empresa`.`id_Empresa`= `viaje`.`id_Empresa`" +
-        "WHERE `empresa`.`id_Empresa`=:id "+
-        "AND `viaje`.`id_Candado`= 1";
-
-
+        " SELECT `viaje`.*, `empresa`.`id_Empresa`, `unidades`.`st_Economico` as st_EconomicoUnidad, `operadores`.`st_Nombre`, operadores.st_ApellidoP, remolques.st_Economico as st_EconomicoRemolque FROM `tbl_viaje` as `viaje` INNER JOIN  `tbl_empresas` as `empresa` ON `empresa`.`id_Empresa`= `viaje`.`id_Empresa` INNER JOIN  `tbl_unidades` as `unidades` ON `unidades`.`id_Unidad`= `viaje`.`id_Unidad` INNER JOIN  `tbl_operadores` as `operadores` ON `operadores`.`id_Operador`= `viaje`.`id_Operador` INNER JOIN  `tbl_remolques` as `remolques` ON `remolques`.`id_Remolque`= `viaje`.`id_Remolque` WHERE `empresa`.`id_Empresa`=:id AND `viaje`.`id_Candado`= 1";
       const dataViajeModified = await sequelize.query(query, {
         replacements: { id: `${id}` },
         type: QueryTypes.SELECT,

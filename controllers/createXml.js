@@ -24,6 +24,8 @@ const {
   objImpModel,
   cfdiModel,
   prodServCFDIModel,
+  empresasModel,
+
 } = require("../models");
 
 /******Install the fs  library to  create the file cfdi_YYYY-MM-DD_HH-mm-ss.xml*********/
@@ -996,6 +998,8 @@ async function populateXMLIngresoCFDI(id_CFDI_DB) {
       generalCfdiInfo.id_TipoComprobante
     );
     const date_FechaCFDI = await getFormattedDate();
+    const empresaInfo = await getEmpresaInfo(id_CFDI_DB)
+
 
     //APARTADO DE PRODUCTOS-SERVICIOS CFDI
 
@@ -1024,18 +1028,19 @@ async function populateXMLIngresoCFDI(id_CFDI_DB) {
       "http://www.sat.gob.mx/cfd/4 http://www.sat.gob.mx/sitio_internet/cfd/4/cfdv40.xsd http://www.sat.gob.mx/CartaPorte20 http://www.sat.gob.mx/sitio_internet/cfd/CartaPorte/CartaPorte20.xsd"
     );
 
-    // Add more XML namespaces and attributes as needed
-
     // Add dynamic generalCfdiInfo to the XML structure
     xml.att("Fecha", date_FechaCFDI);
     //xml.att('Folio', generalCfdiInfo.Folio);
     xml.att("LugarExpedicion", generalCfdiInfo.st_LugarExpedicion);
     xml.att("TipoDeComprobante", c_TipoDeComprobante);
-    xml.att("NoCertificado", "");
+    console.log("getEmpresaInfo")
+
+    console.log(empresaInfo);
+    xml.att("NoCertificado", empresaInfo.st_NoCertificado);
     xml.att("Sello", "");
     xml.att("Certificado", "");
     xml.att("Version", "4.0");
-    xml.att("Exportacion", "");
+//    xml.att("Exportacion", "");
     xml.att("Moneda", c_moneda);
     xml.att("FormaPago", c_FormaPago);
     xml.att("MetodoPago", c_MetodoPago);
@@ -1048,9 +1053,9 @@ async function populateXMLIngresoCFDI(id_CFDI_DB) {
 
     // Add Emisor element
     const emisor = xml.ele("cfdi:Emisor");
-    emisor.att("Rfc", generalCfdiInfo.st_RFC_emisor);
-    emisor.att("Nombre", generalCfdiInfo.st_nombre_emisor);
-    emisor.att("RegimenFiscal", generalCfdiInfo.id_RegimenFiscal_emisor);
+    emisor.att("Rfc", empresaInfo.st_RFC);
+    emisor.att("Nombre", empresaInfo.st_RazonSocial);
+    emisor.att("RegimenFiscal", "dev");
 
     // Add more Emisor attributes as needed
 
@@ -1209,9 +1214,28 @@ async function getClaveTipoFactor(id_TipoFactor) {
     //console.log("UnidadInformation test ", UnidadInformation)
     return UnidadInformation.shift().c_TipoFactor;
   } catch (error) {
-    console.error("Error querying SQL table cat_impuesto:", error);
+    console.error("Error querying SQLa table cat_impuesto:", error);
   }
 }
+
+
+async function getEmpresaInfo(id_CFDI) {
+  try {
+    let query = `SELECT tbl_empresas.* from tbl_empresas LEFT JOIN tbl_cfdi ON tbl_empresas.id_empresa = tbl_cfdi.id_empresa`;
+
+    let EmpresaInformation = await sequelize.query(query, {
+      replacements: { id: `${id_CFDI}` },
+      type: QueryTypes.SELECT,
+    });
+    // Process the query result
+    // console.log("EmpresaInformation.shift ", EmpresaInformation.shift())
+    return EmpresaInformation.shift()
+  } catch (error) {
+    console.error("Error querying SQLa table cat_impuesto:", error);
+  }
+}
+
+
 module.exports = {
   createXmlCtrl,
   createXmlCtrlFromDB,
