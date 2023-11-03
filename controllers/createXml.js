@@ -999,6 +999,7 @@ async function populateXMLIngresoCFDI(id_CFDI_DB) {
     );
     const date_FechaCFDI = await getFormattedDate();
     const empresaInfo = await getEmpresaInfo(id_CFDI_DB)
+    const clienteInfo = await getClienteInfo(id_CFDI_DB)
 
 
     //APARTADO DE PRODUCTOS-SERVICIOS CFDI
@@ -1055,20 +1056,28 @@ async function populateXMLIngresoCFDI(id_CFDI_DB) {
     const emisor = xml.ele("cfdi:Emisor");
     emisor.att("Rfc", empresaInfo.st_RFC);
     emisor.att("Nombre", empresaInfo.st_RazonSocial);
-    emisor.att("RegimenFiscal", "dev");
-
-    // Add more Emisor attributes as needed
+    emisor.att("RegimenFiscal", empresaInfo.c_RegimenFiscal);
 
     // Add Receptor element
+    console.log("clienteInfo", clienteInfo)
     const receptor = xml.ele("cfdi:Receptor");
-    receptor.att("Rfc", generalCfdiInfo.st_RFC_receptor);
-    receptor.att("Nombre", generalCfdiInfo.st_nombre_receptor);
-    receptor.att("RegimenFiscal", generalCfdiInfo.id_RegimenFiscalReceptor);
+    receptor.att("Rfc", clienteInfo.st_RFC);
+    receptor.att("Nombre", clienteInfo.st_RazonSocial);
+    receptor.att("RegimenFiscalReceptor", clienteInfo.c_RegimenFiscal);
     receptor.att(
       "DomicilioFiscalReceptor",
-      generalCfdiInfo.id_DomicilioFiscalReceptor
+      clienteInfo.c_DomicilioFiscal
     );
     receptor.att("UsoCFDI", c_UsoCFDI);
+    
+    // receptor.att("Rfc", generalCfdiInfo.st_RFC_receptor);
+    // receptor.att("Nombre", generalCfdiInfo.st_nombre_receptor);
+    // receptor.att("RegimenFiscalReceptor", generalCfdiInfo.id_RegimenFiscalReceptor);
+    // receptor.att(
+    //   "DomicilioFiscalReceptor",
+    //   generalCfdiInfo.id_DomicilioFiscalReceptor
+    // );
+    // receptor.att("UsoCFDI", c_UsoCFDI);
 
     // Add Conceptos element
     const conceptos = xml.ele("cfdi:Conceptos");
@@ -1221,7 +1230,7 @@ async function getClaveTipoFactor(id_TipoFactor) {
 
 async function getEmpresaInfo(id_CFDI) {
   try {
-    let query = `SELECT tbl_empresas.* from tbl_empresas LEFT JOIN tbl_cfdi ON tbl_empresas.id_empresa = tbl_cfdi.id_empresa`;
+    let query = `SELECT tbl_empresas.*, c_regimenfiscal.c_RegimenFiscal from tbl_empresas LEFT JOIN tbl_cfdi ON tbl_empresas.id_empresa = tbl_cfdi.id_empresa LEFT JOIN c_regimenfiscal ON c_regimenfiscal.id_RegimenFiscal = tbl_empresas.id_RegimenFiscal WHERE tbl_cfdi.id_CFDI=:id`;
 
     let EmpresaInformation = await sequelize.query(query, {
       replacements: { id: `${id_CFDI}` },
@@ -1234,6 +1243,25 @@ async function getEmpresaInfo(id_CFDI) {
     console.error("Error querying SQLa table cat_impuesto:", error);
   }
 }
+
+
+async function getClienteInfo(id_CFDI){
+  try {
+    let query = `SELECT tbl_clientes.*, c_regimenfiscal.c_RegimenFiscal FROM tbl_cfdi LEFT JOIN tbl_clientes ON tbl_clientes.id_Cliente =  tbl_cfdi.id_Cliente LEFT JOIN c_regimenfiscal ON c_regimenfiscal.id_RegimenFiscal = tbl_clientes.id_RegimenFiscal WHERE id_CFDI=:id`;
+
+    let ClienteInformation = await sequelize.query(query, {
+      replacements: { id: `${id_CFDI}` },
+      type: QueryTypes.SELECT,
+    });
+    // Process the query result
+    // console.log("ClienteInformation.shift ", ClienteInformation.shift())
+    return ClienteInformation.shift()
+
+  } catch (error) {
+    console.log("Error querying table tbl_clientes ", error)
+  }
+}
+
 
 
 module.exports = {
