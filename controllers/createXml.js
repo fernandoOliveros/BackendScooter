@@ -10,6 +10,8 @@ var xml2js = require("xml2js");
 
 const { readCFDICtrl } = require("../controllers/cfdi");
 
+const DOMParser = require("xmldom").DOMParser;
+const XMLSerializer = require("xmldom").XMLSerializer;
 const xmlbuilder = require("xmlbuilder");
 
 /******Se invocan las tablas/modelos necesarias para los queries*********/
@@ -25,12 +27,12 @@ const {
   cfdiModel,
   prodServCFDIModel,
   empresasModel,
-
 } = require("../models");
 
 /******Install the fs  library to  create the file cfdi_YYYY-MM-DD_HH-mm-ss.xml*********/
 var fs = require("fs");
 const moment = require("moment"); // Install the moment library to format the date and time
+const { exec } = require("child_process"); //
 
 async function validate_DomicilioFigura(id_Operador) {
   try {
@@ -85,17 +87,40 @@ async function getRemolqueInfo(id_Remolque) {
   }
 }
 
-async function createTimestampedXmlFile(xml) {
-  //var timestamp = Date.now();
-  const timestamp = moment().subtract(1, "hour").format("YYYY-MM-DD_HH-mm-ss");
-  let xmlFileName = `cfdi_${timestamp}.xml`;
+
+async function BuildXML(xmlFileName, xml) {
+  
   fs.writeFile(`./storage/documentos/${xmlFileName}`, xml, function (err) {
     if (err) {
       return console.log(err);
     }
-    console.log(`\nFile cfdi_${timestamp}.xml created successfully.`);
+    console.log(`\nFile ${xmlFileName} created successfullyy.`);
   });
+//  return xmlFileNameCreated;
+}
+
+async function createTimestampedXmlName(id_CFDI_DB, notStampedStringXML) {
+  //var timestamp = Date.now();
+  const timestamp = moment().subtract(1, "hour").format("YYYY-MM-DD_HH-mm-ss");
+  let xmlFileName = `cfdi_${timestamp}.xml`;
+
+
+  await updateTableCFDI(xmlFileName.slice(0, -4), id_CFDI_DB);
+
+  await BuildXML( xmlFileName ,notStampedStringXML)
+
+
+
+
+
+
+
+
+
+
+
   return xmlFileName;
+  
 }
 
 async function getLocalidad(id_localidad) {
@@ -952,16 +977,30 @@ async function createXmlCtrlFromDB(req, res) {
     console.log("createXmlCtrlFromDB");
     const id_CFDI_DB = parseInt(req.params.id);
     const dataCFDI = await readCFDICtrl(req, res, id_CFDI_DB);
+
     let id_TipoComprobante = dataCFDI.shift().id_TipoComprobante;
-    let rawXML;
+    let notStampedStringXML;
+    const empresaInfo = await getEmpresaInfo(id_CFDI_DB);
+    console.log("empresaInfo.st_RFC", empresaInfo.st_RFC);
     switch (id_TipoComprobante) {
       case 1:
         console.log("Creating ingreso CFDI ");
-        rawXML = await populateXMLIngresoCFDI(id_CFDI_DB);
-        let xmlFileName = await createTimestampedXmlFile(rawXML);
-        updateTableCFDI(xmlFileName.slice(0, -4), id_TipoComprobante);
+        notStampedStringXML = await populateXMLIngresoCFDI(id_CFDI_DB);
+
+
+
+        let xmlFileName = await createTimestampedXmlName(id_CFDI_DB, notStampedStringXML);
+        
+
+        let rawSelloString = await getSelloCtrl(empresaInfo.st_RFC, id_CFDI_DB, xmlFileName);
+
+        const signedXML = await stampXML(notStampedStringXML, rawSelloString);
+
+        await BuildXML( xmlFileName ,signedXML)
+        
+
         handleHttpResponse(res, {
-          xmlRaw: `${rawXML}`,
+          xmlRaw: `${signedXML}`,
           xmlFileName: `${xmlFileName}`,
         });
         break;
@@ -998,16 +1037,15 @@ async function populateXMLIngresoCFDI(id_CFDI_DB) {
       generalCfdiInfo.id_TipoComprobante
     );
     const date_FechaCFDI = await getFormattedDate();
-    const empresaInfo = await getEmpresaInfo(id_CFDI_DB)
-    const clienteInfo = await getClienteInfo(id_CFDI_DB)
-
+    const empresaInfo = await getEmpresaInfo(id_CFDI_DB);
+    const clienteInfo = await getClienteInfo(id_CFDI_DB);
 
     //APARTADO DE PRODUCTOS-SERVICIOS CFDI
 
     let query = "SELECT * from tbl_prodserv_cfdi WHERE id_CFDI=:id";
     const prodServCFDI = await sequelize.query(query, {
       type: QueryTypes.SELECT,
-      replacements : {id: id_CFDI_DB}
+      replacements: { id: id_CFDI_DB },
     });
 
     console.log("lenght of prod-serv", prodServCFDI.length);
@@ -1034,14 +1072,17 @@ async function populateXMLIngresoCFDI(id_CFDI_DB) {
     //xml.att('Folio', generalCfdiInfo.Folio);
     xml.att("LugarExpedicion", generalCfdiInfo.st_LugarExpedicion);
     xml.att("TipoDeComprobante", c_TipoDeComprobante);
-    console.log("getEmpresaInfo")
+    console.log("getEmpresaInfo");
 
-    console.log(empresaInfo);
+    const CertificadoBase64 = await GetCertBase64Ctrl(empresaInfo.st_RFC);
+    console.log("GetCertBase64Ctrl", CertificadoBase64);
+
     xml.att("NoCertificado", empresaInfo.st_NoCertificado);
+    xml.att("Certificado", CertificadoBase64);
     xml.att("Sello", "");
-    xml.att("Certificado", "");
+
     xml.att("Version", "4.0");
-//    xml.att("Exportacion", "");
+    //    xml.att("Exportacion", "");
     xml.att("Moneda", c_moneda);
     xml.att("FormaPago", c_FormaPago);
     xml.att("MetodoPago", c_MetodoPago);
@@ -1059,17 +1100,14 @@ async function populateXMLIngresoCFDI(id_CFDI_DB) {
     emisor.att("RegimenFiscal", empresaInfo.c_RegimenFiscal);
 
     // Add Receptor element
-    console.log("clienteInfo", clienteInfo)
+    console.log("clienteInfo", clienteInfo);
     const receptor = xml.ele("cfdi:Receptor");
     receptor.att("Rfc", clienteInfo.st_RFC);
     receptor.att("Nombre", clienteInfo.st_RazonSocial);
     receptor.att("RegimenFiscalReceptor", clienteInfo.c_RegimenFiscal);
-    receptor.att(
-      "DomicilioFiscalReceptor",
-      clienteInfo.c_DomicilioFiscal
-    );
+    receptor.att("DomicilioFiscalReceptor", clienteInfo.c_DomicilioFiscal);
     receptor.att("UsoCFDI", c_UsoCFDI);
-    
+
     // receptor.att("Rfc", generalCfdiInfo.st_RFC_receptor);
     // receptor.att("Nombre", generalCfdiInfo.st_nombre_receptor);
     // receptor.att("RegimenFiscalReceptor", generalCfdiInfo.id_RegimenFiscalReceptor);
@@ -1119,24 +1157,21 @@ async function populateXMLIngresoCFDI(id_CFDI_DB) {
         );
         let c_ImpuestoTraslado = ImpuestoTrasladoInformation.shift().c_Impuesto;
         let c_TipoFactor = await getClaveTipoFactor(
-          prodServResult.id_TipoFactorRetencion);
+          prodServResult.id_TipoFactorRetencion
+        );
         // Create the Impuestos element for the first Traslado
         if (!hasImpuestos) {
           impuestos = concepto.ele("cfdi:Impuestos");
           hasImpuestos = true;
         }
         const traslados = impuestos.ele("cfdi:Traslados");
-        const traslado = traslados.ele("cfd:Traslado");
+        const traslado = traslados.ele("cfdi:Traslado");
 
         traslado.att("Base", prodServResult.dec_BaseTraslado);
         traslado.att("Impuesto", c_ImpuestoTraslado);
         traslado.att("TipoFactor", c_TipoFactor);
         traslado.att("TasaOCuota", prodServResult.dec_TasaOCuotaTraslado);
-       
-      
       }
-
-
 
       if (prodServResult.dec_BaseRetencion != null) {
         console.log("There is an retencion impuesto");
@@ -1154,16 +1189,13 @@ async function populateXMLIngresoCFDI(id_CFDI_DB) {
         if (!hasImpuestos) {
           impuestos = concepto.ele("cfdi:Impuestos");
           hasImpuestos = true;
-
         }
         const retenciones = impuestos.ele("cfdi:Retenciones");
-        const retencion = retenciones.ele("cfd:Retencion");
+        const retencion = retenciones.ele("cfdi:Retencion");
         retencion.att("Base", dec_BaseRetencion);
         retencion.att("Impuesto", c_Impuesto);
         retencion.att("TipoFactor", c_TipoFactor);
         retencion.att("TasaOCuota", dec_TasaOCuotaretencion);
-
-       
       }
     }
 
@@ -1173,6 +1205,7 @@ async function populateXMLIngresoCFDI(id_CFDI_DB) {
     const xmlString = xml.end({ pretty: true });
 
     // res.set('Content-Type', 'text/xml');
+    // return xmlString;
     return xmlString;
   } catch (error) {
     console.log(error);
@@ -1191,7 +1224,8 @@ async function getFormattedDate() {
   const seconds = String(currentDate.getSeconds()).padStart(2, "0");
 
   const formattedDate = `${year}-${month}-${day}T${
-    hours - 1}:${minutes}:${seconds}`;
+    hours - 1
+  }:${minutes}:${seconds}`;
   return formattedDate;
 }
 
@@ -1227,7 +1261,6 @@ async function getClaveTipoFactor(id_TipoFactor) {
   }
 }
 
-
 async function getEmpresaInfo(id_CFDI) {
   try {
     let query = `SELECT tbl_empresas.*, c_regimenfiscal.c_RegimenFiscal from tbl_empresas LEFT JOIN tbl_cfdi ON tbl_empresas.id_empresa = tbl_cfdi.id_empresa LEFT JOIN c_regimenfiscal ON c_regimenfiscal.id_RegimenFiscal = tbl_empresas.id_RegimenFiscal WHERE tbl_cfdi.id_CFDI=:id`;
@@ -1238,14 +1271,13 @@ async function getEmpresaInfo(id_CFDI) {
     });
     // Process the query result
     // console.log("EmpresaInformation.shift ", EmpresaInformation.shift())
-    return EmpresaInformation.shift()
+    return EmpresaInformation.shift();
   } catch (error) {
     console.error("Error querying SQLa table cat_impuesto:", error);
   }
 }
 
-
-async function getClienteInfo(id_CFDI){
+async function getClienteInfo(id_CFDI) {
   try {
     let query = `SELECT tbl_clientes.*, c_regimenfiscal.c_RegimenFiscal FROM tbl_cfdi LEFT JOIN tbl_clientes ON tbl_clientes.id_Cliente =  tbl_cfdi.id_Cliente LEFT JOIN c_regimenfiscal ON c_regimenfiscal.id_RegimenFiscal = tbl_clientes.id_RegimenFiscal WHERE id_CFDI=:id`;
 
@@ -1255,14 +1287,103 @@ async function getClienteInfo(id_CFDI){
     });
     // Process the query result
     // console.log("ClienteInformation.shift ", ClienteInformation.shift())
-    return ClienteInformation.shift()
-
+    return ClienteInformation.shift();
   } catch (error) {
-    console.log("Error querying table tbl_clientes ", error)
+    console.log("Error querying table tbl_clientes ", error);
   }
 }
 
+async function GetCertBase64Ctrl(st_EmpresaRFC) {
+  // Ruta al script de Python que deseas ejecutar
+  const pythonScriptPath = "./controllers/pyGetCertBase64.py";
 
+  const folder = st_EmpresaRFC;
+
+  // Comando para ejecutar el script de Python
+  const command = `python ${pythonScriptPath} --parameter "${folder}"`;
+  try {
+    const { stdout } = await executeCommand(command);
+    console.log(`Salida del script: ${stdout}`);
+
+    // Parse the Python script's output to retrieve the certBase64 value
+    certBase64 = stdout.trim(); // Trim any leading/trailing whitespace
+    return certBase64;
+  } catch (error) {
+    console.error(`Error al ejecutar el script: ${error}`);
+  }
+}
+
+async function getSelloCtrl(st_EmpresaRFC, id_CFDI_DB, nameXML) {
+  console.log("\nid_CFDI_DB", id_CFDI_DB, st_EmpresaRFC);
+
+  let query = `SELECT st_nombreCrudoXML FROM tbl_cfdi WHERE id_CFDI=:id `;
+
+  let st_nombreCrudoXML = await sequelize.query(query, {
+    replacements: { id: `${id_CFDI_DB}` },
+    type: QueryTypes.SELECT,
+  });
+  // Ruta al script de Python que deseas ejecutar
+  // st_nombreCrudoXML = st_nombreCrudoXML.shift();
+  
+  let nameXMLcreated = nameXML.slice(0, -4)
+  console.log("\nrawNombreXML", nameXMLcreated);
+  // let rawNombreXML = st_nombreCrudoXML.st_nombreCrudoXML;
+  const pythonScriptPath = "./controllers/pySelladoXML.py";
+
+  const folder = st_EmpresaRFC;
+
+  // Comando para ejecutar el script de Python
+  const command = `python ${pythonScriptPath} --parameter "${folder}" --nombreXML "${nameXMLcreated}"`;
+  try {
+    const { stdout } = await executeCommand(command);
+    console.log(`Salida del script: ${stdout}`);
+    selloXML = stdout.trim();
+    const startIndex = selloXML.indexOf("'");
+    const endIndex = selloXML.lastIndexOf("'");
+    const valueSelloString = selloXML.substring(startIndex + 1, endIndex);
+    return valueSelloString;
+  } catch (error) {
+    console.error(`Error al ejecutar el script: ${error}`);
+  }
+}
+
+function executeCommand(command) {
+  return new Promise((resolve, reject) => {
+    exec(command, (error, stdout, stderr) => {
+      if (error) {
+        reject(error);
+      } else {
+        resolve({ stdout, stderr });
+      }
+    });
+  });
+}
+
+// Function to sign and update the Sello in the XML
+async function stampXML(xmlString, valueSelloString) {
+  try {
+    // Parse the existing XML string
+    const parser = new DOMParser();
+    const xmlDoc = parser.parseFromString(xmlString, "text/xml");
+
+    // Find the root element (Assuming the root element is 'cfdi:Comprobante')
+    const comprobanteElement =
+      xmlDoc.getElementsByTagName("cfdi:Comprobante")[0];
+
+    // Create a new 'Sello' attribute and add it to the root element
+    const selloAttribute = xmlDoc.createAttribute("Sello");
+    selloAttribute.value = valueSelloString;
+    comprobanteElement.setAttributeNode(selloAttribute);
+
+    // Serialize the modified XML back to a string
+    const updatedXMLString = new XMLSerializer().serializeToString(xmlDoc);
+    console.log("updatedXMLString", updatedXMLString);
+
+    return updatedXMLString;
+  } catch (error) {
+    console.log(error);
+  }
+}
 
 module.exports = {
   createXmlCtrl,

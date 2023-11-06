@@ -2,8 +2,10 @@ const { handleHttpResponse } = require("../utils/handleResponse");
 const { handleHttpError } = require("../utils/handleError");
 const { sequelize } = require("../config/mysql");
 //const { QueryTypes } = require("sequelize");
-const { exec } = require('child_process'); // DELETE PROBABLY
 const {impuestoModel,objImpModel, tipofactorModel} = require("../models")
+
+
+
 
 
 
@@ -20,24 +22,7 @@ async function readMonedasCtrl(req, res) {
   }
 }
 
-// async function readFormasPagoCtrl(req, res) {
 
-
-// // Ruta al script de Python que deseas ejecutar
-// const pythonScriptPath = './controllers/selladoXML.py';
-
-// // Comando para ejecutar el script de Python
-// const command = `python ${pythonScriptPath}`;
-
-// exec(command, (error, stdout, stderr) => {
-//   if (error) {
-//     console.error(`Error al ejecutar el script: ${error}`);
-//     return;
-//   }
-//   console.log(`Salida del script: ${stdout}`);
-// });
-
-// }
 
 async function readFormasPagoCtrl(req, res) {
   try {

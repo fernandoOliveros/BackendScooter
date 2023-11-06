@@ -9,8 +9,6 @@ const {
   //validatorReadCFDI,
 } = require("../validators/CreateXml");
 
-
-
 const {
   createCFDICtrl,
   readAllByEmpresaCFDICtrl,
@@ -19,9 +17,15 @@ const {
   deleteCFDICtrl,
 } = require("../controllers/cfdi");
 
+const {
+  RunPythonSelladoCtrl,
+  GetCertBase64Ctrl,
+} = require("../controllers/selladoXML");
 
-const { createXmlCtrl, createXmlCtrlFromDB } = require('../controllers/createXml');
-
+const {
+  createXmlCtrl,
+  createXmlCtrlFromDB,
+} = require("../controllers/createXml");
 
 /**
  * RUTAS - CFDI
@@ -37,10 +41,13 @@ router.post("/create", validatorCreateCFDI, createCFDICtrl);
 
 router.get("/create/:id", createXmlCtrlFromDB);
 
-
 router.get("/readAllByEmpresa/:id", readAllByEmpresaCFDICtrl);
 router.get("/read/:id", readCFDICtrl);
 router.put("/update/:id", updateCFDICtrl);
+router.get("/selladoXML/:id", RunPythonSelladoCtrl);
+
+// router.get("/getCertBase64", GetCertBase64Ctrl);
+
 //router.delete("/delete/:id", validatorReadCFDI, deleteCFDICtrl);
 
 module.exports = router;

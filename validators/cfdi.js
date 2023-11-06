@@ -8,7 +8,6 @@ const validatorCreateCFDI = [
   check("id_Moneda").notEmpty(),
   check("id_FormaPago").notEmpty(),
   check("id_MetodoPago").notEmpty(),
-  check("id_ClaveProdServCFDI").notEmpty(),
   //check("id_ClaveUnidadPeso").notEmpty(), //this is for CPP
   check("id_UsoCFDI").notEmpty(),
   check("id_TipoComprobante").notEmpty(),

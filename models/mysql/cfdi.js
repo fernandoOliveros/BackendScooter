@@ -21,19 +21,19 @@ const CFDI = sequelize.define(
     },
     st_RFC_emisor: {
       type: DataTypes.STRING,
-      allowNull: false,
+      allowNull: true,
     },
     st_RFC_receptor: {
       type: DataTypes.STRING,
-      allowNull: false,
+      allowNull: true,
     },
     st_nombre_receptor: {
       type: DataTypes.STRING,
-      allowNull: false,
+      allowNull: true,
     },
     st_nombre_emisor: {
       type: DataTypes.STRING,
-      allowNull: false,
+      allowNull: true,
     },
     id_Moneda: {
       type: DataTypes.INTEGER,
