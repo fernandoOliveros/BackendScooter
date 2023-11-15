@@ -40,6 +40,10 @@ const CFDI = sequelize.define(
       type: DataTypes.INTEGER,
       allowNull: false,
     },
+    dec_Descuento: {
+      type: DataTypes.DECIMAL,
+      allowNull: true,
+    },
 
     /**TODO: MODULO DE TRASLADO | IMPUESTOS */
     id_ImpuestoTraslado: {

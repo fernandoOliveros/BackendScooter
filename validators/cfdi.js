@@ -13,7 +13,7 @@ const validatorCreateCFDI = [
   check("id_TipoComprobante").notEmpty(),
   check("id_Viaje").notEmpty(),
   check("id_Cliente").notEmpty(),
-  check("id_TipoViaje").notEmpty(),
+  // check("id_TipoViaje").notEmpty(),
   (req, res, next) => {
     console.log("Entering array of errors validationResult")
     //console.log("\n this is what we got from Request body:", req.body); 

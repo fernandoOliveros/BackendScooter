@@ -53,7 +53,7 @@ async function readMetodosPagoCtrl(req, res) {
 
 async function readProdServicioCFDICtrl(req, res) {
   try {
-    let sqlQuery = "CALL readAllClaveProdServicioCFDI()";
+    let sqlQuery = "SELECT * FROM cat_cfdi_prodserv";
     const dataProdServicio = await sequelize.query(
       sqlQuery,
       true,
@@ -61,7 +61,9 @@ async function readProdServicioCFDICtrl(req, res) {
         return result;
       }
     );
-    handleHttpResponse(res, dataProdServicio);
+
+
+    handleHttpResponse(res, dataProdServicio.shift());
   } catch (e) {
     console.log(e);
     handleHttpError(res, "ERROR_READ_PROD-SERVICIO-CFDI");

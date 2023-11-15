@@ -46,7 +46,7 @@ async function timbrarXML_Ctrl(req, res) {
 
     console.log(`timbrando  ${rawXMLName}`);
     
-    fs.readFile(`./controllers/${rawXMLName}`, 'utf8', function (err, contents) {
+    fs.readFile(`./storage/documentos/${rawXMLName}`, 'utf8', function (err, contents) {
       if (err) {
         let errRes = {
           status: 'error',
@@ -98,6 +98,8 @@ async function timbrarXML_Ctrl(req, res) {
               user: `${user}`,
               password: `${password}`,
             }
+
+        console.log(obj)
 
         
         

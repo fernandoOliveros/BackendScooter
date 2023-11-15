@@ -71,6 +71,10 @@ const CFDI = sequelize.define(
       type: DataTypes.DECIMAL,
       allowNull: true,
     },
+    dec_Descuento: {
+      type: DataTypes.DECIMAL,
+      allowNull: true,
+    },
     st_nombreCrudoXML: {
       type: DataTypes.STRING,
       allowNull: true,

@@ -1157,7 +1157,7 @@ async function populateXMLIngresoCFDI(id_CFDI_DB) {
         );
         let c_ImpuestoTraslado = ImpuestoTrasladoInformation.shift().c_Impuesto;
         let c_TipoFactor = await getClaveTipoFactor(
-          prodServResult.id_TipoFactorRetencion
+          prodServResult.id_TipoFactorTraslado
         );
         // Create the Impuestos element for the first Traslado
         if (!hasImpuestos) {
@@ -1178,7 +1178,7 @@ async function populateXMLIngresoCFDI(id_CFDI_DB) {
         let dec_BaseRetencion = prodServResult.dec_BaseRetencion;
 
         let c_TipoFactor = await getClaveTipoFactor(
-          prodServResult.id_TipoFactorTraslado
+          prodServResult.id_TipoFactorRetencion
         );
         let ImpuestoretencionInformation = await getClaveImpuesto(
           prodServResult.id_ImpuestoRetencion
@@ -1273,7 +1273,7 @@ async function getEmpresaInfo(id_CFDI) {
     // console.log("EmpresaInformation.shift ", EmpresaInformation.shift())
     return EmpresaInformation.shift();
   } catch (error) {
-    console.error("Error querying SQLa table cat_impuesto:", error);
+    console.error("Error querying SQLa table tbl_empresas:", error);
   }
 }
 
