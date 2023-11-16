@@ -1070,7 +1070,7 @@ async function populateXMLIngresoCFDI(id_CFDI_DB) {
     // Add dynamic generalCfdiInfo to the XML structure
     xml.att("Fecha", date_FechaCFDI);
     //xml.att('Folio', generalCfdiInfo.Folio);
-    xml.att("LugarExpedicion", generalCfdiInfo.st_LugarExpedicion);
+    xml.att("LugarExpedicion", empresaInfo.st_CodigoPostal);
     xml.att("TipoDeComprobante", c_TipoDeComprobante);
     console.log("getEmpresaInfo");
 
@@ -1080,6 +1080,9 @@ async function populateXMLIngresoCFDI(id_CFDI_DB) {
     xml.att("NoCertificado", empresaInfo.st_NoCertificado);
     xml.att("Certificado", CertificadoBase64);
     xml.att("Sello", "");
+    xml.att("Exportacion", "01");
+    
+    
 
     xml.att("Version", "4.0");
     //    xml.att("Exportacion", "");
@@ -1224,8 +1227,7 @@ async function getFormattedDate() {
   const seconds = String(currentDate.getSeconds()).padStart(2, "0");
 
   const formattedDate = `${year}-${month}-${day}T${
-    hours - 1
-  }:${minutes}:${seconds}`;
+    hours}:${minutes}:${seconds}`;
   return formattedDate;
 }
 
