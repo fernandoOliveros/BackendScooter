@@ -23,6 +23,9 @@ const validatorUnidades = [
   check("st_NumPoliza").exists(),
   check("date_Mecanico").exists(),
   check("date_Ecologico").exists(),
+  check("id_AseguradoraRespCivil").exists(),
+
+  
   (req, res, next) => {
     return validateResults(req, res, next);
   },

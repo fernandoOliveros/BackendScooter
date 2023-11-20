@@ -231,6 +231,24 @@ async function readTipoFactorCtrl(req, res) {
 }
 
 
+async function readAseguradoraCtrl(req, res) {
+  try {
+    let sqlQuery = "call readAllAseguradoras();";
+    const dataProdServicio = await sequelize.query(
+      sqlQuery,
+      true,
+      function (error, result) {
+        return result;
+      }
+    );
+    handleHttpResponse(res, dataProdServicio);
+  } catch (e) {
+    console.log(e);
+    handleHttpError(res, "ERROR_READ_ASEGURADORAS");
+  }
+}
+
+
 
 
 
@@ -244,6 +262,7 @@ module.exports = {
   readUsosCFDICtrl,
   readRegimenFiscalCFDICtrl,
   // timbrarCFDICtrl,
+  readAseguradoraCtrl,
   readProdServicioCPCtrl,
   readMaterialesPeligrososCtrl,
   readEmbalajesCtrl,

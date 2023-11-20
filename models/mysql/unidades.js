@@ -54,6 +54,11 @@ const Unidad = sequelize.define(
     id_TipoPermiso: {
       type: DataTypes.NUMBER,
     },
+    id_AseguradoraRespCivl: {
+      type: DataTypes.NUMBER,
+      allowNull: true,
+
+    },
   },
   {
     timestamps: false, //se debe especificar para cada modelo, o especificar globalmente desde /../../config/mysql

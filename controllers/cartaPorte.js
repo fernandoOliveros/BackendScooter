@@ -5,18 +5,32 @@ const { handleHttpResponse } = require('../utils/handleResponse');
 const { handleHttpError } = require('../utils/handleError');
 const { matchedData } = require("express-validator");
 
-const createCartaPorteCtrl = async (req, res, next ) => {
-  try {
+// const createCartaPorteCtrl = async (req, res, next ) => {
+//   try {
 
    
+//     const body = matchedData(req); //la data del request venga curada
+//     console.log("entering controller createCartaPorteCtrl", body, "ending body sample")
+//     const cartaPorte = await cartaPorteModel.create(body);
+//     const id_CartaPorte = cartaPorte.dataValues.id_CartaPorte;
+//     req.body.Ubicaciones.id_CartaPorte = id_CartaPorte;
+//     //req.body = req.body;
+//     //console.log("printing req.body.Ubicaciones[1].Domicilio", req.body.Ubicaciones[1].Domicilio)
+//     next();
+//   } catch (error) {
+//     console.log(error);
+//     handleHttpError(res, 'ERROR_CREATING_CARTAPORTE');
+//   }
+// };
+
+
+const createCartaPorteCtrl = async (req, res, next ) => {
+  try {
     const body = matchedData(req); //la data del request venga curada
     console.log("entering controller createCartaPorteCtrl", body, "ending body sample")
     const cartaPorte = await cartaPorteModel.create(body);
-    const id_CartaPorte = cartaPorte.dataValues.id_CartaPorte;
-    req.body.Ubicaciones.id_CartaPorte = id_CartaPorte;
-    //req.body = req.body;
-    //console.log("printing req.body.Ubicaciones[1].Domicilio", req.body.Ubicaciones[1].Domicilio)
-    next();
+
+    handleHttpResponse(res, cartaPorte );
   } catch (error) {
     console.log(error);
     handleHttpError(res, 'ERROR_CREATING_CARTAPORTE');

@@ -1,7 +1,6 @@
 const express = require("express");
 const router = express.Router();
 
-
 /***
  * VALIDATORS
  */
@@ -23,18 +22,13 @@ const {
  */
 const {
   createDireccionOrigenCPCtrl,
-
 } = require("../controllers/direccionOrigenCP");
 
-const {
-  createCartaPorteCtrl,
-} = require("../controllers/cartaPorte");
+const { createCartaPorteCtrl } = require("../controllers/cartaPorte");
 
 const {
   createDireccionDestinoCPCtrl,
-
 } = require("../controllers/direccionDestinoCP");
-
 
 /**
  * RUTAS - CARTA PORTE
@@ -45,9 +39,17 @@ const {
  * Delete CARTA PORTE: http://localhost:5000/api/CARTA PORTE/delete/:id
  */
 
-router.post("/create", validateCartaporte, createCartaPorteCtrl, validatorDirOrigenCartaPorte, createDireccionOrigenCPCtrl, validatorDirDestinoCartaPorte,createDireccionDestinoCPCtrl );
+// router.post(
+//   "/create",
+//   validateCartaporte,
+//   createCartaPorteCtrl,
+//   validatorDirOrigenCartaPorte,
+//   createDireccionOrigenCPCtrl,
+//   validatorDirDestinoCartaPorte,
+//   createDireccionDestinoCPCtrl
+// );
 
-
+router.post("/create",  validateCartaporte, createCartaPorteCtrl)
 
 //router.get("/read", readAllCARTA PORTECtrl);
 //router.get("/read/:id", validatorReadCARTA PORTE, readCARTA PORTECtrl);
