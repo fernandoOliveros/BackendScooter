@@ -16,7 +16,7 @@ const CFDI = sequelize.define(
       primaryKey: true,
       allowNull: false,
     },
-    id_ClaveUnidadPesoCFDI: {
+    id_ClaveUnidadPeso: {
       type: DataTypes.INTEGER,
       allowNull: false,
     },
@@ -56,17 +56,9 @@ const CFDI = sequelize.define(
       type: DataTypes.INTEGER,
       allowNull: true,
     },
-    
-    
-    
-    
-
-
-
-    
   },
   {
-    timestamps: true,
+    timestamps: false,
     tableName: "tbl_productoservicio_cartaporte",
     timezone: "Mexico_City", // Set timezone to Mexico City***
   }

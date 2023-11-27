@@ -24,7 +24,6 @@ const CartaPorte = sequelize.define(
       type: DataTypes.INTEGER,
       allowNull: true,
     },
-     /**BORRAR st_LugarExpedicion*/
     i_NumTotalMercancias: {
       type: DataTypes.INTEGER,
       allowNull: true,
@@ -41,6 +40,7 @@ const CartaPorte = sequelize.define(
       type: DataTypes.INTEGER,
       allowNull: true,
     },
+      /**BORRAR st_LugarExpedicion*/
     st_LugarExpedicion: {
       type: DataTypes.STRING(100),
       allowNull: true,

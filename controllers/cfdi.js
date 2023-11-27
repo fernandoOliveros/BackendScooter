@@ -80,6 +80,18 @@ const getProdServRelatedToCfdi = async(id_cfdi)=>{
   }
 }
 
+const readOneCFDICtrl = async (req, res, id_CFDI_DB) => {
+  try {
+    const id_CFDI_DB = parseInt(req.params.id);
+    const dataCFDI = await readCFDICtrl(req, res, id_CFDI_DB);
+    // console.log(dataCFDI)
+    handleHttpResponse(res, dataCFDI); 
+    // Handle the dataCFDI as needed
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false, message: 'Server Error on readOneCFDICtrl' });
+  }
+}
 const readCFDICtrl = async (req, res, id_CFDI_DB) => {
   try {
     let id_cfdi;
@@ -104,6 +116,8 @@ const readCFDICtrl = async (req, res, id_CFDI_DB) => {
     res.status(500).json({ success: false, message: 'Server Error' });
   }
 };
+
+
 // UPDATE
 const updateCFDICtrl = async (req, res) => {
   try {
@@ -140,4 +154,5 @@ module.exports = {
   readCFDICtrl,
   updateCFDICtrl,
   deleteCFDICtrl,
+  readOneCFDICtrl
 };

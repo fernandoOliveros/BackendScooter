@@ -13,6 +13,7 @@ const {
   createCFDICtrl,
   readAllByEmpresaCFDICtrl,
   readCFDICtrl,
+  readOneCFDICtrl,
   updateCFDICtrl,
   deleteCFDICtrl,
 } = require("../controllers/cfdi");
@@ -42,7 +43,7 @@ router.post("/create", validatorCreateCFDI, createCFDICtrl);
 router.get("/create/:id", createXmlCtrlFromDB);
 
 router.get("/readAllByEmpresa/:id", readAllByEmpresaCFDICtrl);
-router.get("/read/:id", readCFDICtrl);
+router.get("/read/:id", readOneCFDICtrl);
 router.put("/update/:id", updateCFDICtrl);
 router.get("/selladoXML/:id", RunPythonSelladoCtrl);
 

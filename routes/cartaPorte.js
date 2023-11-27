@@ -24,7 +24,15 @@ const {
   createDireccionOrigenCPCtrl,
 } = require("../controllers/direccionOrigenCP");
 
-const { createCartaPorteCtrl } = require("../controllers/cartaPorte");
+const {
+  createCartaPorteCtrl,
+  readCartaPorteCtrl,
+  updateCartaPorteCtrl,
+  readOneCartaPorteCtrl,
+  readAllByEmpresaCartaPorteCtrl,
+  deleteCartaPorteCtrl
+
+} = require("../controllers/cartaPorte");
 
 const {
   createDireccionDestinoCPCtrl,
@@ -49,11 +57,17 @@ const {
 //   createDireccionDestinoCPCtrl
 // );
 
-router.post("/create",  validateCartaporte, createCartaPorteCtrl)
+router.post("/create", validateCartaporte, createCartaPorteCtrl);
+router.put("/update/:id", validateCartaporte, updateCartaPorteCtrl);
+router.get("/read/:id", readOneCartaPorteCtrl);
+router.get("/readAllByEmpresa/:id", readAllByEmpresaCartaPorteCtrl);
+router.delete("/delete/:id",deleteCartaPorteCtrl);
+
+
+
+
 
 //router.get("/read", readAllCARTA PORTECtrl);
 //router.get("/read/:id", validatorReadCARTA PORTE, readCARTA PORTECtrl);
-//router.put("/update/:id", [validatorCreateCARTA PORTE, validatorReadCARTA PORTE], updateCARTA PORTECtrl);
-//router.delete("/delete/:id", validatorReadCARTA PORTE, deleteCARTA PORTECtrl);
 
 module.exports = router;
