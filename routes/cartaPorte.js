@@ -30,9 +30,15 @@ const {
   updateCartaPorteCtrl,
   readOneCartaPorteCtrl,
   readAllByEmpresaCartaPorteCtrl,
-  deleteCartaPorteCtrl
+  deleteCartaPorteCtrl,
+  
 
 } = require("../controllers/cartaPorte");
+
+const {
+  createXmlCartaPorteFromDBCtrl,
+} = require("../controllers/createXml");
+
 
 const {
   createDireccionDestinoCPCtrl,
@@ -58,6 +64,7 @@ const {
 // );
 
 router.post("/create", validateCartaporte, createCartaPorteCtrl);
+router.get("/create/:id", createXmlCartaPorteFromDBCtrl);
 router.put("/update/:id", validateCartaporte, updateCartaPorteCtrl);
 router.get("/read/:id", readOneCartaPorteCtrl);
 router.get("/readAllByEmpresa/:id", readAllByEmpresaCartaPorteCtrl);

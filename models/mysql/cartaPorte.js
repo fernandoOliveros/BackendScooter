@@ -59,7 +59,7 @@ const CartaPorte = sequelize.define(
       type: DataTypes.STRING,
       allowNull: true,
     },
-    st_AseguraCarga:{
+    st_PolizaAseguraCarga:{
       type: DataTypes.STRING,
       allowNull: true,
     },

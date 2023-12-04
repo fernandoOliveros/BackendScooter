@@ -9,7 +9,10 @@ const {
   //   readAllCFDICtrl,
 //   readCFDICtrl,
    updateProdServCPCtrl,
-   deleteProdServCPCtrl
+   deleteProdServCPCtrl,
+   createProdServOrigenCPCtrl,
+createProdServDestinoCPCtrl
+
 } = require("../controllers/ProdServCP");
 
 
@@ -29,6 +32,9 @@ router.get("/readAllByEmpresa/:id", readAllByEmpresaProdServCPCtrl);
 router.put("/update/:id_CartaPorte/:id_prodserv", updateProdServCPCtrl);
 router.delete("/delete/:id_CartaPorte/:id_prodserv", deleteProdServCPCtrl);
 
+/**APARTADO DE UBICACIONES */
+router.post("/create/ubicacionOrigen", createProdServOrigenCPCtrl);
+router.post("/create/ubicacionDestino", createProdServDestinoCPCtrl);
 
 
 module.exports = router;

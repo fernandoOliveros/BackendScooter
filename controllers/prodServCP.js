@@ -1,4 +1,4 @@
-const { prodServCartaPorteModel } = require("../models");
+const { prodServCartaPorteModel, direccionOrigenCPModel, direccionDestinoCPModel } = require("../models");
 
 const { matchedData } = require("express-validator");
 const { handleHttpResponse } = require("../utils/handleResponse");
@@ -113,12 +113,42 @@ const deleteProdServCPCtrl = async (req, res) => {
   }
 };
 
+const createProdServOrigenCPCtrl = async (req, res, next) => {
+  try {  
+    const body =req.body; //la data del request venga curada
+
+    const cfdi = await direccionOrigenCPModel.create(body);
+    handleHttpResponse(res, cfdi)
+  } catch (err) {
+    console.error(err);
+    handleHttpError(res, "ERROR_CREATE_createProdServCP")
+  }
+};
+
+const createProdServDestinoCPCtrl = async (req, res, next) => {
+  try {  
+    const body =req.body; //la data del request venga curada
+
+    const cfdi = await direccionDestinoCPModel.create(body);
+    handleHttpResponse(res, cfdi)
+  } catch (err) {
+    console.error(err);
+    handleHttpError(res, "ERROR_CREATE_createProdServCP")
+  }
+};
+
+
+
+
 module.exports = {
     createProdServCPCtrl,
     readAllByEmpresaProdServCPCtrl,
     //   readAllCFDICtrl,
 //   readCFDICtrl,
   updateProdServCPCtrl,
-  deleteProdServCPCtrl
+  deleteProdServCPCtrl,
   //   deleteCFDICtrl,
+  createProdServOrigenCPCtrl,
+createProdServDestinoCPCtrl
+
 };

@@ -9,24 +9,24 @@ const DirDestinoCP = sequelize.define(
       primaryKey: true,
       autoIncrement: true,
     },
-    id_CartaPorte: {
-      type: DataTypes.INTEGER,
-    },
+    // id_CartaPorte: {
+    //   type: DataTypes.INTEGER,
+    // },
     id_Estado: {
       type: DataTypes.BIGINT,
       allowNull: false,
     },
     id_Localidad: {
       type: DataTypes.BIGINT,
-      allowNull: false,
+      allowNull: true,
     },
     id_Municipio: {
       type: DataTypes.BIGINT,
-      allowNull: false,
+      allowNull: true,
     },
     id_Colonia: {
       type: DataTypes.BIGINT,
-      allowNull: false,
+      allowNull: true,
     },
     c_codigoPostal: {
       type: DataTypes.STRING(6),
@@ -34,19 +34,19 @@ const DirDestinoCP = sequelize.define(
     },
     st_Calle: {
       type: DataTypes.STRING(50),
-      allowNull: false,
+      allowNull: true,
     },
     st_NoExterior: {
       type: DataTypes.STRING(10),
-      allowNull: false,
+      allowNull: true,
     },
     st_NoInterior: {
       type: DataTypes.STRING(10),
-      allowNull: false,
+      allowNull: true,
     },
     st_RefDomicilio: {
       type: DataTypes.TEXT,
-      allowNull: false,
+      allowNull: true,
     },
     st_DestinatarioNombre: {
       type: DataTypes.STRING(50),
@@ -54,7 +54,7 @@ const DirDestinoCP = sequelize.define(
     },
     st_IdUbicacion: {
       type: DataTypes.STRING(8),
-      allowNull: false,
+      allowNull: true,
       defaultValue: "DE000000",
     },
     date_FechaLlegada: {
@@ -64,6 +64,8 @@ const DirDestinoCP = sequelize.define(
     },
     st_DestinatarioRFC: {
       type: DataTypes.STRING(12),
+      allowNull: false,
+
     },
     dec_DistRec: {
       type: DataTypes.DECIMAL(7,2),
