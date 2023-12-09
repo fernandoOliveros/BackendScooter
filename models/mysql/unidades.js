@@ -54,7 +54,7 @@ const Unidad = sequelize.define(
     id_TipoPermiso: {
       type: DataTypes.NUMBER,
     },
-    id_AseguradoraRespCivl: {
+    id_AseguradoraRespCivil: {
       type: DataTypes.NUMBER,
       allowNull: true,
 
