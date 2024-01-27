@@ -88,6 +88,17 @@ const CFDI = sequelize.define(
       allowNull: true,
     },
 
+    st_CondicionesPago: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+
+    i_Timbrado: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+    },
+    
+
 
 
     

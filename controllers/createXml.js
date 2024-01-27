@@ -1180,6 +1180,13 @@ async function createXmlCtrlFromDB(req, res) {
           xmlRaw: `${signedXML}`,
           xmlFileName: `${xmlFileName}`,
         });
+
+        let query = "UPDATE tbl_cfdi set i_Timbrado = 1 WHERE id_CFDI = :id";
+        await sequelize.query(query, {
+          replacements: { id: `${id_CFDI_DB}` },
+        type: sequelize.QueryTypes.UPDATE, // Use the appropriate type
+      });
+
         break;
       case 2:
         console.log("Creating Traslado CFDI ");
@@ -1199,6 +1206,12 @@ async function createXmlCtrlFromDB(req, res) {
           xmlRaw: `${signedXML}`,
           xmlFileName: `${xmlFileName}`,
         });
+
+        let updateTrasladoCfdiStatus = "UPDATE tbl_cfdi set i_Timbrado = 1 WHERE id_CFDI = :id";
+        await sequelize.query(updateTrasladoCfdiStatus, {
+          replacements: { id: `${id_CFDI_DB}` },
+        type: sequelize.QueryTypes.UPDATE, // Use the appropriate type
+      });
 
         break;
       default:
@@ -1433,6 +1446,7 @@ async function populateXMLIngresoCFDI_CARTAPORTE(
     //APARTADO DE PRODUCTOS-SERVICIOS CFDI
 
     let query = "SELECT * from tbl_prodserv_cfdi WHERE id_CFDI=:id";
+
     const prodServCFDI = await sequelize.query(query, {
       type: QueryTypes.SELECT,
       replacements: { id: id_CFDI_DB },

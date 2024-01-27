@@ -1,71 +1,49 @@
 const fs = require('fs');
-//const CFDI = require('../src/CFDI');
-const CFDI = require('cfdi40');
+const util = require('util');
+const xml2js = require('xml2js');
+const puppeteer = require('puppeteer');
 
+// Read your XML file
+const xmlData = fs.readFileSync('./controllers/test_xml.xml', 'utf-8');
 
-const key = 'CSD_Sucursal_2_CACX7605101P8_20230509_130255.key';
-const cer = 'CSD_Sucursal_2_CACX7605101P8_20230509_130255.cer';
+// Parse XML to JavaScript object
+const parser = new xml2js.Parser();
+const parseString = util.promisify(parser.parseString);
 
-const cfdi = new CFDI({
-    Serie: 'A',
-    Folio: '167ABC',
-    Fecha: '2018-01-16T09:33:43',
-    SubTotal: '369.83',
-    Moneda: 'MXN',
-    Total: '429.00',
-    TipoDeComprobante: 'I',
-    FormaPago: '01',
-    MetodoPago: 'PUE',
-    LugarExpedicion: '45079'
-});
+async function convertXmlToHtml(xmlData) {
+  const jsonData = await parseString(xmlData);
+  
+  // Now you can create an HTML string from jsonData, using a templating engine if needed
+  // For simplicity, let's assume jsonData is a plain object
+  const title = jsonData['cfdi:Comprobante'].$.Folio; // Accessing the 'Folio' attribute
 
-cfdi.emisor({
-    Rfc: 'SAT',
-    Nombre: 'SAT SA DE CV',
-    RegimenFiscal: '601'
-});
+  const html = `<html><body><h1>${title}</h1></body></html>`;
+  return html;
+}
 
-cfdi.receptor({
-    Rfc: 'MALD930428US2',
-    Nombre: 'DAVID ISAAC MARTINEZ LOPEZ',
-    UsoCFDI: 'G01'
-});
+async function generatePdf(html) {
+    const browser = await puppeteer.launch({
+        headless: true,
+        executablePath: 'C:/Users/dsczk/AppData/Local/Google/Chrome/Application/chrome.exe' // Replace with the actual path to Chrome
+      });
 
-const concepto = cfdi.concepto({
-    ClaveProdServ: '52121500',
-    ClaveUnidad: 'E48',
-    NoIdentificacion: '3031130179',
-    Cantidad: '1',
-    Unidad: 'PZ',
-    Descripcion: 'BATITA UNICORNIO',
-    ValorUnitario: '369.83',
-    Importe: '369.83'
-});
+  const page = await browser.newPage();
 
-concepto.traslado({
-    Base: '369.83',
-    Impuesto: '002',
-    TipoFactor: 'Tasa',
-    TasaOCuota: '0.16',
-    Importe: '59.17'
-});
+  // Set content to the HTML
+  await page.setContent(html);
 
-concepto.agregar(cfdi);
+  // Generate PDF
+  await page.pdf({ path: 'output.pdf', format: 'A4' });
 
-cfdi.impuestos({
-    TotalImpuestosTrasladados: '59.17',
-    Traslados: [
-      {
-        Impuesto: '002',
-        TipoFactor: 'Tasa',
-        TasaOCuota: '0.16',
-        Importe: '59.17'
-      }
-    ]
-});
+  await browser.close();
+}
 
-cfdi.certificar(cer);
-
-cfdi.xmlSellado(key, '12345678a')
-.then(xml => console.log("the xml is", xml))
-.catch(err => console.log(err));
+(async () => {
+  try {
+    const html = await convertXmlToHtml(xmlData);
+    await generatePdf(html);
+    console.log('PDF Generated successfully!');
+  } catch (error) {
+    console.error('Error:', error);
+  }
+})();

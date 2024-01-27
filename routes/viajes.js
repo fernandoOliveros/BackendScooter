@@ -11,7 +11,8 @@ const {
   readViajeCtrl,
   updateViajesCtrl,
   deleteViajeCtrl,
-  getLatestFolio
+  getLatestFolio,
+  readViajeActivoEmpresaCtrl
 } = require("../controllers/viajes");
 
 /**
@@ -30,6 +31,8 @@ router.get("/read/:id", readViajeCtrl);
 router.get("/readByEmpresa/:id", readViajeEmpresaCtrl);
 
 router.get("/getLatestFolio/:id", getLatestFolio); //send id of the enterprise you want the latest folio from
+router.get("/readActivosByEmpresa/:id", readViajeActivoEmpresaCtrl);
+
 
 
 router.put(

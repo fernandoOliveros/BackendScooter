@@ -128,7 +128,6 @@ const createProdServOrigenCPCtrl = async (req, res, next) => {
 const createProdServDestinoCPCtrl = async (req, res, next) => {
   try {  
     const body =req.body; //la data del request venga curada
-
     const cfdi = await direccionDestinoCPModel.create(body);
     handleHttpResponse(res, cfdi)
   } catch (err) {
