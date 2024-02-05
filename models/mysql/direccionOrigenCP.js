@@ -9,9 +9,10 @@ const DirOrigenCP = sequelize.define(
       primaryKey: true,
       autoIncrement: true,
     },
-    // id_CartaPorte: {
-    //   type: DataTypes.INTEGER,
-    // },
+    id_CartaPorte: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
     id_Estado: {
       type: DataTypes.BIGINT,
       allowNull: false,
