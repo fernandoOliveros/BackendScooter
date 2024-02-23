@@ -33,6 +33,7 @@ const models = {
   tipofactorModel: require(`${pathDB}/tipoFactor`),
   prodServCFDIModel: require(`${pathDB}/prodServCFDI`),
   prodServCartaPorteModel: require(`${pathDB}/prodServCartaPorte`),
+  impuestosAgrupadosCFDIModel: require(`${pathDB}/impuestosAgrupadosCFDI`)
 };
 
 module.exports = models;

@@ -25,7 +25,7 @@ const createProdServCFDICtrl = async (req, res, next) => {
 const readAllByEmpresaProdServCFDICtrl = async (req, res) => {
   try {
     let id_Empresa=req.params.id;
-    let query = "    SELECT prodserv.* FROM tbl_prodserv_cfdi as prodserv RIGHT JOIN tbl_cfdi as cfdi ON  cfdi.id_CFDI = prodserv.id_CFDI WHERE cfdi.id_Empresa = :id"
+    let query = "SELECT prodserv.* FROM tbl_prodserv_cfdi as prodserv RIGHT JOIN tbl_cfdi as cfdi ON  cfdi.id_CFDI = prodserv.id_CFDI WHERE cfdi.id_Empresa = :id"
       const result = await sequelize.query(query, {
           replacements: { id: `${id_Empresa}` },
         type: sequelize.QueryTypes.SELECT, // Use the appropriate type

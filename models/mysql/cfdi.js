@@ -97,6 +97,14 @@ const CFDI = sequelize.define(
       type: DataTypes.INTEGER,
       allowNull: true,
     },
+    dec_TotalImpuestosRetenidos: {
+      type: DataTypes.DECIMAL,
+      allowNull: true,
+    },
+    dec_TotalImpuestosTrasladados: {
+      type: DataTypes.DECIMAL,
+      allowNull: true,
+    },
     
 
 

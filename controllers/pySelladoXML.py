@@ -140,7 +140,7 @@ def getSelloShadow():
 
             with open(f"{current_working_directory}/storage/sellos/sello_{xml_file_name}.txt", "wb") as sello_file:
                 sello_file.write(base64_encoded_seal)
-            print(base64_encoded_seal)
+            print(base64_encoded_seal) 
     else:
         if len(cer_files) == 0:
             print("No .cer files found in the folder.")
