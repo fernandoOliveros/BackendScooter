@@ -95,4 +95,58 @@ async function timboxAuthenticateCtrl() {
 }
 
 
+async function timbrarXML_Ctrl(req, res) {
+  try {
+    let id = parseInt(req.params.id);
+    console.log(`timbrarXML_Ctrl: The id of the CFDI database is ${id}, connecting to SW services`);
+
+    let query = `SELECT * FROM tbl_cfdi WHERE id_CFDI = :id;`;
+
+    const OperadorInformation = await sequelize.query(query, {
+      replacements: { id: `${id}` },
+      type: QueryTypes.SELECT,
+    });
+
+
+
+
+
+    let rawXMLName = `${OperadorInformation[0].st_nombreCrudoXML}.xml`;
+
+    console.log(`timbrando  ${rawXMLName}`);
+
+    const contents = fs.readFileSync(`./storage/documentos/${rawXMLName}`, 'utf8');
+    const generatedToken = await timboxAuthenticateCtrl();
+
+    let xml = contents;
+    let params = { url: `${url}`, token: generatedToken };
+    let stamp = StampService.Set(params);
+
+    return new Promise((resolve, reject) => {
+      stamp.StampV4(xml, async (error, dataCfdiSellado) => { // mark the function as async here
+        if (error) {
+          console.log(error);
+          reject(error); // Reject the promise if there's an error
+        } else {
+          console.log(dataCfdiSellado);
+          let updateTrasladoCfdiStatus = "UPDATE tbl_cfdi set i_Timbrado = 1 WHERE id_CFDI = :id";
+          await sequelize.query(updateTrasladoCfdiStatus, {
+            replacements: { id: `${id}` },
+          type: sequelize.QueryTypes.UPDATE, // Use the appropriate type
+          });
+          console.log("\nthe uuid is:", dataCfdiSellado.data.uuid)
+  
+          handleHttpResponse(res, dataCfdiSellado)
+          resolve(dataCfdiSellado); // Resolve the promise with the data
+        }
+      });
+    });
+  } catch (error) {
+    console.log(error);
+    throw error; // Rethrow the error to be caught by the caller
+  }
+}
+
+
+
 module.exports = { timboxAuthenticateCtrl, timbrarXML_Ctrl };

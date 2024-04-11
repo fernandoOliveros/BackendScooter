@@ -623,8 +623,81 @@ async function getArrayImpuestos(id_CFDI, id_TipoImpuesto_RT) {
   }
 }
 
-/******GETTING VARIABLES VALUES BY ID, SENT BY JSON POST ******/
 
+async function createImpuestosAgrupados(id_CFDI) {
+  try {
+    let query_del_imp_agrupados = `DELETE FROM tbl_impuestos_agrupados_cfdi WHERE id_CFDI=:id;`;    
+
+    await sequelize.query(query_del_imp_agrupados, {
+      replacements: { id: `${id_CFDI}` },
+      type: QueryTypes.DELETE,
+    });
+    console.log("Borrando impuestos agrupados...");
+    
+    let query_get_infoImpuestosTraslado= `CALL CalculateImpuestosAgrupadosTraslado(:id_CFDI);` ;
+
+    let ImpuestosAgrupadosTrasladoInfo = await sequelize.query(query_get_infoImpuestosTraslado, {
+      replacements: { id_CFDI: `${id_CFDI}` },
+      type: QueryTypes.SELECT,
+    });
+
+    let query_get_infoImpuestosRetencion= `CALL CalculateImpuestosAgrupadosRetencion(:id_CFDI);` ;
+
+    let ImpuestosAgrupadosRetencionInfo = await sequelize.query(query_get_infoImpuestosRetencion, {
+      replacements: { id_CFDI: `${id_CFDI}` },
+      type: QueryTypes.SELECT,
+    });
+    
+    let query_insert_impuestosagrupados= `INSERT INTO tbl_impuestos_agrupados_cfdi (id_CFDI, id_TipoImpuesto, id_TipoFactor, dec_BaseTotal, dec_ImporteTotal, dec_TasaOCuota, id_TipoImpuesto_RT)
+    VALUES (:id_CFDI, :id_Impuesto, :id_TipoFactor, :dec_total_base, :dec_total_importe, :dec_TasaOCuotaTraslado, :id_TipoImpuesto_RT);`
+
+    Object.values(ImpuestosAgrupadosTrasladoInfo[0]).forEach(async (obj, index) => {
+      // Access values inside each object
+      const {
+        id_CFDI,
+        id_ImpuestoTraslado,
+        id_TipoFactorTraslado,
+        dec_TasaOCuotaTraslado,
+        total_ImporteTraslado_Grouped,
+        total_BaseTraslado_Grouped 
+      } = obj;
+
+      await sequelize.query(query_insert_impuestosagrupados, {
+        replacements: { id_CFDI: `${id_CFDI}`, id_Impuesto: `${id_ImpuestoTraslado}`,id_TipoFactor: `${id_TipoFactorTraslado}`,dec_total_base: `${total_BaseTraslado_Grouped}`,dec_total_importe: `${total_ImporteTraslado_Grouped}`,dec_TasaOCuotaTraslado: `${dec_TasaOCuotaTraslado}`,id_TipoImpuesto_RT: 2 },
+        type: QueryTypes.INSERT,
+      });
+    });
+
+
+    // console.log("\nImpuestosAgrupadosRetencionInfo", ImpuestosAgrupadosRetencionInfo[0]);
+    Object.values(ImpuestosAgrupadosRetencionInfo[0]).forEach(async (obj, index) => {
+      // Access values inside each object
+      const {
+        id_CFDI,
+        id_ImpuestoRetencion,
+        id_TipoFactorRetencion,
+        dec_TasaOCuotaRetencion,
+        total_ImporteRetencion_Grouped,
+        total_BaseRetencion_Grouped 
+      } = obj;
+
+      await sequelize.query(query_insert_impuestosagrupados, {
+        replacements: { id_CFDI: `${id_CFDI}`, id_Impuesto: `${id_ImpuestoRetencion}`,id_TipoFactor: `${id_TipoFactorRetencion}`,dec_total_base: `${total_BaseRetencion_Grouped}`,dec_total_importe: `${total_ImporteRetencion_Grouped}`,dec_TasaOCuotaTraslado: `${dec_TasaOCuotaRetencion}`,id_TipoImpuesto_RT: 1 },
+        type: QueryTypes.INSERT,
+      });
+      
+    });
+    return ImpuestosAgrupadosTrasladoInfo;
+  } catch (error) {
+    console.error(
+      "Error calling SP CalculateImpuestosAgrupadosTraslado",
+      error
+    );
+  }
+}
+
+/******GETTING VARIABLES VALUES BY ID, SENT BY JSON POST ******/
+/**Borrar quizas */
 async function createXmlCtrl(req, res) {
   try {
     //const body =req.body;
@@ -1166,6 +1239,7 @@ async function createXmlCtrl(req, res) {
     //handleHttpError(res, "ERROR_CREATE_XML");
   }
 }
+/**Borrar quizas */
 
 async function createXmlCtrlFromDB(req, res) {
   try {
@@ -1341,9 +1415,9 @@ async function populateXMLIngresoCFDI(
     receptor.att("UsoCFDI", c_UsoCFDI);
 
     // Add Conceptos element
-    const conceptos = xml.ele("cfdi:Conceptos");
-    //apartado para tabla tbl_prodserv_cfdi
-
+    const conceptos = xml.ele("cfdi:Conceptos");      
+        //apartado para tabla tbl_impuestos_agrupados
+  await createImpuestosAgrupados(id_CFDI_DB);
 
     //apartado de impuestos
     // Define an empty object to hold the attributes
@@ -1499,13 +1573,14 @@ async function populateXMLIngresoCFDI(
 
 
 
+
 async function populateXMLIngresoCFDI_CARTAPORTE(
   id_CFDI_DB,
   populateXMLIngresoCFDI_CARTAPORTE
 ) {
   try {
     const id_CartaPorte = populateXMLIngresoCFDI_CARTAPORTE;
-    console.log("populateXMLIngresoCFDI where id_CFDI_DB", id_CFDI_DB);
+    console.log("populateXMLIngresoCFDI_CARTAPORTE where id_CFDI_DB", id_CFDI_DB);
 
     const generalCfdiInfo = await cfdiModel.findByPk(id_CFDI_DB);
     //    console.log(generalCfdiInfo)
@@ -1592,8 +1667,8 @@ async function populateXMLIngresoCFDI_CARTAPORTE(
 
     // Add Conceptos element
     const conceptos = xml.ele("cfdi:Conceptos");
-    //apartado para tabla tbl_prodserv_cfdi
-
+    //apartado para tabla tbl_impuestos_agrupados
+    await createImpuestosAgrupados(id_CFDI_DB);
 
     //apartado de impuestos
     // Define an empty object to hold the attributes
@@ -1606,8 +1681,7 @@ async function populateXMLIngresoCFDI_CARTAPORTE(
     TotalImpuestosAttribute.TotalImpuestosRetenidos = dec_TotalImpuestosRetenidos;
     TotalImpuestosAttribute.TotalImpuestosTrasladados = dec_TotalImpuestosTrasladados;
 
-
-
+    /**Get information from impuestos agrupados module */
     if (Object.keys(TotalImpuestosAttribute).length > 0) {
       // Create the impuestos element with the dynamically determined attributes
         const impuestos = xml.ele("cfdi:Impuestos", TotalImpuestosAttribute);
@@ -1639,9 +1713,6 @@ async function populateXMLIngresoCFDI_CARTAPORTE(
               });
           }
       }
-    
-
-
     }
     
    
@@ -2563,7 +2634,7 @@ async function stampXML(xmlString, valueSelloString) {
 
 async function createXmlCartaPorteFromDBCtrl(req, res) {
   try {
-    console.log("createXmlCartaPorteFromDBCtrl");
+    console.log("\n\ncreateXmlCartaPorteFromDBCtrl");
 
     const id_CartaPorte = parseInt(req.params.id);
 
@@ -2581,8 +2652,6 @@ async function createXmlCartaPorteFromDBCtrl(req, res) {
 
     let id_TipoComprobante = dataCFDI.shift().id_TipoComprobante;
     let notStampedStringXMLCFDI_CARTAPORTE;
-    // let notStampedStringXMLCartaPorte;
-    let notStampedStringXML;
     let xmlFileName;
     let rawSelloString;
     let signedXML;
@@ -2593,6 +2662,7 @@ async function createXmlCartaPorteFromDBCtrl(req, res) {
 
     switch (id_TipoComprobante) {
       case 1:
+
         console.log("Creating ingreso CFDI con CartaPorte");
         notStampedStringXMLCFDI_CARTAPORTE =
           await populateXMLIngresoCFDI_CARTAPORTE(id_CFDI_DB, id_CartaPorte);
@@ -2653,6 +2723,7 @@ async function createXmlCartaPorteFromDBCtrl(req, res) {
     handleHttpError(res, "ERROR_CREATING_createXmlCfdiCartaPorteCtrl", e);
   }
 }
+
 
 /**Borrar quizas */
 async function populateXMLCartaPorte(id_CartaPorte) {
