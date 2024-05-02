@@ -1,6 +1,8 @@
 /***
  * IMPORTANDO LIBRERIAS PARA HACER QUERIES
  */
+let st_VersionCartaPorte="30" //vigencia desde 01 Abril 2024 - Indefinido
+
 const { sequelize } = require("../config/mysql");
 const { QueryTypes } = require("sequelize");
 const { handleHttpResponse } = require("../utils/handleResponse");
@@ -13,6 +15,8 @@ const { readCFDICtrl } = require("../controllers/cfdi");
 const DOMParser = require("xmldom").DOMParser;
 const XMLSerializer = require("xmldom").XMLSerializer;
 const xmlbuilder = require("xmlbuilder");
+
+const { v4: uuidv4 } = require('uuid');
 
 /******Se invocan las tablas/modelos necesarias para los queries*********/
 const {
@@ -695,6 +699,38 @@ async function createImpuestosAgrupados(id_CFDI) {
     );
   }
 }
+
+
+
+
+async function validateRemolqueRequirement(id_TipoUnidad){
+  try {
+    let query = "SELECT st_Remolques FROM cat_tipounidades WHERE id_TipoUnidad=:id";
+    const ValidationRemolque = await sequelize.query(query, {
+      type: QueryTypes.SELECT,
+      replacements: { id: id_TipoUnidad },
+    });
+
+    return ValidationRemolque.shift();
+  } catch (error) {
+    console.error("Error querying SQL table cat_tipoembalaje:", error);
+  }
+}
+
+
+function generateIdCCP() {
+  // Generate RFC 4122 compliant UUID
+  const uuid = uuidv4().toUpperCase();
+
+  // Extract first 32 characters (alphanumeric) from UUID
+  const uuidChars = uuid.replace(/-/g, '').substring(0, 32);
+
+  // Construct IdCCP according to the pattern
+  const idCCP = `CCC${uuidChars.substring(0, 8)}-${uuidChars.substring(8, 12)}-${uuidChars.substring(12, 16)}-${uuidChars.substring(16, 20)}-${uuidChars.substring(20)}`;
+
+  return idCCP;
+}
+
 
 /******GETTING VARIABLES VALUES BY ID, SENT BY JSON POST ******/
 /**Borrar quizas */
@@ -1618,10 +1654,10 @@ async function populateXMLIngresoCFDI_CARTAPORTE(
 
     xml.att("xmlns:cfdi", "http://www.sat.gob.mx/cfd/4");
     xml.att("xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance");
-    xml.att("xmlns:cartaporte20", "http://www.sat.gob.mx/CartaPorte20");
+    xml.att(`xmlns:cartaporte${st_VersionCartaPorte}`, `http://www.sat.gob.mx/CartaPorte${st_VersionCartaPorte}`);
     xml.att(
       "xsi:schemaLocation",
-      "http://www.sat.gob.mx/cfd/4 http://www.sat.gob.mx/sitio_internet/cfd/4/cfdv40.xsd http://www.sat.gob.mx/CartaPorte20 http://www.sat.gob.mx/sitio_internet/cfd/CartaPorte/CartaPorte20.xsd"
+      `http://www.sat.gob.mx/cfd/4 http://www.sat.gob.mx/sitio_internet/cfd/4/cfdv40.xsd http://www.sat.gob.mx/CartaPorte${st_VersionCartaPorte} http://www.sat.gob.mx/sitio_internet/cfd/CartaPorte/CartaPorte${st_VersionCartaPorte}.xsd`
     );
 
     // Add dynamic generalCfdiInfo to the XML structure
@@ -1860,10 +1896,17 @@ async function populateXMLIngresoCFDI_CARTAPORTE(
     const complementoXML = xml.ele("cfdi:Complemento");
 
     // Add CartaPorte element
-    const cartaPorte = complementoXML.ele("cartaporte20:CartaPorte", {
+    const cartaPorte = complementoXML.ele(`cartaporte${st_VersionCartaPorte}:CartaPorte`, {
+
+    // const cartaPorte = complementoXML.ele("cartaporte", st_VersionCartaPorte, ":CartaPorte", {
       Version: st_Version,
+      idCCP: `CCC9CADE-7CC8-4E99-BA0A-0C229FC248E5`,
+
       TotalDistRec: dec_TotalDistRec,
       TranspInternac: "No"
+
+      
+      // idCCP: `${generateIdCCP()}`
     });
 
     let UbicacionesOrigen = await getUbicacionInfoOrigen(id_CartaPorte);
@@ -1873,18 +1916,18 @@ async function populateXMLIngresoCFDI_CARTAPORTE(
 
     // Add Ubicaciones element
 
-    const ubicaciones = cartaPorte.ele("cartaporte20:Ubicaciones");
+    const ubicaciones = cartaPorte.ele(`cartaporte${st_VersionCartaPorte}:Ubicaciones`);
 
     for (const UbicacionOrigen of UbicacionesOrigen) {
       let Reformatdate_FechaSalida = await getFormattedDateForCP(UbicacionOrigen.date_FechaSalida);
-      const ubicacionOrigen = ubicaciones.ele("cartaporte20:Ubicacion", {
+      const ubicacionOrigen = ubicaciones.ele(`cartaporte${st_VersionCartaPorte}:Ubicacion`, {
         TipoUbicacion: "Origen",
         RFCRemitenteDestinatario: UbicacionOrigen.st_RemitenteRFC,
         NombreRemitenteDestinatario: UbicacionOrigen.st_RemitenteNombre,
         FechaHoraSalidaLlegada: Reformatdate_FechaSalida,
       });
 
-      ubicacionOrigen.ele("cartaporte20:Domicilio", {
+      ubicacionOrigen.ele(`cartaporte${st_VersionCartaPorte}:Domicilio`, {
         Estado: `${await getEstado(UbicacionOrigen.id_Estado)}`,
         Pais: "MEX",
         CodigoPostal: UbicacionOrigen.c_codigoPostal,
@@ -1899,7 +1942,7 @@ async function populateXMLIngresoCFDI_CARTAPORTE(
     for (const UbicacionDestino of UbicacionesDestino) {
       let Reformatdate_FechaLlegada = await getFormattedDateForCP(UbicacionDestino.date_FechaLlegada);
 
-      const ubicacionDestino = ubicaciones.ele("cartaporte20:Ubicacion", {
+      const ubicacionDestino = ubicaciones.ele(`cartaporte${st_VersionCartaPorte}:Ubicacion`, {
         TipoUbicacion: "Destino",
         RFCRemitenteDestinatario: UbicacionDestino.st_DestinatarioRFC,
         NombreRemitenteDestinatario: UbicacionDestino.st_DestinatarioNombre,
@@ -1907,7 +1950,7 @@ async function populateXMLIngresoCFDI_CARTAPORTE(
         DistanciaRecorrida: UbicacionDestino.dec_DistRec,
       });
 
-      ubicacionDestino.ele("cartaporte20:Domicilio", {
+      ubicacionDestino.ele(`cartaporte${st_VersionCartaPorte}:Domicilio`, {
         Estado: `${await getEstado(UbicacionDestino.id_Estado)}`,
         Pais: "MEX",
         CodigoPostal: UbicacionDestino.c_codigoPostal,
@@ -1916,14 +1959,14 @@ async function populateXMLIngresoCFDI_CARTAPORTE(
 
     // Add Mercancias element
     const MercanciasArray = await getMercanciasCartaPorte(id_CartaPorte);
-    const mercancia = cartaPorte.ele("cartaporte20:Mercancias", {
+    const mercancia = cartaPorte.ele(`cartaporte${st_VersionCartaPorte}:Mercancias`, {
       PesoBrutoTotal: dec_PesoBrutoTotalMercancias,
       UnidadPeso: c_UnidadPesoMercancias,
       NumTotalMercancias: i_NumTotalMercancias,
     });
 
     for (const Mercancia of MercanciasArray) {
-      const mercanciaElement = mercancia.ele("cartaporte20:Mercancia", {
+      const mercanciaElement = mercancia.ele(`cartaporte${st_VersionCartaPorte}:Mercancia`, {
         BienesTransp: Mercancia.st_ClaveProducto,
         Descripcion: Mercancia.st_Descripcion,
         Cantidad: Mercancia.i_Cantidad,
@@ -1955,13 +1998,13 @@ async function populateXMLIngresoCFDI_CARTAPORTE(
     );
     AutotransporteInfo = AutotransporteInfo.shift();
     // Add Autotransporte element
-    const autotransporte = mercancia.ele("cartaporte20:Autotransporte", {
+    const autotransporte = mercancia.ele(`cartaporte${st_VersionCartaPorte}:Autotransporte`, {
       PermSCT: AutotransporteInfo.st_Clave,
       NumPermisoSCT: AutotransporteInfo.st_PermisoSCT,
     });
 
 
-    autotransporte.ele("cartaporte20:IdentificacionVehicular", {
+    autotransporte.ele(`cartaporte${st_VersionCartaPorte}:IdentificacionVehicular`, {
       ConfigVehicular: AutotransporteInfo.st_ClaveTransporte,
       PlacaVM: AutotransporteInfo.st_Placa,
       AnioModeloVM: AutotransporteInfo.st_Anio,
@@ -1970,7 +2013,7 @@ async function populateXMLIngresoCFDI_CARTAPORTE(
     let nombreAseguradoraUnidad = await getNombreAseguradora(
       AutotransporteInfo.id_AseguradoraRespCivil
     );
-    autotransporte.ele("cartaporte20:Seguros", {
+    autotransporte.ele(`cartaporte${st_VersionCartaPorte}:Seguros`, {
       AseguraRespCivil: nombreAseguradoraUnidad,
       PolizaRespCivil: AutotransporteInfo.st_NumPoliza,
     });
@@ -1983,9 +2026,9 @@ async function populateXMLIngresoCFDI_CARTAPORTE(
     );
 
     // Add FiguraTransporte element
-    const figuraTransporte = cartaPorte.ele("cartaporte20:FiguraTransporte");
+    const figuraTransporte = cartaPorte.ele(`cartaporte${st_VersionCartaPorte}:FiguraTransporte`);
     figuraTransporte
-      .ele("cartaporte20:TiposFigura", {
+      .ele(`cartaporte${st_VersionCartaPorte}:TiposFigura`, {
         TipoFigura: `${await getIdTipoFigura(
           OperadorInformation.id_TipoFigura
         )}`,
@@ -1993,7 +2036,7 @@ async function populateXMLIngresoCFDI_CARTAPORTE(
         NumLicencia: OperadorInformation.st_NumLicencia,
         NombreFigura: `${OperadorInformation.st_Nombre} ${OperadorInformation.st_ApellidoP} ${OperadorInformation.st_ApellidoM}`,
       })
-      .ele("cartaporte20:Domicilio", {
+      .ele(`cartaporte${st_VersionCartaPorte}:Domicilio`, {
         Calle: OperadorDomicilio.st_Calle,
         Estado: `${await getEstado(OperadorDomicilio.id_Estado)}`,
         Pais: "MEX",
@@ -2051,7 +2094,7 @@ async function populateXMLTrasladoCFDI(id_CFDI_DB) {
 
     xml.att("xmlns:cfdi", "http://www.sat.gob.mx/cfd/4");
     xml.att("xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance");
-    xml.att("xmlns:cartaporte20", "http://www.sat.gob.mx/CartaPorte20");
+    xml.att(`xmlns:cartaporte${st_VersionCartaPorte}`, `http://www.sat.gob.mx/CartaPorte${st_VersionCartaPorte}`);
     xml.att(
       "xsi:schemaLocation",
       "http://www.sat.gob.mx/cfd/4 http://www.sat.gob.mx/sitio_internet/cfd/4/cfdv40.xsd http://www.sat.gob.mx/CartaPorte20 http://www.sat.gob.mx/sitio_internet/cfd/CartaPorte/CartaPorte20.xsd"

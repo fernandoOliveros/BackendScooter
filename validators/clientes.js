@@ -14,6 +14,7 @@ const validatorClientesCreate = [
   check("st_Celular").optional({checkFalsy: true}).isString().isLength({ max: 15 }),
   check("st_Correo").optional({checkFalsy: true}).isEmail(),
   check("id_Empresa").optional({checkFalsy: true}).isInt(),
+  check("c_DomicilioFiscal").optional({checkFalsy: true}).isInt(),
   (req, res, next) => {
     return validateResults(req, res, next);
   },

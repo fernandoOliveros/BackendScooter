@@ -1,0 +1,30 @@
+||4.0|Serie|2024-05-01T18:27:09|99|30001000000500003416|1100.00|MXN|1220.00|I|01|PPD|56605|EKU9003173C9|ESCUELA KEMPER URGATE|601|CACX7605101P8|XOCHILT CASAS CHAVEZ|36257|608|D01|78101802|1|E48|Unidad de servicio|Prueba 2|100.00|100.00|02|100.00|002|Tasa|0.160000|16.00|100.00|002|Tasa|0.160000|16.00|78101803|1|E48|Unidad de servicio|Prueba 3|1000.00|1000.00|02|1000.00|002|Tasa|0.160000|160.00|1000.00|001|Tasa|0.040000|40.00|001|40.00|002|16.00|56.00|1100.00|002|Tasa|0.160000|176.00|176.00
+      :CartaPorte
+      
+        :Ubicaciones
+        
+          :Ubicacion
+          :Domicilio
+        
+        
+          :Ubicacion
+          :Domicilio
+        
+      
+      
+        :Mercancias
+        :Mercancia
+        
+          :Autotransporte
+          :IdentificacionVehicular
+          :Seguros
+        
+      
+      
+        :FiguraTransporte
+        
+          :TiposFigura
+          :Domicilio
+        
+      
+    ||

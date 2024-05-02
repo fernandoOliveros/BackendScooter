@@ -32,12 +32,17 @@ def getCadenaOriginal(xml_name):
     xml_file_path = f"{current_working_directory}/storage/documentos/{xml_name}.xml"
     #print(f'xml_file_path')
     try:
+        print("im here 1")
         xml_doc = etree.parse(xml_file_path)
 
     except FileNotFoundError:
+        print("im here 2")
+
         raise Exception(f"XML file not found {xml_file_name}")
         exit(1)
     except etree.ParseError:
+        print("im here 3")
+
         raise Exception(f"Error parsing XML {xml_file_name}")
         exit(1)
 

@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cfdi:Comprobante xmlns:cfdi="http://www.sat.gob.mx/cfd/4" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:cartaporte20="http://www.sat.gob.mx/CartaPorte20" xsi:schemaLocation="http://www.sat.gob.mx/cfd/4 http://www.sat.gob.mx/sitio_internet/cfd/4/cfdv40.xsd http://www.sat.gob.mx/CartaPorte20 http://www.sat.gob.mx/sitio_internet/cfd/CartaPorte/CartaPorte20.xsd" Fecha="2024-05-01T11:57:25" LugarExpedicion="56605" TipoDeComprobante="I" NoCertificado="30001000000500003416" Certificado="MIIFsDCCA5igAwIBAgIUMzAwMDEwMDAwMDA1MDAwMDM0MTYwDQYJKoZIhvcNAQELBQAwggErMQ8wDQYDVQQDDAZBQyBVQVQxLjAsBgNVBAoMJVNFUlZJQ0lPIERFIEFETUlOSVNUUkFDSU9OIFRSSUJVVEFSSUExGjAYBgNVBAsMEVNBVC1JRVMgQXV0aG9yaXR5MSgwJgYJKoZIhvcNAQkBFhlvc2Nhci5tYXJ0aW5lekBzYXQuZ29iLm14MR0wGwYDVQQJDBQzcmEgY2VycmFkYSBkZSBjYWxpejEOMAwGA1UEEQwFMDYzNzAxCzAJBgNVBAYTAk1YMRkwFwYDVQQIDBBDSVVEQUQgREUgTUVYSUNPMREwDwYDVQQHDAhDT1lPQUNBTjERMA8GA1UELRMIMi41LjQuNDUxJTAjBgkqhkiG9w0BCQITFnJlc3BvbnNhYmxlOiBBQ0RNQS1TQVQwHhcNMjMwNTE4MTE0MzUxWhcNMjcwNTE4MTE0MzUxWjCB1zEnMCUGA1UEAxMeRVNDVUVMQSBLRU1QRVIgVVJHQVRFIFNBIERFIENWMScwJQYDVQQpEx5FU0NVRUxBIEtFTVBFUiBVUkdBVEUgU0EgREUgQ1YxJzAlBgNVBAoTHkVTQ1VFTEEgS0VNUEVSIFVSR0FURSBTQSBERSBDVjElMCMGA1UELRMcRUtVOTAwMzE3M0M5IC8gVkFEQTgwMDkyN0RKMzEeMBwGA1UEBRMVIC8gVkFEQTgwMDkyN0hTUlNSTDA1MRMwEQYDVQQLEwpTdWN1cnNhbCAxMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAtmecO6n2GS0zL025gbHGQVxznPDICoXzR2uUngz4DqxVUC/w9cE6FxSiXm2ap8Gcjg7wmcZfm85EBaxCx/0J2u5CqnhzIoGCdhBPuhWQnIh5TLgj/X6uNquwZkKChbNe9aeFirU/JbyN7Egia9oKH9KZUsodiM/pWAH00PCtoKJ9OBcSHMq8Rqa3KKoBcfkg1ZrgueffwRLws9yOcRWLb02sDOPzGIm/jEFicVYt2Hw1qdRE5xmTZ7AGG0UHs+unkGjpCVeJ+BEBn0JPLWVvDKHZAQMj6s5Bku35+d/MyATkpOPsGT/VTnsouxekDfikJD1f7A1ZpJbqDpkJnss3vQIDAQABox0wGzAMBgNVHRMBAf8EAjAAMAsGA1UdDwQEAwIGwDANBgkqhkiG9w0BAQsFAAOCAgEAFaUgj5PqgvJigNMgtrdXZnbPfVBbukAbW4OGnUhNrA7SRAAfv2BSGk16PI0nBOr7qF2mItmBnjgEwk+DTv8Zr7w5qp7vleC6dIsZFNJoa6ZndrE/f7KO1CYruLXr5gwEkIyGfJ9NwyIagvHHMszzyHiSZIA850fWtbqtythpAliJ2jF35M5pNS+YTkRB+T6L/c6m00ymN3q9lT1rB03YywxrLreRSFZOSrbwWfg34EJbHfbFXpCSVYdJRfiVdvHnewN0r5fUlPtR9stQHyuqewzdkyb5jTTw02D2cUfL57vlPStBj7SEi3uOWvLrsiDnnCIxRMYJ2UA2ktDKHk+zWnsDmaeleSzonv2CHW42yXYPCvWi88oE1DJNYLNkIjua7MxAnkNZbScNw01A6zbLsZ3y8G6eEYnxSTRfwjd8EP4kdiHNJftm7Z4iRU7HOVh79/lRWB+gd171s3d/mI9kte3MRy6V8MMEMCAnMboGpaooYwgAmwclI2XZCczNWXfhaWe0ZS5PmytD/GDpXzkX0oEgY9K/uYo5V77NdZbGAjmyi8cE2B2ogvyaN2XfIInrZPgEffJ4AB7kFA2mwesdLOCh0BLD9itmCve3A1FGR4+stO2ANUoiI3w3Tv2yQSg4bjeDlJ08lXaaFCLW2peEXMXjQUk7fmpb5MNuOUTW6BE=" Sello="Szh8/py3cW8syLWVeGxwAIo+jOVU56+l4URMAOB3sgIUSG6u9E6RnBrq24U4pfNRhrgrpEJdY97AxvJODLlgHg8aXgPq5GjRRlBS9QTI20Nq8QTxAatP4rH/hN0/W8o5ytNk/bdArHegoupA0gDPL8khqf9a4E6G7hYBDgYv06MR9q7/wUjswvsYZVbybvme4de5WIswMQerATvzGmxtfmMLP9YjfQh283/1XcfhQ+kLx+B5UHlPAFQ1FJXRcZ87ol6GKcp+ZWbDMoCq7RnOjEAmQuZhXO3ToOFb2rMW/xydUnk8Z0MJgtK71IC+VxEgLTU5nllozEh5smgFwQ+AtA==" Exportacion="01" Version="4.0" Moneda="MXN" FormaPago="99" MetodoPago="PPD" SubTotal="1100.00" Total="1220.00" Serie="Serie">
+  <cfdi:Emisor Rfc="EKU9003173C9" Nombre="ESCUELA KEMPER URGATE" RegimenFiscal="601"/>
+  <cfdi:Receptor Rfc="CACX7605101P8" Nombre="XOCHILT CASAS CHAVEZ" RegimenFiscalReceptor="608" DomicilioFiscalReceptor="36257" UsoCFDI="D01"/>
+  <cfdi:Conceptos>
+    <cfdi:Concepto ClaveProdServ="78101802" Cantidad="1" ClaveUnidad="E48" Unidad="Unidad de servicio" ObjetoImp="02" Descripcion="Prueba  2" Importe="100.00" ValorUnitario="100.00">
+      <cfdi:Impuestos>
+        <cfdi:Traslados>
+          <cfdi:Traslado Base="100.00" Impuesto="002" TipoFactor="Tasa" TasaOCuota="0.160000" Importe="16.00"/>
+        </cfdi:Traslados>
+        <cfdi:Retenciones>
+          <cfdi:Retencion Base="100.00" Impuesto="002" TipoFactor="Tasa" TasaOCuota="0.160000" Importe="16.00"/>
+        </cfdi:Retenciones>
+      </cfdi:Impuestos>
+    </cfdi:Concepto>
+    <cfdi:Concepto ClaveProdServ="78101803" Cantidad="1" ClaveUnidad="E48" Unidad="Unidad de servicio" ObjetoImp="02" Descripcion="Prueba  3" Importe="1000.00" ValorUnitario="1000.00">
+      <cfdi:Impuestos>
+        <cfdi:Traslados>
+          <cfdi:Traslado Base="1000.00" Impuesto="002" TipoFactor="Tasa" TasaOCuota="0.160000" Importe="160.00"/>
+        </cfdi:Traslados>
+        <cfdi:Retenciones>
+          <cfdi:Retencion Base="1000.00" Impuesto="001" TipoFactor="Tasa" TasaOCuota="0.040000" Importe="40.00"/>
+        </cfdi:Retenciones>
+      </cfdi:Impuestos>
+    </cfdi:Concepto>
+  </cfdi:Conceptos>
+  <cfdi:Impuestos TotalImpuestosRetenidos="56.00" TotalImpuestosTrasladados="176.00">
+    <cfdi:Retenciones>
+      <cfdi:Retencion Impuesto="001" Importe="40.00"/>
+      <cfdi:Retencion Impuesto="002" Importe="16.00"/>
+    </cfdi:Retenciones>
+    <cfdi:Traslados>
+      <cfdi:Traslado Base="1100.00" Impuesto="002" TipoFactor="Tasa" Importe="176.00" TasaOCuota="0.160000"/>
+    </cfdi:Traslados>
+  </cfdi:Impuestos>
+  <cfdi:Complemento>
+    <cartaporte20:CartaPorte Version="2.0" TotalDistRec="50.00" TranspInternac="No">
+      <cartaporte20:Ubicaciones>
+        <cartaporte20:Ubicacion TipoUbicacion="Origen" RFCRemitenteDestinatario="HECS000901UW6" NombreRemitenteDestinatario="Saul Eduardo Hnernandez" FechaHoraSalidaLlegada="2024-03-26T01:18:06">
+          <cartaporte20:Domicilio Estado="MEX" Pais="MEX" CodigoPostal="56605"/>
+        </cartaporte20:Ubicacion>
+        <cartaporte20:Ubicacion TipoUbicacion="Destino" RFCRemitenteDestinatario="CACX7605101P8" NombreRemitenteDestinatario="Lucas Bravo" FechaHoraSalidaLlegada="2024-03-26T01:18:32" DistanciaRecorrida="50.00">
+          <cartaporte20:Domicilio Estado="MEX" Pais="MEX" CodigoPostal="56601"/>
+        </cartaporte20:Ubicacion>
+      </cartaporte20:Ubicaciones>
+      <cartaporte20:Mercancias PesoBrutoTotal="100.00" UnidadPeso="KGM" NumTotalMercancias="1">
+        <cartaporte20:Mercancia BienesTransp="10101501" Descripcion="Test producto servicio CARTAPORTE" Cantidad="1" ClaveUnidad="18	" PesoEnKg="100.000"/>
+        <cartaporte20:Autotransporte PermSCT="TPAF01" NumPermisoSCT="PERMISO-4-21">
+          <cartaporte20:IdentificacionVehicular ConfigVehicular="VL" PlacaVM="PLACA98" AnioModeloVM="2019"/>
+          <cartaporte20:Seguros AseguraRespCivil="A.N.A. Compañía de Seguros, S.A. de C.V." PolizaRespCivil="POLIZA12345"/>
+        </cartaporte20:Autotransporte>
+      </cartaporte20:Mercancias>
+      <cartaporte20:FiguraTransporte>
+        <cartaporte20:TiposFigura TipoFigura="01" RFCFigura="HECS000901UW6" NumLicencia="NUMLICENCIA-SAUL" NombreFigura="Lucas Bravo Madrigal">
+          <cartaporte20:Domicilio Calle="San Bartolome" Estado="MEX" Pais="MEX" CodigoPostal="56605"/>
+        </cartaporte20:TiposFigura>
+      </cartaporte20:FiguraTransporte>
+    </cartaporte20:CartaPorte>
+  </cfdi:Complemento>
+</cfdi:Comprobante>

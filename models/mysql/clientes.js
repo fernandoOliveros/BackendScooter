@@ -48,6 +48,11 @@ const Cliente = sequelize.define(
       type: DataTypes.INTEGER,
       allowNull: true,
     },
+    c_DomicilioFiscal: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    
   },
   {
     timestamps: false,
