@@ -63,6 +63,10 @@ const CartaPorte = sequelize.define(
       type: DataTypes.STRING,
       allowNull: true,
     },
+    dec_PesoBrutoVehicular:{
+      type: DataTypes.DECIMAL,
+      allowNull: true,
+    },
 
 
 

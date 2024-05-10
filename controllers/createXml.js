@@ -708,17 +708,18 @@ async function validateRemolqueRequirement(id_TipoUnidad){
     let query = "SELECT st_Remolques FROM cat_tipounidades WHERE id_TipoUnidad=:id";
     const ValidationRemolque = await sequelize.query(query, {
       type: QueryTypes.SELECT,
-      replacements: { id: id_TipoUnidad },
+      replacements: { id: `${id_TipoUnidad}` },
     });
-
+    // console.log("ValidationRemolque is ", ValidationRemolque.st_Remolques)
     return ValidationRemolque.shift();
   } catch (error) {
-    console.error("Error querying SQL table cat_tipoembalaje:", error);
+    console.error("Error querying SQL table cat_tipounidades:", error);
   }
 }
 
 
-function generateIdCCP() {
+
+async function generateIdCCP() {
   // Generate RFC 4122 compliant UUID
   const uuid = uuidv4().toUpperCase();
 
@@ -726,10 +727,34 @@ function generateIdCCP() {
   const uuidChars = uuid.replace(/-/g, '').substring(0, 32);
 
   // Construct IdCCP according to the pattern
-  const idCCP = `CCC${uuidChars.substring(0, 8)}-${uuidChars.substring(8, 12)}-${uuidChars.substring(12, 16)}-${uuidChars.substring(16, 20)}-${uuidChars.substring(20)}`;
+  const idCCP = `CCC${uuidChars.substring(0, 5)}-${uuidChars.substring(5, 9)}-${uuidChars.substring(9, 13)}-${uuidChars.substring(13, 17)}-${uuidChars.substring(17, 29)}`;
 
   return idCCP;
 }
+
+
+async function getRemolquesInfo(id_CartaPorte) {
+  try {
+    let query = "SELECT cat_tiporemolque.st_ClaveRemolque, inner_query.st_placa FROM cat_tiporemolque  INNER JOIN (SELECT tbl_remolques.id_Remolque, tbl_remolques.id_TipoRemolque, tbl_remolques.st_placa  FROM `rel_viaje_remolque` LEFT JOIN tbl_remolques ON tbl_remolques.id_Remolque = rel_viaje_remolque.id_Remolque WHERE id_CartaPorte= :id) as inner_query ON inner_query.id_TipoRemolque  = cat_tiporemolque.id_TipoRemolque";
+    const RemolqueInfo = await sequelize.query(query, {
+      type: QueryTypes.SELECT,
+      replacements: { id: `${id_CartaPorte}`  },
+    });
+
+    console.log(
+      "lenght of RemolqueCartaPorteInfo",
+      RemolqueInfo.length
+    );
+
+
+
+    return RemolqueInfo;
+  } catch (error) {
+    console.error("Error querying SQL table rel_viaje_remolque, cat_tiporemolque, tbl_remolques:", error);
+  }
+}
+
+
 
 
 /******GETTING VARIABLES VALUES BY ID, SENT BY JSON POST ******/
@@ -1609,7 +1634,6 @@ async function populateXMLIngresoCFDI(
 
 
 
-
 async function populateXMLIngresoCFDI_CARTAPORTE(
   id_CFDI_DB,
   populateXMLIngresoCFDI_CARTAPORTE
@@ -1723,12 +1747,14 @@ async function populateXMLIngresoCFDI_CARTAPORTE(
         const impuestos = xml.ele("cfdi:Impuestos", TotalImpuestosAttribute);
         if (dec_TotalImpuestosRetenidos !== null) {
           const ArrayImpuestosRetenidos = await getArrayImpuestos(id_CFDI_DB, 1);
+          // console.log("getArrayImpuestos Retenidos", ArrayImpuestosRetenidos);
+
           const retenciones = impuestos.ele("cfdi:Retenciones");
+
           for (const item of ArrayImpuestosRetenidos) {
+          // # console.log("item", item)
             retenciones.ele("cfdi:Retencion", {
-                  // Base: item.dec_BaseTotal,
                   Impuesto: item.c_Impuesto,
-                  // TipoFactor: item.c_TipoFactor,
                   Importe: item.dec_ImporteTotal
                   // TasaOCuota: item.dec_TasaOCuota
               });
@@ -1900,13 +1926,13 @@ async function populateXMLIngresoCFDI_CARTAPORTE(
 
     // const cartaPorte = complementoXML.ele("cartaporte", st_VersionCartaPorte, ":CartaPorte", {
       Version: st_Version,
-      idCCP: `CCC9CADE-7CC8-4E99-BA0A-0C229FC248E5`,
+      // idCCP: `CCC9CADE-7CC8-4E99-BA0A-0C229FC248E5`,
 
       TotalDistRec: dec_TotalDistRec,
-      TranspInternac: "No"
+      TranspInternac: "No",
 
       
-      // idCCP: `${generateIdCCP()}`
+      IdCCP: `${await generateIdCCP()}`
     });
 
     let UbicacionesOrigen = await getUbicacionInfoOrigen(id_CartaPorte);
@@ -2008,15 +2034,36 @@ async function populateXMLIngresoCFDI_CARTAPORTE(
       ConfigVehicular: AutotransporteInfo.st_ClaveTransporte,
       PlacaVM: AutotransporteInfo.st_Placa,
       AnioModeloVM: AutotransporteInfo.st_Anio,
+      PesoBrutoVehicular: generalCartaPorteInfo.dec_PesoBrutoVehicular
     });
 
     let nombreAseguradoraUnidad = await getNombreAseguradora(
       AutotransporteInfo.id_AseguradoraRespCivil
     );
+    
     autotransporte.ele(`cartaporte${st_VersionCartaPorte}:Seguros`, {
       AseguraRespCivil: nombreAseguradoraUnidad,
       PolizaRespCivil: AutotransporteInfo.st_NumPoliza,
     });
+
+
+    let RemolqueRequirementValidation = await validateRemolqueRequirement(viajeInformation.id_Unidad);
+
+    console.log("RemolqueRequirementValidation", RemolqueRequirementValidation.st_Remolques)
+    if(RemolqueRequirementValidation != 0 ){
+      const remolques = autotransporte.ele(`cartaporte${st_VersionCartaPorte}:Remolques`);
+      let remolquesArray = await getRemolquesInfo(id_CartaPorte)
+      console.log("remolquesArray content", remolquesArray)
+
+      for (const remolque of remolquesArray) {
+        remolques.ele(`cartaporte${st_VersionCartaPorte}:Remolque`, {
+        Placa: remolque.st_placa,
+        SubTipoRem: remolque.st_ClaveRemolque
+      });
+      }
+    }
+
+
 
     const OperadorInformation = await getOperadorInformation(
       viajeInformation.id_Operador

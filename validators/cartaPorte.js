@@ -20,6 +20,9 @@ const validateCartaporte = [
   check("id_AseguraCarga").optional().exists(), 
   check("st_PolizaMedAmbiente").optional().exists(), 
   check("st_AseguraCarga").optional().exists(), 
+  check("dec_PesoBrutoVehicular").optional().exists(), 
+
+  
 
 
 
