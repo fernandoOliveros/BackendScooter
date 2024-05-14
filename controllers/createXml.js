@@ -487,7 +487,9 @@ async function getNombreAseguradora(id_Aseguradora) {
 
 async function getUbicacionInfoOrigen(id_CartaPorte) {
   try {
-    let query = `SELECT tbl_dir_origen_cartaporte.* FROM tbl_dir_origen_cartaporte LEFT JOIN tbl_productoservicio_cartaporte  ON tbl_productoservicio_cartaporte.id_DirOrigenCP=tbl_dir_origen_cartaporte.id_DirOrigenCP WHERE tbl_productoservicio_cartaporte.id_CartaPorte = :id `;
+    // let query = `SELECT tbl_dir_origen_cartaporte.* FROM tbl_dir_origen_cartaporte LEFT JOIN tbl_productoservicio_cartaporte  ON tbl_productoservicio_cartaporte.id_DirOrigenCP=tbl_dir_origen_cartaporte.id_DirOrigenCP WHERE tbl_productoservicio_cartaporte.id_CartaPorte = :id `;
+
+    let query = `SELECT tbl_dir_origen_cartaporte.* FROM tbl_dir_origen_cartaporte  WHERE tbl_dir_origen_cartaporte.id_CartaPorte = :id `;
 
     let UbicacionInformation = await sequelize.query(query, {
       replacements: { id: `${id_CartaPorte}` },
@@ -502,7 +504,9 @@ async function getUbicacionInfoOrigen(id_CartaPorte) {
 
 async function getUbicacionInfoDestino(id_CartaPorte) {
   try {
-    let query = `SELECT tbl_dir_destino_cartaporte.* FROM tbl_dir_destino_cartaporte LEFT JOIN tbl_productoservicio_cartaporte  ON tbl_productoservicio_cartaporte.id_DirDestinoCP = tbl_dir_destino_cartaporte.id_dir_destinoCP WHERE tbl_productoservicio_cartaporte.id_CartaPorte = :id `;
+    // let query = `SELECT tbl_dir_destino_cartaporte.* FROM tbl_dir_destino_cartaporte LEFT JOIN tbl_productoservicio_cartaporte  ON tbl_productoservicio_cartaporte.id_DirDestinoCP = tbl_dir_destino_cartaporte.id_dir_destinoCP WHERE tbl_productoservicio_cartaporte.id_CartaPorte = :id `;
+
+    let query = `SELECT tbl_dir_destino_cartaporte.* FROM tbl_dir_destino_cartaporte WHERE tbl_dir_destino_cartaporte.id_CartaPorte = :id `;
 
     let UbicacionInformation = await sequelize.query(query, {
       replacements: { id: `${id_CartaPorte}` },
