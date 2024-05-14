@@ -81,7 +81,7 @@ const readRemolqueCtrl = async (req, res) => {
         "SELECT `remolques`.*, `docs`.`id_Documento`, `docs`.`url_Factura`, `docs`.`url_PermisoSCT`, `docs`.`url_TarjetaCirculacion` "+
         //"`docs`.`url_TarjetaCirculacion`, `docs`.`url_Factura` , `docs`.`url_PermisoSCT`,`docs`.`id_Documento` " +
         "FROM `tbl_remolques` as `remolques`" +
-        "INNER JOIN `tbl_docs_remolques` as `docs`" +
+        "LEFT JOIN `tbl_docs_remolques` as `docs`" +
         "ON `docs`.`id_Remolque`= `remolques`.`id_Remolque`" +
         //"INNER JOIN  `tbl_tipocandado` as `candado`" +
         //"ON `candado`.`id_Candado`= `unidades`.`id_Candado`" +
