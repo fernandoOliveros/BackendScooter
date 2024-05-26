@@ -5,6 +5,8 @@ const {
   timbrarXML_Ctrl
 } = require("../controllers/timbox");
 
+
+const { authMiddleware } = require("../middleware/session")
 const axios = require('axios');
 const app = express();
 
@@ -28,7 +30,7 @@ http://localhost:5000/api/timbox//timboxTimbrar/:id //SEND ID from the table tbl
  */
 
 router.post("/security/authenticate", timboxAuthenticateCtrl);
-router.post("/timboxTimbrar/:id", timbrarXML_Ctrl);
+router.post("/timboxTimbrar/:id", authMiddleware, timbrarXML_Ctrl);
 
 
 module.exports = router;

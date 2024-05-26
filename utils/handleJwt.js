@@ -1,4 +1,5 @@
-const jsonwebtoken = require("jsonwebtoken");
+// const {jsonwebtoken, jwt} = require("jsonwebtoken");
+const jwt = require("jsonwebtoken");
 const JWT_SECRET = process.env.ACCESS_TOKEN_SECRET;
 
 /**
@@ -8,7 +9,7 @@ const JWT_SECRET = process.env.ACCESS_TOKEN_SECRET;
 
 const tokenSign = async (user) => {
   //firmar token
-  const sign = await jsonwebtoken.sign(
+  const sign = await jwt.sign(
     {
       id_User: user.id_User,
       email: user.email,
@@ -17,7 +18,7 @@ const tokenSign = async (user) => {
     },
     JWT_SECRET,
     {
-      expiresIn: "60s",
+      expiresIn: "7200s",
     }
   );
   return sign;
@@ -31,8 +32,10 @@ const tokenSign = async (user) => {
 const verifyToken = async (tokenJwt) => {
   //verifica que el token sea firmado de manera correcta por el backend
   try {
-    return jsonwebtoken.verify(tokenJwt, JWT_SECRET);
+
+    return jwt.verify(tokenJwt, JWT_SECRET);
   } catch (e) {
+    console.log("Error verifying JWT:", e)
     return null;
   }
 };

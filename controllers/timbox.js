@@ -18,59 +18,60 @@ const password = config.password;
 
 const StampService = require('sw-sdk-nodejs').StampService; //Libreria para timbrar (o sellar)
 
-async function timbrarXML_Ctrl(req, res) {
-  try {
-    let id = parseInt(req.params.id);
-    console.log(`timbrarXML_Ctrl: The id of the CFDI database is ${id}, connecting to SW services`);
+// async function timbrarXML_Ctrl(req, res) {
+//   try {
+//     let id = parseInt(req.params.id);
+//     console.log(`timbrarXML_Ctrl: The id of the CFDI database is ${id}, connecting to SW services`);
 
-    let query = `SELECT * FROM tbl_cfdi WHERE id_CFDI = :id;`;
+//     let query = `SELECT * FROM tbl_cfdi WHERE id_CFDI = :id;`;
 
-    const OperadorInformation = await sequelize.query(query, {
-      replacements: { id: `${id}` },
-      type: QueryTypes.SELECT,
-    });
+//     const OperadorInformation = await sequelize.query(query, {
+//       replacements: { id: `${id}` },
+//       type: QueryTypes.SELECT,
+//     });
 
-    let rawXMLName = `${OperadorInformation[0].st_nombreCrudoXML}.xml`;
+//     let rawXMLName = `${OperadorInformation[0].st_nombreCrudoXML}.xml`;
 
-    console.log(`timbrando  ${rawXMLName}`);
+//     console.log(`timbrandoo  ${rawXMLName}`);
 
-    const contents = fs.readFileSync(`./storage/documentos/${rawXMLName}`, 'utf8');
-    const generatedToken = await timboxAuthenticateCtrl();
+//     const contents = fs.readFileSync(`./storage/documentos/${rawXMLName}`, 'utf8');
+//     const generatedToken = await timboxAuthenticateCtrl();
 
-    // console.log("the token in timbrar controller is ", generatedToken);
+//     // console.log("the token in timbrar controller is ", generatedToken);
 
-    let xml = contents;
-    let params = { url: `${url}`, token: generatedToken };
-    let stamp = StampService.Set(params);
+//     let xml = contents;
+//     let params = { url: `${url}`, token: generatedToken };
+//     let stamp = StampService.Set(params);
 
-    return new Promise((resolve, reject) => {
-      stamp.StampV4(xml, async (error, dataCfdiSellado) => { // mark the function as async here
-        if (error) {
-          console.log(error);
-          reject(error); // Reject the promise if there's an error
-        } else {
-          console.log(dataCfdiSellado);
-          let updateTrasladoCfdiStatus = "UPDATE tbl_cfdi set i_Timbrado = 1 WHERE id_CFDI = :id";
-          await sequelize.query(updateTrasladoCfdiStatus, {
-            replacements: { id: `${id}` },
-          type: sequelize.QueryTypes.UPDATE, // Use the appropriate type
-          });
-          console.log("\nthe uuid is:", dataCfdiSellado.data.uuid)
+//     return new Promise((resolve, reject) => {
+//       stamp.StampV4(xml, async (error, dataCfdiSellado) => { // mark the function as async here
+//         if (error) {
+//           console.log("error message is", error.message);
+//           reject(error); // Reject the promise if there's an error
+//         } else {
+//           console.log(dataCfdiSellado);
+//           let updateTrasladoCfdiStatus = "UPDATE tbl_cfdi set i_Timbrado = 1 WHERE id_CFDI = :id";
+//           await sequelize.query(updateTrasladoCfdiStatus, {
+//             replacements: { id: `${id}` },
+//           type: sequelize.QueryTypes.UPDATE, // Use the appropriate type
+//           });
+//           console.log("\nthe uuid is:", dataCfdiSellado.data.uuid)
   
-          handleHttpResponse(res, dataCfdiSellado)
-          resolve(dataCfdiSellado); // Resolve the promise with the data
-        }
-      });
-    });
-  } catch (error) {
-    console.log(error);
-    throw error; // Rethrow the error to be caught by the caller
-  }
-}
+//           handleHttpResponse(res, dataCfdiSellado)
+//           resolve(dataCfdiSellado); // Resolve the promise with the data
+//         }
+//       });
+//     });
+//   } catch (error) {
+//     console.log("error message is", error.message);
+//     throw error; // Rethrow the error to be caught by the caller
+//   }
+// }
 
 
 
 const util = require('util');
+const { stringifyFunction } = require("puppeteer-core/internal/util/Function.js");
 
 async function timboxAuthenticateCtrl() {
   try {
@@ -97,6 +98,9 @@ async function timboxAuthenticateCtrl() {
 
 async function timbrarXML_Ctrl(req, res) {
   try {
+    logs_audit_gmail=JSON.stringify(req.user.st_Email, null, 2).toString();
+
+    // const userId = req.user.tbl_users; // Assuming userId is part of the JWT payload
     let id = parseInt(req.params.id);
     console.log(`timbrarXML_Ctrl: The id of the CFDI database is ${id}, connecting to SW services`);
 
@@ -106,10 +110,6 @@ async function timbrarXML_Ctrl(req, res) {
       replacements: { id: `${id}` },
       type: QueryTypes.SELECT,
     });
-
-
-
-
 
     let rawXMLName = `${OperadorInformation[0].st_nombreCrudoXML}.xml`;
 
@@ -125,15 +125,36 @@ async function timbrarXML_Ctrl(req, res) {
     return new Promise((resolve, reject) => {
       stamp.StampV4(xml, async (error, dataCfdiSellado) => { // mark the function as async here
         if (error) {
+          // str_matriz_errores_sat=JSON.stringify(error)
+          // console.log("str_matriz_errores_sat is", str_matriz_errores_sat)
+          let st_codigo_error=(error.message).toString();
+          let st_detalle_error=(error.messageDetail).toString();
           console.log(error);
+
+
+
+          let insertCfdiTimbrado = "INSERT INTO tbl_audit_cfdi (id_CFDI,	st_codigo_error,	st_detalle_error,	st_usuario) VALUES (:id, :st_codigo_error,	:st_detalle_error,	:st_usuario)";
+          await sequelize.query(insertCfdiTimbrado, {
+            replacements: { id: `${id}`, st_codigo_error: `${st_codigo_error}`,	 st_detalle_error: `${st_detalle_error}`,	st_usuario: `${logs_audit_gmail}` },
+          type: sequelize.QueryTypes.INSERT // Use the appropriate type
+          });
+
           reject(error); // Reject the promise if there's an error
         } else {
           console.log(dataCfdiSellado);
           let updateTrasladoCfdiStatus = "UPDATE tbl_cfdi set i_Timbrado = 1 WHERE id_CFDI = :id";
+          
           await sequelize.query(updateTrasladoCfdiStatus, {
             replacements: { id: `${id}` },
           type: sequelize.QueryTypes.UPDATE, // Use the appropriate type
           });
+
+          let insertCfdiTimbrado = "INSERT INTO tbl_cfdi_timbrados (id_CFDI,	st_noCertificadoSAT,	st_noCertificadoCFDI,	st_uuid,	fch_fechaTimbrado,	st_qrCode,	st_selloCFDI,	st_selloSAT) VALUES (:id, :st_noCertificadoSAT,	:st_noCertificadoCFDI,	:st_uuid,	:fch_fechaTimbrado,	:st_qrCode,	:st_selloCFDI,	:st_selloSAT )";
+          await sequelize.query(insertCfdiTimbrado, {
+            replacements: { id: `${id}`, st_noCertificadoSAT: `${dataCfdiSellado.data.noCertificadoSAT}`,	 st_noCertificadoCFDI: `${dataCfdiSellado.data.noCertificadoCFDI}`,	st_uuid: `${dataCfdiSellado.data.uuid}`,	fch_fechaTimbrado: `${dataCfdiSellado.data.fechaTimbrado}`,	st_qrCode: `${dataCfdiSellado.data.qrCode}`,	st_selloCFDI: `${dataCfdiSellado.data.selloCFDI}`,	st_selloSAT: `${dataCfdiSellado.data.selloSAT}` },
+          type: sequelize.QueryTypes.INSERT // Use the appropriate type
+          });
+
           console.log("\nthe uuid is:", dataCfdiSellado.data.uuid)
   
           handleHttpResponse(res, dataCfdiSellado)
@@ -142,7 +163,7 @@ async function timbrarXML_Ctrl(req, res) {
       });
     });
   } catch (error) {
-    console.log(error);
+    console.log("error message is ", error.message);
     throw error; // Rethrow the error to be caught by the caller
   }
 }

@@ -11,8 +11,13 @@ const authMiddleware = async (req, res, next) => {
       return;
     }
     const authHeader = req.headers["authorization"];
+
+    // console.log("authHeader is", authHeader)
     const token = authHeader && authHeader.split(" ")[1]; //no nulo && indice 1 es donde esta el token, el 0 es Bearer
+    // console.log("token is", token)
+    
     const dataToken = await verifyToken(token);
+    // console.log("dataToken is", dataToken)
     //console.log(dataToken.id_User)
     if (!dataToken.id_User) {
       handleHttpError(res, "ERROR_ID_TOKEN", 401);

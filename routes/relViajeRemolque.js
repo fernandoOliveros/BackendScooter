@@ -5,6 +5,7 @@ const {
   updateViajeRemolqueCtrl,
   deleteViajeRemolqueCtrl,  
   // readAllRemolquesCtrl,
+  readViajeRemolqueCtrl,
   // readRemolqueCtrl,
   // updateRemolqueCtrl,
   // deleteRemolqueCtrl,

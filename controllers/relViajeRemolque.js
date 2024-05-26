@@ -25,17 +25,17 @@ const readViajeRemolqueCtrl = async (req, res) => {
     const id= parseInt(req.params.id)
     //console.log(`El id ESSSS ${id}`)
 
-    const dataUnidad = await unidadesModel.findByPk(id);
+    const dataUnidad = await relViajeRemolqueCPModel.findByPk(id);
     if (!dataUnidad) {
-      handleHttpError(res, `No existe unidad con id: ${id}`, 404);
+      handleHttpError(res, `No existe relViajeRemolque con id: ${id}`, 404);
       return;
     } else {
       let query =
         "SELECT `candado`.`st_DescripcionCandado`, `unidades`.*, `docs`.`url_TarjetaCirculacion`, `docs`.`url_Factura` , `docs`.`url_PermisoSCT`,`docs`.`id_Documento` " +
         "FROM `tbl_unidades` as `unidades`" +
-        "INNER JOIN `tbl_documentos` as `docs`" +
+        "LEFT JOIN `tbl_documentos` as `docs`" +
         " ON `docs`.`id_Unidad`= `unidades`.`id_Unidad`" +
-        "INNER JOIN  `tbl_tipocandado` as `candado`" +
+        "LEFT JOIN  `tbl_tipocandado` as `candado`" +
         " ON `candado`.`id_Candado`= `unidades`.`id_Candado`" +
         " AND `candado`.`id_Candado`= `unidades`.`id_Candado`" +
         "WHERE `unidades`.`id_Unidad`=:id;";
