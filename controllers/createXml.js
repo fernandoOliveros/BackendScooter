@@ -135,7 +135,6 @@ async function BuildXML(xmlFileName, xml) {
     }
     console.log(`\nFile ${xmlFileName} created successfullyy.`);
   });
-  //  return xmlFileNameCreated;
 }
 
 async function createTimestampedXmlName(id_CFDI_DB, notStampedStringXML) {

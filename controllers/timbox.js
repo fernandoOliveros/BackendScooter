@@ -68,6 +68,14 @@ const StampService = require('sw-sdk-nodejs').StampService; //Libreria para timb
 //   }
 // }
 
+async function BuildXML(xmlFileName, xml) {
+  fs.writeFile(`./storage/documentos/${xmlFileName}`, xml, function (err) {
+    if (err) {
+      return console.log(err);
+    }
+    console.log(`\nFile ${xmlFileName} updated successfullyy.`);
+  });
+}
 
 
 const util = require('util');
@@ -130,9 +138,6 @@ async function timbrarXML_Ctrl(req, res) {
           let st_codigo_error=(error.message).toString();
           let st_detalle_error=(error.messageDetail).toString();
           console.log(error);
-
-
-
           let insertCfdiTimbrado = "INSERT INTO tbl_audit_cfdi (id_CFDI,	st_codigo_error,	st_detalle_error,	st_usuario) VALUES (:id, :st_codigo_error,	:st_detalle_error,	:st_usuario)";
           await sequelize.query(insertCfdiTimbrado, {
             replacements: { id: `${id}`, st_codigo_error: `${st_codigo_error}`,	 st_detalle_error: `${st_detalle_error}`,	st_usuario: `${logs_audit_gmail}` },
@@ -141,7 +146,7 @@ async function timbrarXML_Ctrl(req, res) {
 
           reject(error); // Reject the promise if there's an error
         } else {
-          console.log(dataCfdiSellado);
+          // console.log("dataCfdiSellado.data is:", dataCfdiSellado.data);
           let updateTrasladoCfdiStatus = "UPDATE tbl_cfdi set i_Timbrado = 1 WHERE id_CFDI = :id";
           
           await sequelize.query(updateTrasladoCfdiStatus, {
@@ -150,12 +155,27 @@ async function timbrarXML_Ctrl(req, res) {
           });
 
           let insertCfdiTimbrado = "INSERT INTO tbl_cfdi_timbrados (id_CFDI,	st_noCertificadoSAT,	st_noCertificadoCFDI,	st_uuid,	fch_fechaTimbrado,	st_qrCode,	st_selloCFDI,	st_selloSAT) VALUES (:id, :st_noCertificadoSAT,	:st_noCertificadoCFDI,	:st_uuid,	:fch_fechaTimbrado,	:st_qrCode,	:st_selloCFDI,	:st_selloSAT )";
+          
           await sequelize.query(insertCfdiTimbrado, {
-            replacements: { id: `${id}`, st_noCertificadoSAT: `${dataCfdiSellado.data.noCertificadoSAT}`,	 st_noCertificadoCFDI: `${dataCfdiSellado.data.noCertificadoCFDI}`,	st_uuid: `${dataCfdiSellado.data.uuid}`,	fch_fechaTimbrado: `${dataCfdiSellado.data.fechaTimbrado}`,	st_qrCode: `${dataCfdiSellado.data.qrCode}`,	st_selloCFDI: `${dataCfdiSellado.data.selloCFDI}`,	st_selloSAT: `${dataCfdiSellado.data.selloSAT}` },
-          type: sequelize.QueryTypes.INSERT // Use the appropriate type
+            replacements: { id, st_noCertificadoSAT: dataCfdiSellado.data.noCertificadoSAT,
+              	 st_noCertificadoCFDI: `${dataCfdiSellado.data.noCertificadoCFDI}`,	st_uuid: `${dataCfdiSellado.data.uuid}`,	fch_fechaTimbrado: `${dataCfdiSellado.data.fechaTimbrado}`,	st_qrCode: `${dataCfdiSellado.data.qrCode}`,	st_selloCFDI: `${dataCfdiSellado.data.selloCFDI}`,	st_selloSAT: `${dataCfdiSellado.data.selloSAT}` },
+          type: QueryTypes.INSERT // Use the appropriate type
           });
 
-          console.log("\nthe uuid is:", dataCfdiSellado.data.uuid)
+    
+
+          let query_xml_name="SELECT st_nombreCrudoXML from tbl_cfdi where id_cfdi = :id";
+          let query_result_xml_name = await sequelize.query(query_xml_name, {
+            replacements: { id,
+          type: sequelize.QueryTypes.SELECT // Use the appropriate type
+          }});
+          let xmlFileName=query_result_xml_name.shift();
+          xmlFileName=xmlFileName.shift()
+
+          xmlFileName=xmlFileName.st_nombreCrudoXML+".xml";
+
+          let xml_cfdi=dataCfdiSellado.data.cfdi;        
+          await BuildXML(xmlFileName, xml_cfdi);
   
           handleHttpResponse(res, dataCfdiSellado)
           resolve(dataCfdiSellado); // Resolve the promise with the data
