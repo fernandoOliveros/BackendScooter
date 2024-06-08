@@ -147,9 +147,9 @@ const readRemolquesEmpresaCtrl = async (req, res) => {
       let query =
         "SELECT `remolques`.*, `empresa`.`id_Empresa`, `docs`.`url_TarjetaCirculacion`, `docs`.`url_Factura` , `docs`.`url_PermisoSCT`,`docs`.`id_Documento` "+
         "FROM `tbl_remolques` as `remolques`" +
-        "INNER JOIN  `tbl_empresas` as `empresa`" +
+        "LEFT JOIN  `tbl_empresas` as `empresa`" +
         "ON `empresa`.`id_Empresa`= `remolques`.`id_Empresa`" +
-        "INNER JOIN  `tbl_docs_remolques` as `docs`" +
+        "LEFT JOIN  `tbl_docs_remolques` as `docs`" +
         "ON `docs`.`id_Remolque`= `remolques`.`id_Remolque`" +
         "WHERE `empresa`.`id_Empresa`=:id " + 
         "AND `remolques`.`i_Status`!=0" ;
