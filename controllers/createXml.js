@@ -1398,7 +1398,7 @@ async function populateXMLIngresoCFDI(
     // Add Conceptos element
     const conceptos = xml.ele("cfdi:Conceptos");      
         //apartado para tabla tbl_impuestos_agrupados
-  await createImpuestosAgrupados(id_CFDI_DB);
+  // await createImpuestosAgrupados(id_CFDI_DB);
 
 
     //apartado de impuestos
@@ -1413,38 +1413,88 @@ async function populateXMLIngresoCFDI(
     TotalImpuestosAttribute.TotalImpuestosTrasladados = dec_TotalImpuestosTrasladados;
 
 
-
     if (Object.keys(TotalImpuestosAttribute).length > 0) {
-      // Create the impuestos element with the dynamically determined attributes
-        const impuestos = xml.ele("cfdi:Impuestos", TotalImpuestosAttribute);
-        if (dec_TotalImpuestosRetenidos !== null) {
-          const ArrayImpuestosRetenidos = await getArrayImpuestos(id_CFDI_DB, 1);
-          const retenciones = impuestos.ele("cfdi:Retenciones");
-          for (const item of ArrayImpuestosRetenidos) {
-            retenciones.ele("cfdi:Retencion", {
-                  //Base: item.dec_BaseTotal,
-                  Impuesto: item.c_Impuesto,
-                  //TipoFactor: item.c_TipoFactor,
-                  Importe: item.dec_ImporteTotal,
-                  //TasaOCuota: item.dec_TasaOCuota
-              });
-          }
-    
-      }
-      if (dec_TotalImpuestosTrasladados !== null) {
-          const ArrayImpuestosTrasladados = await getArrayImpuestos(id_CFDI_DB, 2);
-          const traslados = impuestos.ele("cfdi:Traslados");
-    
-          for (const item of ArrayImpuestosTrasladados) {
-              traslados.ele("cfdi:Traslado", {
-                  Base: item.dec_BaseTotal,
-                  Impuesto: item.c_Impuesto,
-                  TipoFactor: item.c_TipoFactor,
-                  Importe: item.dec_ImporteTotal,
-                  TasaOCuota: item.dec_TasaOCuota
-              });
-          }
-      }
+        if(dec_TotalImpuestosRetenidos != 0 && dec_TotalImpuestosTrasladados != 0 ){
+
+                // Create the impuestos element with the dynamically determined attributes
+              const impuestos = xml.ele("cfdi:Impuestos", TotalImpuestosAttribute);
+             
+
+
+              if (dec_TotalImpuestosRetenidos !== null) {
+                const ArrayImpuestosRetenidos = await getArrayImpuestos(id_CFDI_DB, 1);
+                const retenciones = impuestos.ele("cfdi:Retenciones");
+                for (const item of ArrayImpuestosRetenidos) {
+                  retenciones.ele("cfdi:Retencion", {
+                        //Base: item.dec_BaseTotal,
+                        Impuesto: item.c_Impuesto,
+                        //TipoFactor: item.c_TipoFactor,
+                        Importe: item.dec_ImporteTotal,
+                        //TasaOCuota: item.dec_TasaOCuota
+                    });
+                }
+          
+            }
+
+            if (dec_TotalImpuestosTrasladados !== null) {
+                const ArrayImpuestosTrasladados = await getArrayImpuestos(id_CFDI_DB, 2);
+                const traslados = impuestos.ele("cfdi:Traslados");
+          
+                for (const item of ArrayImpuestosTrasladados) {
+                    traslados.ele("cfdi:Traslado", {
+                        Base: item.dec_BaseTotal,
+                        Impuesto: item.c_Impuesto,
+                        TipoFactor: item.c_TipoFactor,
+                        Importe: item.dec_ImporteTotal,
+                        TasaOCuota: item.dec_TasaOCuota
+                    });
+                }
+            }
+
+        }else if (dec_TotalImpuestosRetenidos != 0 && dec_TotalImpuestosTrasladados == 0){
+
+             // Create the impuestos element with the dynamically determined attributes
+              const impuestos = xml.ele("cfdi:Impuestos", TotalImpuestosAttribute);
+             
+
+
+              if (dec_TotalImpuestosRetenidos !== null) {
+                const ArrayImpuestosRetenidos = await getArrayImpuestos(id_CFDI_DB, 1);
+                const retenciones = impuestos.ele("cfdi:Retenciones");
+                for (const item of ArrayImpuestosRetenidos) {
+                  retenciones.ele("cfdi:Retencion", {
+                        //Base: item.dec_BaseTotal,
+                        Impuesto: item.c_Impuesto,
+                        //TipoFactor: item.c_TipoFactor,
+                        Importe: item.dec_ImporteTotal,
+                        //TasaOCuota: item.dec_TasaOCuota
+                    });
+                }
+          
+            }
+
+        }else if (dec_TotalImpuestosRetenidos == 0 && dec_TotalImpuestosTrasladados != 0){
+          const impuestos = xml.ele("cfdi:Impuestos", TotalImpuestosAttribute);
+          
+
+           if (dec_TotalImpuestosTrasladados !== null) {
+                const ArrayImpuestosTrasladados = await getArrayImpuestos(id_CFDI_DB, 2);
+                const traslados = impuestos.ele("cfdi:Traslados");
+          
+                for (const item of ArrayImpuestosTrasladados) {
+                    traslados.ele("cfdi:Traslado", {
+                        Base: item.dec_BaseTotal,
+                        Impuesto: item.c_Impuesto,
+                        TipoFactor: item.c_TipoFactor,
+                        Importe: item.dec_ImporteTotal,
+                        TasaOCuota: item.dec_TasaOCuota
+                    });
+                }
+            }
+
+        }
+
+        
     
 
 
@@ -1452,6 +1502,7 @@ async function populateXMLIngresoCFDI(
     
     // Iterate through the results of prodServCFDI query
     let impuestosConcepto;
+    // await createImpuestosAgrupados(id_CFDI_DB);
 
     for (const prodServResult of prodServCFDI) {
       //apartado para tabla tbl_prodserv_cfdi
@@ -1483,6 +1534,9 @@ async function populateXMLIngresoCFDI(
         
       }
       else{
+      
+      await createImpuestosAgrupados(id_CFDI_DB);
+      
               if (prodServResult.id_TipoFactorTraslado != null) {
             console.log("There is an traslado impuesto");
 
@@ -1560,8 +1614,6 @@ async function populateXMLIngresoCFDI(
   }
 }
 
-
-
 async function populateXMLIngresoCFDI_CARTAPORTE(
   id_CFDI_DB,
   populateXMLIngresoCFDI_CARTAPORTE,
@@ -1656,482 +1708,10 @@ async function populateXMLIngresoCFDI_CARTAPORTE(
 
     // Add Conceptos element
     const conceptos = xml.ele("cfdi:Conceptos");
-    //apartado para tabla tbl_impuestos_agrupados
-    if (id_TipoComprobante==1){
-      await createImpuestosAgrupados(id_CFDI_DB);
-    }
-    
-    //apartado de impuestos
-    // Define an empty object to hold the attributes
-    let TotalImpuestosAttribute= {};
-    let dec_TotalImpuestosRetenidos = generalCfdiInfo.dec_TotalImpuestosRetenidos; 
-    let dec_TotalImpuestosTrasladados = generalCfdiInfo.dec_TotalImpuestosTrasladados;
-    console.log("dec_TotalImpuestosRetenidos", dec_TotalImpuestosRetenidos, ",dec_TotalImpuestosTrasladados", dec_TotalImpuestosTrasladados)
-
-
-    TotalImpuestosAttribute.TotalImpuestosRetenidos = dec_TotalImpuestosRetenidos;
-    TotalImpuestosAttribute.TotalImpuestosTrasladados = dec_TotalImpuestosTrasladados;
-
-    /**Get information from impuestos agrupados module */
-    if (Object.keys(TotalImpuestosAttribute).length > 0) {
-      // Create the impuestos element with the dynamically determined attributes
-        const impuestos = xml.ele("cfdi:Impuestos", TotalImpuestosAttribute);
-        if (dec_TotalImpuestosRetenidos !== null) {
-          const ArrayImpuestosRetenidos = await getArrayImpuestos(id_CFDI_DB, 1);
-          // console.log("getArrayImpuestos Retenidos", ArrayImpuestosRetenidos);
-
-          const retenciones = impuestos.ele("cfdi:Retenciones");
-
-          for (const item of ArrayImpuestosRetenidos) {
-          // # console.log("item", item)
-            retenciones.ele("cfdi:Retencion", {
-                  Impuesto: item.c_Impuesto,
-                  Importe: item.dec_ImporteTotal
-                  // TasaOCuota: item.dec_TasaOCuota
-              });
-          }
-    
-      }
-      if (dec_TotalImpuestosTrasladados !== null) {
-          const ArrayImpuestosTrasladados = await getArrayImpuestos(id_CFDI_DB, 2);
-          const traslados = impuestos.ele("cfdi:Traslados");
-    
-          for (const item of ArrayImpuestosTrasladados) {
-              traslados.ele("cfdi:Traslado", {
-                  Base: item.dec_BaseTotal,
-                  Impuesto: item.c_Impuesto,
-                  TipoFactor: item.c_TipoFactor,
-                  Importe: item.dec_ImporteTotal,
-                  TasaOCuota: item.dec_TasaOCuota
-              });
-          }
-      }
-    }
-    
-   
-       
-
-
-   
-
-    // Iterate through the results of prodServCFDI query
-    let impuestosConcepto;
-
-    for (const prodServResult of prodServCFDI) {
-      //apartado para tabla tbl_prodserv_cfdi
-      let c_prodServCFDI = await getClaveProdServCFDI(
-        prodServResult.id_ClaveProdServCFDI
-      );
-      let dataUnidadCFDI = await getClaveUnidadCFDI(
-        prodServResult.id_ClaveUnidadPesoCFDI
-      );
-      let c_ObjetoImp = await getClaveObjetoImp(prodServResult.id_ObjetoImp);
-      let i_Cantidad = prodServResult.i_Cantidad;
-
-      const concepto = conceptos.ele("cfdi:Concepto");
-      concepto.att("ClaveProdServ", c_prodServCFDI);
-      concepto.att("Cantidad", i_Cantidad);
-      concepto.att("ClaveUnidad", dataUnidadCFDI.c_ClaveUnidad);
-      concepto.att("Unidad", dataUnidadCFDI.st_Nombre);
-      concepto.att("ObjetoImp", c_ObjetoImp);
-      concepto.att("Descripcion", prodServResult.st_DescripcionConcepto);
-      concepto.att("Importe", prodServResult.dec_ImporteConcepto);
-      concepto.att("ValorUnitario", prodServResult.dec_ValorUnitarioConcepto);
-
-      let hasimpuestosConcepto = false;
-
-      if (prodServResult.id_TipoFactorTraslado != null) {
-            console.log("There is an traslado impuesto");
-
-            let ImpuestoTrasladoInformation = await getClaveImpuesto(
-              prodServResult.id_ImpuestoTraslado
-            );
-            let c_ImpuestoTraslado = ImpuestoTrasladoInformation.shift().c_Impuesto;
-            let c_TipoFactor = await getClaveTipoFactor(
-              prodServResult.id_TipoFactorTraslado
-            );
-            // Create the impuestosConcepto element for the first Traslado
-            if (!hasimpuestosConcepto) {
-              impuestosConcepto = concepto.ele("cfdi:Impuestos");
-              hasimpuestosConcepto = true;
-            }
-            const traslados = impuestosConcepto.ele("cfdi:Traslados");
-            const traslado = traslados.ele("cfdi:Traslado");
-
-            let dec_TasaOCuotaTrasladoFormatted = prodServResult.dec_TasaOCuotaTraslado;
-            // let dec_ImporteTrasladoFormatted = prodServResult.dec_ImporteTraslado.toString() + '0000';
-            let dec_ImporteTrasladoFormatted = prodServResult.dec_ImporteTraslado;
-
-            traslado.att("Base", prodServResult.dec_BaseTraslado);
-            traslado.att("Impuesto", c_ImpuestoTraslado);
-            traslado.att("TipoFactor", c_TipoFactor);
-            traslado.att("TasaOCuota", dec_TasaOCuotaTrasladoFormatted);
-            traslado.att("Importe", dec_ImporteTrasladoFormatted);
-
-      }
-
-      if (prodServResult.dec_BaseRetencion != null) {
-        console.log("There is an retencion impuesto");
-        let dec_BaseRetencion = prodServResult.dec_BaseRetencion;
-
-        let c_TipoFactor = await getClaveTipoFactor(
-          prodServResult.id_TipoFactorRetencion
-        );
-        let ImpuestoretencionInformation = await getClaveImpuesto(
-          prodServResult.id_ImpuestoRetencion
-        );
-        let c_Impuesto = ImpuestoretencionInformation.shift().c_Impuesto;
-
-        let dec_TasaOCuotaretencion = prodServResult.dec_TasaOCuotaRetencion;
-        let dec_ImporteRetencion = prodServResult.dec_ImporteRetencion;
-
-        if (!hasimpuestosConcepto) {
-          impuestosConcepto = concepto.ele("cfdi:Impuestos");
-          hasimpuestosConcepto = true;
-        }
-        let dec_TasaOCuotaTrasladoFormatted = dec_TasaOCuotaretencion;
-
-        const retenciones = impuestosConcepto.ele("cfdi:Retenciones");
-        const retencion = retenciones.ele("cfdi:Retencion");
-        retencion.att("Base", dec_BaseRetencion);
-        retencion.att("Impuesto", c_Impuesto);
-        retencion.att("TipoFactor", c_TipoFactor);
-        retencion.att("TasaOCuota", dec_TasaOCuotaTrasladoFormatted);
-        retencion.att("Importe", dec_ImporteRetencion);
-        
-      }
-    }
-
-    // concepto.att('NoIdentificacion', generalCfdiInfo.NoIdentificacion);
-    console.log(
-      "populateXMLCartaPorte para cfdi ingreso where id_CartaPorte",
-      id_CartaPorte
-    );
-
-    let generalCartaPorteInfo = await cartaPorteModel.findByPk(id_CartaPorte);
-    generalCartaPorteInfo = generalCartaPorteInfo.dataValues;
-    console.log("generalCartaPorteInfo is ", generalCartaPorteInfo);
-
-    //APARTADO DE CARTA PORTE GENERAL
-    let st_Version = generalCartaPorteInfo.st_Version;
-
-    let dec_TotalDistRec = generalCartaPorteInfo.dec_TotalDistRec;
-
-    let i_NumTotalMercancias = generalCartaPorteInfo.i_NumTotalMercancias;
-    let dec_PesoBrutoTotalMercancias =
-      generalCartaPorteInfo.dec_PesoBrutoTotalMercancias;
-
-    let c_UnidadPesoInformation = await getClaveUnidadCFDI(
-      generalCartaPorteInfo.id_UnidadPeso
-    );
-    c_UnidadPesoMercancias = c_UnidadPesoInformation.c_ClaveUnidad;
-
-    let st_NombreAseguradoraMedAmbiente;
-
-    if (generalCartaPorteInfo.id_AseguraMedAmbiente !== null) {
-      console.log("There is a id_AseguraMedAmbiente");
-      st_NombreAseguradoraMedAmbiente = await getNombreAseguradora(
-        generalCartaPorteInfo.id_AseguraMedAmbiente
-      );
-    }
-    let st_NombreAseguradoraCarga;
-    if (generalCartaPorteInfo.id_AseguraMedAmbiente !== null) {
-      console.log("There is a id_AseguraCarga");
-      st_NombreAseguradoraCarga = await getNombreAseguradora(
-        generalCartaPorteInfo.id_AseguraCarga
-      );
-    }
-    let st_PolizaMedAmbiente;
-    if (generalCartaPorteInfo.st_PolizaMedAmbiente !== null) {
-      st_PolizaMedAmbiente = generalCartaPorteInfo.st_PolizaMedAmbiente;
-    }
-    let st_PolizaAseguraCarga;
-    if (generalCartaPorteInfo.st_PolizaAseguraCarga !== null) {
-      st_PolizaAseguraCarga = generalCartaPorteInfo.st_PolizaAseguraCarga;
-    }
-
-    const complementoXML = xml.ele("cfdi:Complemento");
-
-    // Add CartaPorte element
-    const cartaPorte = complementoXML.ele(`cartaporte${st_VersionCartaPorte}:CartaPorte`, {
-
-    // const cartaPorte = complementoXML.ele("cartaporte", st_VersionCartaPorte, ":CartaPorte", {
-      Version: st_Version,
-      // idCCP: `CCC9CADE-7CC8-4E99-BA0A-0C229FC248E5`,
-
-      TotalDistRec: dec_TotalDistRec,
-      TranspInternac: "No",
-
-      
-      IdCCP: `${await generateIdCCP()}`
-    });
-
-    let UbicacionesOrigen = await getUbicacionInfoOrigen(id_CartaPorte);
-
-    let UbicacionesOrigenLeght = UbicacionesOrigen.length;
-    console.log("UbicacionesOrigenLeght is ", UbicacionesOrigenLeght);
-
-    // Add Ubicaciones element
-
-    const ubicaciones = cartaPorte.ele(`cartaporte${st_VersionCartaPorte}:Ubicaciones`);
-
-    for (const UbicacionOrigen of UbicacionesOrigen) {
-      let Reformatdate_FechaSalida = await getFormattedDateForCP(UbicacionOrigen.date_FechaSalida);
-      const ubicacionOrigen = ubicaciones.ele(`cartaporte${st_VersionCartaPorte}:Ubicacion`, {
-        TipoUbicacion: "Origen",
-        RFCRemitenteDestinatario: UbicacionOrigen.st_RemitenteRFC,
-        NombreRemitenteDestinatario: UbicacionOrigen.st_RemitenteNombre,
-        FechaHoraSalidaLlegada: Reformatdate_FechaSalida,
-      });
-
-      ubicacionOrigen.ele(`cartaporte${st_VersionCartaPorte}:Domicilio`, {
-        Estado: `${await getEstado(UbicacionOrigen.id_Estado)}`,
-        Pais: "MEX",
-        CodigoPostal: UbicacionOrigen.c_codigoPostal,
-      });
-    }
-
-    let UbicacionesDestino = await getUbicacionInfoDestino(id_CartaPorte);
-    let UbicacionesDestinoLeght = UbicacionesDestino.length;
-
-    console.log("UbicacionesDestinoLeght is ", UbicacionesDestinoLeght);
-
-    for (const UbicacionDestino of UbicacionesDestino) {
-      let Reformatdate_FechaLlegada = await getFormattedDateForCP(UbicacionDestino.date_FechaLlegada);
-
-      const ubicacionDestino = ubicaciones.ele(`cartaporte${st_VersionCartaPorte}:Ubicacion`, {
-        TipoUbicacion: "Destino",
-        RFCRemitenteDestinatario: UbicacionDestino.st_DestinatarioRFC,
-        NombreRemitenteDestinatario: UbicacionDestino.st_DestinatarioNombre,
-        FechaHoraSalidaLlegada: Reformatdate_FechaLlegada,
-        DistanciaRecorrida: UbicacionDestino.dec_DistRec,
-      });
-
-      ubicacionDestino.ele(`cartaporte${st_VersionCartaPorte}:Domicilio`, {
-        Estado: `${await getEstado(UbicacionDestino.id_Estado)}`,
-        Pais: "MEX",
-        CodigoPostal: UbicacionDestino.c_codigoPostal,
-      });
-    }
-
-    // Add Mercancias element
-    const MercanciasArray = await getMercanciasCartaPorte(id_CartaPorte);
-    const mercancia = cartaPorte.ele(`cartaporte${st_VersionCartaPorte}:Mercancias`, {
-      PesoBrutoTotal: dec_PesoBrutoTotalMercancias,
-      UnidadPeso: c_UnidadPesoMercancias,
-      NumTotalMercancias: i_NumTotalMercancias,
-    });
-
-    for (const Mercancia of MercanciasArray) {
-      const mercanciaElement = mercancia.ele(`cartaporte${st_VersionCartaPorte}:Mercancia`, {
-        BienesTransp: Mercancia.st_ClaveProducto,
-        Descripcion: Mercancia.st_Descripcion,
-        Cantidad: Mercancia.i_Cantidad,
-        ClaveUnidad: Mercancia.c_ClaveUnidad,
-        PesoEnKg: Mercancia.dec_PesoEnKg,
-      });
-      if (Mercancia.i_MaterialPeligroso === 1) {
-        // Add more attributes based on the condition
-        const c_MaterialesPeligrososInfo = await getClaveMaterialPeligroso(
-          Mercancia.id_MaterialesPeligrosos
-        );
-        const c_tipoEmbalajeInfo = await getClaveTipoEmbalaje(
-          Mercancia.id_TipoEmbalaje
-        );
-
-        mercanciaElement.att({
-          MaterialPeligroso: "Sí",
-          CveMaterialPeligroso:
-          c_MaterialesPeligrososInfo.c_MaterialesPeligrosos,
-          Embalaje: c_tipoEmbalajeInfo.c_tipoEmbalaje,
-        });
-      }
-    }
-
-    const viajeInformation = await getViajeCartaPorteInfo(id_CartaPorte);
-    
-    let AutotransporteInfo = await getAutotransporteInfo(
-      viajeInformation.id_Unidad
-    );
-    AutotransporteInfo = AutotransporteInfo.shift();
-    // Add Autotransporte element
-    const autotransporte = mercancia.ele(`cartaporte${st_VersionCartaPorte}:Autotransporte`, {
-      PermSCT: AutotransporteInfo.st_Clave,
-      NumPermisoSCT: AutotransporteInfo.st_PermisoSCT,
-    });
-
-
-    autotransporte.ele(`cartaporte${st_VersionCartaPorte}:IdentificacionVehicular`, {
-      ConfigVehicular: AutotransporteInfo.st_ClaveTransporte,
-      PlacaVM: AutotransporteInfo.st_Placa,
-      AnioModeloVM: AutotransporteInfo.st_Anio,
-      PesoBrutoVehicular: generalCartaPorteInfo.dec_PesoBrutoVehicular
-    });
-
-    let nombreAseguradoraUnidad = await getNombreAseguradora(
-      AutotransporteInfo.id_AseguradoraRespCivil
-    );
-    
-    autotransporte.ele(`cartaporte${st_VersionCartaPorte}:Seguros`, {
-      AseguraRespCivil: nombreAseguradoraUnidad,
-      PolizaRespCivil: AutotransporteInfo.st_NumPoliza,
-    });
-
-
-    let RemolqueRequirementValidation = await validateRemolqueRequirement(viajeInformation.id_Unidad);
-
-    console.log("RemolqueRequirementValidation", RemolqueRequirementValidation.st_Remolques)
-    if(RemolqueRequirementValidation != 0 ){
-      const remolques = autotransporte.ele(`cartaporte${st_VersionCartaPorte}:Remolques`);
-      let remolquesArray = await getRemolquesInfo(id_CartaPorte)
-      console.log("remolquesArray content", remolquesArray)
-
-      for (const remolque of remolquesArray) {
-        remolques.ele(`cartaporte${st_VersionCartaPorte}:Remolque`, {
-        Placa: remolque.st_placa,
-        SubTipoRem: remolque.st_ClaveRemolque
-      });
-      }
-    }
-
-
-
-    const OperadorInformation = await getOperadorInformation(
-      viajeInformation.id_Operador
-    );
-    const OperadorDomicilio = await getDomicilioFigura(
-      OperadorInformation.id_Operador
-    );
-
-    // Add FiguraTransporte element
-    const figuraTransporte = cartaPorte.ele(`cartaporte${st_VersionCartaPorte}:FiguraTransporte`);
-    figuraTransporte
-      .ele(`cartaporte${st_VersionCartaPorte}:TiposFigura`, {
-        TipoFigura: `${await getIdTipoFigura(
-          OperadorInformation.id_TipoFigura
-        )}`,
-        RFCFigura: OperadorInformation.st_RFC,
-        NumLicencia: OperadorInformation.st_NumLicencia,
-        NombreFigura: `${OperadorInformation.st_Nombre} ${OperadorInformation.st_ApellidoP} ${OperadorInformation.st_ApellidoM}`,
-      })
-      .ele(`cartaporte${st_VersionCartaPorte}:Domicilio`, {
-        Calle: OperadorDomicilio.st_Calle,
-        Estado: `${await getEstado(OperadorDomicilio.id_Estado)}`,
-        Pais: "MEX",
-        CodigoPostal: OperadorDomicilio.c_codigoPostal,
-      });
-
-    // Convert XML to string
-    const xmlString = xml.end({ pretty: true });
-    //console.log(xmlString);
-
-    // res.set('Content-Type', 'text/xml');
-    // return xmlString;
-    return xmlString;
-  } catch (error) {
-    console.log(error);
-  }
-}
-
-
-async function populateXMLIngresoCFDI_CARTAPORTE(
-  id_CFDI_DB,
-  populateXMLIngresoCFDI_CARTAPORTE,
-  id_TipoComprobante
-) {
-  try {
-    const id_CartaPorte = populateXMLIngresoCFDI_CARTAPORTE;
-    console.log("populateXMLIngresoCFDI_CARTAPORTE where id_CFDI_DB", id_CFDI_DB);
-
-    const generalCfdiInfo = await cfdiModel.findByPk(id_CFDI_DB);
-    //    console.log(generalCfdiInfo)
-    //APARTADO DE CFDI GENERAL
-    let c_moneda = await getClaveTipoMoneda(generalCfdiInfo.id_Moneda);
-    let c_UsoCFDI = await getClaveUsoCFDI(generalCfdiInfo.id_UsoCFDI);
-    let c_FormaPago = await getClaveFormaPago(generalCfdiInfo.id_FormaPago);
-    let c_MetodoPago = await getClaveMetodoPago(generalCfdiInfo.id_MetodoPago);
-    let c_TipoDeComprobante = await getClaveTipoComprobante(
-      generalCfdiInfo.id_TipoComprobante
-    );
-    const date_FechaCFDI = await getFormattedDate();
-    const empresaInfo = await getEmpresaInfo(id_CFDI_DB);
-    const clienteInfo = await getClienteInfo(id_CFDI_DB);
-
-    //APARTADO DE PRODUCTOS-SERVICIOS CFDI
-
-    let query = "SELECT * from tbl_prodserv_cfdi WHERE id_CFDI=:id";
-
-    const prodServCFDI = await sequelize.query(query, {
-      type: QueryTypes.SELECT,
-      replacements: { id: id_CFDI_DB },
-    });
-
-    console.log("lenght of prod-serv", prodServCFDI.length);
-
-    const xml = xmlbuilder.create("cfdi:Comprobante", {
-      version: "1.0",
-      encoding: "UTF-8",
-      headless: false, // Set headless to false to include the XML declaration
-    });
-
-    // Include the XML declaration manually
-    xml.dec({ version: "1.0", encoding: "UTF-8" });
-
-    xml.att("xmlns:cfdi", "http://www.sat.gob.mx/cfd/4");
-    xml.att("xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance");
-    xml.att(`xmlns:cartaporte${st_VersionCartaPorte}`, `http://www.sat.gob.mx/CartaPorte${st_VersionCartaPorte}`);
-    xml.att(
-      "xsi:schemaLocation",
-      `http://www.sat.gob.mx/cfd/4 http://www.sat.gob.mx/sitio_internet/cfd/4/cfdv40.xsd http://www.sat.gob.mx/CartaPorte${st_VersionCartaPorte} http://www.sat.gob.mx/sitio_internet/cfd/CartaPorte/CartaPorte${st_VersionCartaPorte}.xsd`
-    );
-
-    // Add dynamic generalCfdiInfo to the XML structure
-    xml.att("Fecha", date_FechaCFDI);
-    //xml.att('Folio', generalCfdiInfo.Folio);
-    xml.att("LugarExpedicion", empresaInfo.st_CodigoPostal);
-    xml.att("TipoDeComprobante", c_TipoDeComprobante);
-    console.log("getEmpresaInfo");
-
-    const CertificadoBase64 = await GetCertBase64Ctrl(empresaInfo.st_RFC);
-    console.log("GetCertBase64Ctrl", CertificadoBase64);
-
-    xml.att("NoCertificado", empresaInfo.st_NoCertificado);
-    xml.att("Certificado", CertificadoBase64);
-    xml.att("Sello", "");
-    xml.att("Exportacion", "01");
-
-    xml.att("Version", "4.0");
-    //    xml.att("Exportacion", "");
-    xml.att("Moneda", c_moneda);
-    xml.att("FormaPago", c_FormaPago);
-    xml.att("MetodoPago", c_MetodoPago);
-
-    xml.att("SubTotal", generalCfdiInfo.dec_SubTotal);
-    xml.att("Total", generalCfdiInfo.dec_Total);
-    xml.att("Serie", "Serie");
-
-    // Add more dynamic generalCfdiInfo attributes here
-
-    // Add Emisor element
-    const emisor = xml.ele("cfdi:Emisor");
-    emisor.att("Rfc", empresaInfo.st_RFC);
-    emisor.att("Nombre", empresaInfo.st_RazonSocial);
-    emisor.att("RegimenFiscal", empresaInfo.c_RegimenFiscal);
-
-    // Add Receptor element
-    const receptor = xml.ele("cfdi:Receptor");
-    receptor.att("Rfc", clienteInfo.st_RFC);
-    receptor.att("Nombre", clienteInfo.st_RazonSocial);
-    receptor.att("RegimenFiscalReceptor", clienteInfo.c_RegimenFiscal);
-    receptor.att("DomicilioFiscalReceptor", clienteInfo.c_DomicilioFiscal);
-    receptor.att("UsoCFDI", c_UsoCFDI);
-
-    // Add Conceptos element
-    const conceptos = xml.ele("cfdi:Conceptos");
-    //apartado para tabla tbl_impuestos_agrupados
-    if (id_TipoComprobante==1){
-      await createImpuestosAgrupados(id_CFDI_DB);
-    }
+    // //apartado para tabla tbl_impuestos_agrupados
+    // if (id_TipoComprobante==1){
+    //   await createImpuestosAgrupados(id_CFDI_DB);
+    // }
     
     //apartado de impuestos
     // Define an empty object to hold the attributes
@@ -2218,6 +1798,10 @@ async function populateXMLIngresoCFDI_CARTAPORTE(
         
       }
       else {
+          //apartado para tabla tbl_impuestos_agrupados
+    if (id_TipoComprobante==1){
+      await createImpuestosAgrupados(id_CFDI_DB);
+    }
         
       if (prodServResult.id_TipoFactorTraslado != null) {
             console.log("There is an traslado impuesto");
@@ -2513,8 +2097,6 @@ async function populateXMLIngresoCFDI_CARTAPORTE(
     console.log(error);
   }
 }
-
-
 
 
 async function populateXMLTrasladoCFDI(id_CFDI_DB) {
