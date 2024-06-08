@@ -13,7 +13,7 @@ const validatorViajes = [
   check("id_TipoViaje").exists(),
   check("id_Unidad").exists(),
   check("id_Operador").exists(),
-  check("id_Remolque").exists(),
+  // check("id_Remolque").exists(),
   check("i_km_totales").exists(),
   check("id_Empresa").exists(),
   check("id_StatusViaje").exists(),
