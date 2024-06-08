@@ -1725,41 +1725,92 @@ async function populateXMLIngresoCFDI_CARTAPORTE(
     TotalImpuestosAttribute.TotalImpuestosTrasladados = dec_TotalImpuestosTrasladados;
 
     /**Get information from impuestos agrupados module */
-    if (Object.keys(TotalImpuestosAttribute).length > 0) {
-      // Create the impuestos element with the dynamically determined attributes
-        const impuestos = xml.ele("cfdi:Impuestos", TotalImpuestosAttribute);
-        if (dec_TotalImpuestosRetenidos !== null) {
-          const ArrayImpuestosRetenidos = await getArrayImpuestos(id_CFDI_DB, 1);
-          // console.log("getArrayImpuestos Retenidos", ArrayImpuestosRetenidos);
+ if (Object.keys(TotalImpuestosAttribute).length > 0) {
+        if(dec_TotalImpuestosRetenidos != 0 && dec_TotalImpuestosTrasladados != 0 ){
 
-          const retenciones = impuestos.ele("cfdi:Retenciones");
+                // Create the impuestos element with the dynamically determined attributes
+              const impuestos = xml.ele("cfdi:Impuestos", TotalImpuestosAttribute);
+             
 
-          for (const item of ArrayImpuestosRetenidos) {
-          // # console.log("item", item)
-            retenciones.ele("cfdi:Retencion", {
-                  Impuesto: item.c_Impuesto,
-                  Importe: item.dec_ImporteTotal
-                  // TasaOCuota: item.dec_TasaOCuota
-              });
-          }
+
+              if (dec_TotalImpuestosRetenidos !== null) {
+                const ArrayImpuestosRetenidos = await getArrayImpuestos(id_CFDI_DB, 1);
+                const retenciones = impuestos.ele("cfdi:Retenciones");
+                for (const item of ArrayImpuestosRetenidos) {
+                  retenciones.ele("cfdi:Retencion", {
+                        //Base: item.dec_BaseTotal,
+                        Impuesto: item.c_Impuesto,
+                        //TipoFactor: item.c_TipoFactor,
+                        Importe: item.dec_ImporteTotal,
+                        //TasaOCuota: item.dec_TasaOCuota
+                    });
+                }
+          
+            }
+
+            if (dec_TotalImpuestosTrasladados !== null) {
+                const ArrayImpuestosTrasladados = await getArrayImpuestos(id_CFDI_DB, 2);
+                const traslados = impuestos.ele("cfdi:Traslados");
+          
+                for (const item of ArrayImpuestosTrasladados) {
+                    traslados.ele("cfdi:Traslado", {
+                        Base: item.dec_BaseTotal,
+                        Impuesto: item.c_Impuesto,
+                        TipoFactor: item.c_TipoFactor,
+                        Importe: item.dec_ImporteTotal,
+                        TasaOCuota: item.dec_TasaOCuota
+                    });
+                }
+            }
+
+        }else if (dec_TotalImpuestosRetenidos != 0 && dec_TotalImpuestosTrasladados == 0){
+
+             // Create the impuestos element with the dynamically determined attributes
+              const impuestos = xml.ele("cfdi:Impuestos", TotalImpuestosAttribute);
+             
+
+
+              if (dec_TotalImpuestosRetenidos !== null) {
+                const ArrayImpuestosRetenidos = await getArrayImpuestos(id_CFDI_DB, 1);
+                const retenciones = impuestos.ele("cfdi:Retenciones");
+                for (const item of ArrayImpuestosRetenidos) {
+                  retenciones.ele("cfdi:Retencion", {
+                        //Base: item.dec_BaseTotal,
+                        Impuesto: item.c_Impuesto,
+                        //TipoFactor: item.c_TipoFactor,
+                        Importe: item.dec_ImporteTotal,
+                        //TasaOCuota: item.dec_TasaOCuota
+                    });
+                }
+          
+            }
+
+        }else if (dec_TotalImpuestosRetenidos == 0 && dec_TotalImpuestosTrasladados != 0){
+          const impuestos = xml.ele("cfdi:Impuestos", TotalImpuestosAttribute);
+          
+
+           if (dec_TotalImpuestosTrasladados !== null) {
+                const ArrayImpuestosTrasladados = await getArrayImpuestos(id_CFDI_DB, 2);
+                const traslados = impuestos.ele("cfdi:Traslados");
+          
+                for (const item of ArrayImpuestosTrasladados) {
+                    traslados.ele("cfdi:Traslado", {
+                        Base: item.dec_BaseTotal,
+                        Impuesto: item.c_Impuesto,
+                        TipoFactor: item.c_TipoFactor,
+                        Importe: item.dec_ImporteTotal,
+                        TasaOCuota: item.dec_TasaOCuota
+                    });
+                }
+            }
+
+        }
+
+        
     
-      }
-      if (dec_TotalImpuestosTrasladados !== null) {
-          const ArrayImpuestosTrasladados = await getArrayImpuestos(id_CFDI_DB, 2);
-          const traslados = impuestos.ele("cfdi:Traslados");
-    
-          for (const item of ArrayImpuestosTrasladados) {
-              traslados.ele("cfdi:Traslado", {
-                  Base: item.dec_BaseTotal,
-                  Impuesto: item.c_Impuesto,
-                  TipoFactor: item.c_TipoFactor,
-                  Importe: item.dec_ImporteTotal,
-                  TasaOCuota: item.dec_TasaOCuota
-              });
-          }
-      }
+
+
     }
-    
    
        
 
@@ -2097,7 +2148,6 @@ async function populateXMLIngresoCFDI_CARTAPORTE(
     console.log(error);
   }
 }
-
 
 async function populateXMLTrasladoCFDI(id_CFDI_DB) {
   try {
