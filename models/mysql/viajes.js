@@ -29,10 +29,10 @@ const Viaje = sequelize.define(
       type: DataTypes.INTEGER,
       allowNull: false,
     },
-    id_Remolque: {
-      type: DataTypes.INTEGER,
-      allowNull: true,
-    },
+    // id_Remolque: {
+    //   type: DataTypes.INTEGER,
+    //   allowNull: true,
+    // },
     i_km_totales: {
       type: DataTypes.INTEGER,
       allowNull: false,
