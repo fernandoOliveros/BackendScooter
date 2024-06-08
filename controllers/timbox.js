@@ -106,8 +106,8 @@ async function timboxAuthenticateCtrl() {
 
 async function timbrarXML_Ctrl(req, res) {
   try {
+    console.log("timbrarXML_Ctrl starts...")
     logs_audit_gmail=JSON.stringify(req.user.st_Email, null, 2).toString();
-
     // const userId = req.user.tbl_users; // Assuming userId is part of the JWT payload
     let id = parseInt(req.params.id);
     console.log(`timbrarXML_Ctrl: The id of the CFDI database is ${id}, connecting to SW services`);
@@ -124,19 +124,34 @@ async function timbrarXML_Ctrl(req, res) {
     console.log(`timbrando  ${rawXMLName}`);
 
     const contents = fs.readFileSync(`./storage/documentos/${rawXMLName}`, 'utf8');
+    // console.log("contents is:", contents)
     const generatedToken = await timboxAuthenticateCtrl();
 
     let xml = contents;
     let params = { url: `${url}`, token: generatedToken };
+    console.log("under params")
     let stamp = StampService.Set(params);
 
     return new Promise((resolve, reject) => {
+      console.log("inside promise")
       stamp.StampV4(xml, async (error, dataCfdiSellado) => { // mark the function as async here
         if (error) {
-          // str_matriz_errores_sat=JSON.stringify(error)
-          // console.log("str_matriz_errores_sat is", str_matriz_errores_sat)
+          console.log("inside error, error is:", error)
           let st_codigo_error=(error.message).toString();
-          let st_detalle_error=(error.messageDetail).toString();
+          console.log("st_codigo_error", st_codigo_error)
+
+          // let st_detalle_error=(error.messageDetail).toString();
+
+          let st_detalle_error = "";
+
+          if (error.messageDetail !== null && error.messageDetail !== undefined) {
+              st_detalle_error = error.messageDetail.toString();
+          } else {
+              // Handle the case where messageDetail is null or undefined
+              st_detalle_error = "No message detail available";
+          }
+          console.log("st_detalle_error", st_detalle_error)
+
           console.log(error);
           let insertCfdiTimbrado = "INSERT INTO tbl_audit_cfdi (id_CFDI,	st_codigo_error,	st_detalle_error,	st_usuario) VALUES (:id, :st_codigo_error,	:st_detalle_error,	:st_usuario)";
           await sequelize.query(insertCfdiTimbrado, {

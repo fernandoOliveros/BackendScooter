@@ -70,21 +70,22 @@ const updateViajeRemolqueCtrl = async (req, res) => {
 
 const deleteViajeRemolqueCtrl = async (req, res) => {
   try {  
-    const { id_CartaPorte, id_Viaje, id_Remolque } = req;
-    const dataRemolque = await relViajeRemolqueCPModel.findByPk({
+    console.log("deleteViajeRemolqueCtrl starts...")
+    const { id_Viaje, id_Remolque } = req.params;
+    console.log(id_Viaje, id_Remolque)
+    const dataRemolque = await relViajeRemolqueCPModel.findOne({
       where: {
-          id_CartaPorte: id_CartaPorte,
-          id_Viaje: id_Viaje,
-          id_Remolque: id_Remolque
+          id_Viaje,
+          id_Remolque
       }
    });
 
     if (!dataRemolque) {
-      handleHttpError(res, `No existe dataRemolque con id: ${id}`, 404);
+      handleHttpError(res, `No existe dataRemolque con id_Viaje: ${id_Viaje} y id_Remolque: ${id_Remolque}`, 404);
       return;
     } else {
 
-      await cartaPorte.destroy();
+      await dataRemolque.destroy();
       handleHttpResponse(res, "Relacion Remolque-CP eliminada correctamente.");
 
     }

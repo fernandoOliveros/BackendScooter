@@ -4,11 +4,6 @@ const { DataTypes } = require("sequelize");
 const CFDI = sequelize.define(
   "rel_viaje_remolque",
   {
-    id_CartaPorte: {
-      type: DataTypes.INTEGER,
-      primaryKey: true,
-      allowNull: false,
-    },
     id_Viaje: {
       type: DataTypes.INTEGER,
       primaryKey: true,
