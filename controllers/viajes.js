@@ -54,7 +54,7 @@ const updateViajesCtrl = async (req, res) => {
 //   try {
 //     let query = "SELECT `candado`.`st_DescripcionCandado`, `Viajes`.*"+
 //     "FROM `tbl_Viajes` as `Viajes`" +
-//     "INNER JOIN  `tbl_tipocandado` as `candado`" +
+//     "LEFT JOIN  `tbl_tipocandado` as `candado`" +
 //     "ON `candado`.`id_Candado`= `Viajes`.`id_Candado`" +
 //     "WHERE  `Viajes`.`id_Candado` = 1" ;
 //     const readAllViajes = await sequelize.query(query, {
@@ -120,7 +120,7 @@ const deleteViajeCtrl = async (req, res) => {
 //       return;
 //     } else {
 //       let query =
-//         " SELECT `viaje`.*, `empresa`.`id_Empresa`, `unidades`.`st_Economico` as st_EconomicoUnidad, `operadores`.`st_Nombre`, operadores.st_ApellidoP, remolques.st_Economico as st_EconomicoRemolque FROM `tbl_viaje` as `viaje` INNER JOIN  `tbl_empresas` as `empresa` ON `empresa`.`id_Empresa`= `viaje`.`id_Empresa` INNER JOIN  `tbl_unidades` as `unidades` ON `unidades`.`id_Unidad`= `viaje`.`id_Unidad` INNER JOIN  `tbl_operadores` as `operadores` ON `operadores`.`id_Operador`= `viaje`.`id_Operador` INNER JOIN  `tbl_remolques` as `remolques` ON `remolques`.`id_Remolque`= `viaje`.`id_Remolque` WHERE `empresa`.`id_Empresa`=:id AND `viaje`.`id_Candado`= 1 AND `viaje`.`id_StatusViaje`= 1" ;
+//         " SELECT `viaje`.*, `empresa`.`id_Empresa`, `unidades`.`st_Economico` as st_EconomicoUnidad, `operadores`.`st_Nombre`, operadores.st_ApellidoP, remolques.st_Economico as st_EconomicoRemolque FROM `tbl_viaje` as `viaje` LEFT JOIN  `tbl_empresas` as `empresa` ON `empresa`.`id_Empresa`= `viaje`.`id_Empresa` LEFT JOIN  `tbl_unidades` as `unidades` ON `unidades`.`id_Unidad`= `viaje`.`id_Unidad` LEFT JOIN  `tbl_operadores` as `operadores` ON `operadores`.`id_Operador`= `viaje`.`id_Operador` LEFT JOIN  `tbl_remolques` as `remolques` ON `remolques`.`id_Remolque`= `viaje`.`id_Remolque` WHERE `empresa`.`id_Empresa`=:id AND `viaje`.`id_Candado`= 1 AND `viaje`.`id_StatusViaje`= 1" ;
 //       const dataViajeModified = await sequelize.query(query, {
 //         replacements: { id: `${id}` },
 //         type: QueryTypes.SELECT,
@@ -167,11 +167,17 @@ const readViajeEmpresaCtrl = async (req, res) => {
       return;
     } else {
       let query =
-        " SELECT `viaje`.*, `empresa`.`id_Empresa`, `unidades`.`st_Economico` as st_EconomicoUnidad, `operadores`.`st_Nombre`, operadores.st_ApellidoP, remolques.st_Economico as st_EconomicoRemolque FROM `tbl_viaje` as `viaje` INNER JOIN  `tbl_empresas` as `empresa` ON `empresa`.`id_Empresa`= `viaje`.`id_Empresa` INNER JOIN  `tbl_unidades` as `unidades` ON `unidades`.`id_Unidad`= `viaje`.`id_Unidad` INNER JOIN  `tbl_operadores` as `operadores` ON `operadores`.`id_Operador`= `viaje`.`id_Operador` LEFT JOIN  `tbl_remolques` as `remolques` ON `remolques`.`id_Remolque`= `viaje`.`id_Remolque` WHERE `empresa`.`id_Empresa`=:id AND `viaje`.`id_Candado`= 1";
+        " SELECT `viaje`.*, `empresa`.`id_Empresa`, `unidades`.`st_Economico` as st_EconomicoUnidad, `operadores`.`st_Nombre`, operadores.st_ApellidoP FROM `tbl_viaje` as `viaje` LEFT JOIN  `tbl_empresas` as `empresa` ON `empresa`.`id_Empresa`= `viaje`.`id_Empresa` LEFT JOIN  `tbl_unidades` as `unidades` ON `unidades`.`id_Unidad`= `viaje`.`id_Unidad` LEFT JOIN  `tbl_operadores` as `operadores` ON `operadores`.`id_Operador`= `viaje`.`id_Operador`  WHERE `empresa`.`id_Empresa`=:id AND `viaje`.`id_Candado`= 1";
       const dataViajeModified = await sequelize.query(query, {
         replacements: { id: `${id}` },
         type: QueryTypes.SELECT,
       });
+
+      for (const viajeInfo of dataViajeModified){
+        viajeInfo.remolques= await getRemolquesByViajeCtrl(viajeInfo.id_Viaje)
+      }
+
+
       handleHttpResponse(res, dataViajeModified);
     }
   } catch (e) {
@@ -179,6 +185,37 @@ const readViajeEmpresaCtrl = async (req, res) => {
     handleHttpError(res, "ERROR_READ_viaje-EMPRESA");
   }
 };
+
+const getRemolquesByViajeCtrl = async (id_Viaje) => {
+  try {
+    const dataViaje = await viajeModel.findByPk(id_Viaje);
+    if (!dataViaje) {
+      handleHttpError(res, `No existe viaje con id: ${id_Viaje}`, 404);
+      return;
+    } else {
+      let query =
+        "SELECT tbl_remolques.st_Economico FROM tbl_remolques RIGHT JOIN( SELECT rel_viaje_remolque.id_Remolque FROM tbl_viaje RIGHT JOIN rel_viaje_remolque ON rel_viaje_remolque.id_Viaje = tbl_viaje.id_Viaje LEFT JOIN tbl_empresas ON tbl_empresas.id_Empresa = tbl_viaje.id_Empresa WHERE tbl_viaje.id_Viaje=:id ) AS remolques_by_empresa ON remolques_by_empresa.id_Remolque = tbl_remolques.id_Remolque;";
+
+      const dataRemolquesByViaje = await sequelize.query(query, {
+        replacements: { id: `${id_Viaje}` },
+        type: QueryTypes.SELECT,
+      });
+
+      const remolquesArray = [];
+      for (const remolque of dataRemolquesByViaje){
+        remolquesArray.push(remolque)
+        // console.log("remolque:", remolque)
+
+      }
+      console.log("final remolquesArray:", remolquesArray)
+      return remolquesArray;
+      
+    }
+  } catch (e) {
+    console.log("Error at getRemolquesByViajeCtrl ", e);
+  }
+};
+
 
 const readViajeActivoEmpresaCtrl = async (req, res) => {
   try {
@@ -189,11 +226,18 @@ const readViajeActivoEmpresaCtrl = async (req, res) => {
       return;
     } else {
       let query =
-        "SELECT `viaje`.*, `empresa`.`id_Empresa`, `unidades`.`st_Economico` as st_EconomicoUnidad, `operadores`.`st_Nombre`, operadores.st_ApellidoP, remolques.st_Economico as st_EconomicoRemolque FROM `tbl_viaje` as `viaje` INNER JOIN  `tbl_empresas` as `empresa` ON `empresa`.`id_Empresa`= `viaje`.`id_Empresa` INNER JOIN  `tbl_unidades` as `unidades` ON `unidades`.`id_Unidad`= `viaje`.`id_Unidad` INNER JOIN  `tbl_operadores` as `operadores` ON `operadores`.`id_Operador`= `viaje`.`id_Operador` LEFT JOIN  `tbl_remolques` as `remolques` ON `remolques`.`id_Remolque`= `viaje`.`id_Remolque` WHERE `empresa`.`id_Empresa`=:id AND `viaje`.`id_Candado`= 1 AND `viaje`.`id_StatusViaje`= 1";
+        "SELECT `viaje`.*, `empresa`.`id_Empresa`, `unidades`.`st_Economico` as st_EconomicoUnidad, `operadores`.`st_Nombre`, operadores.st_ApellidoP FROM `tbl_viaje` as `viaje` LEFT JOIN  `tbl_empresas` as `empresa` ON `empresa`.`id_Empresa`= `viaje`.`id_Empresa` LEFT JOIN  `tbl_unidades` as `unidades` ON `unidades`.`id_Unidad`= `viaje`.`id_Unidad` LEFT JOIN  `tbl_operadores` as `operadores` ON `operadores`.`id_Operador`= `viaje`.`id_Operador` WHERE `empresa`.`id_Empresa`=:id AND `viaje`.`id_Candado`= 1 AND `viaje`.`id_StatusViaje`= 1";
+
       const dataViajeModified = await sequelize.query(query, {
         replacements: { id: `${id}` },
         type: QueryTypes.SELECT,
       });
+
+      for (const viajeInfo of dataViajeModified){
+        viajeInfo.remolques= await getRemolquesByViajeCtrl(viajeInfo.id_Viaje)
+      }
+
+
 
       const dataViajeModifiedLength = dataViajeModified.length;
       console.log("dataViajeModifiedLength", dataViajeModifiedLength);
@@ -213,6 +257,9 @@ const readViajeActivoEmpresaCtrl = async (req, res) => {
             type: QueryTypes.SELECT,
           }
         );
+
+        await getRemolquesByViajeCtrl(idViaje);
+        
 
         if (
           verifyCfdiExistanceQueryResult &&
