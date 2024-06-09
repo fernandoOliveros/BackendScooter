@@ -2030,6 +2030,8 @@ async function populateXMLIngresoCFDI_CARTAPORTE(
       });
     }
 
+
+
     // Add Mercancias element
     const MercanciasArray = await getMercanciasCartaPorte(id_CartaPorte);
     const mercancia = cartaPorte.ele(`cartaporte${st_VersionCartaPorte}:Mercancias`, {
@@ -2037,6 +2039,8 @@ async function populateXMLIngresoCFDI_CARTAPORTE(
       UnidadPeso: c_UnidadPesoMercancias,
       NumTotalMercancias: i_NumTotalMercancias,
     });
+
+    let flag_material_peligroso=0;
 
     for (const Mercancia of MercanciasArray) {
       const mercanciaElement = mercancia.ele(`cartaporte${st_VersionCartaPorte}:Mercancia`, {
@@ -2061,6 +2065,7 @@ async function populateXMLIngresoCFDI_CARTAPORTE(
           c_MaterialesPeligrososInfo.c_MaterialesPeligrosos,
           Embalaje: c_tipoEmbalajeInfo.c_tipoEmbalaje,
         });
+        flag_material_peligroso=1;
       }
     }
 
@@ -2092,6 +2097,16 @@ async function populateXMLIngresoCFDI_CARTAPORTE(
       AseguraRespCivil: nombreAseguradoraUnidad,
       PolizaRespCivil: AutotransporteInfo.st_NumPoliza,
     });
+
+    if (flag_material_peligroso==1){
+     autotransporte.ele(`cartaporte${st_VersionCartaPorte}:Seguros`, {
+      AseguraRespCivil: nombreAseguradoraUnidad,
+      PolizaRespCivil: AutotransporteInfo.st_NumPoliza,
+      AseguraMedAmbiente:  st_NombreAseguradoraMedAmbiente,
+      PolizaMedAmbiente: st_PolizaAseguraCarga
+      });
+    }
+
 
 
     let RemolqueRequirementValidation = await validateRemolqueRequirement(viajeInformation.id_Unidad);
