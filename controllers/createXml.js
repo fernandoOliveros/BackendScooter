@@ -2093,10 +2093,7 @@ async function populateXMLIngresoCFDI_CARTAPORTE(
       AutotransporteInfo.id_AseguradoraRespCivil
     );
     
-    autotransporte.ele(`cartaporte${st_VersionCartaPorte}:Seguros`, {
-      AseguraRespCivil: nombreAseguradoraUnidad,
-      PolizaRespCivil: AutotransporteInfo.st_NumPoliza,
-    });
+
 
     if (flag_material_peligroso==1){
      autotransporte.ele(`cartaporte${st_VersionCartaPorte}:Seguros`, {
@@ -2105,6 +2102,11 @@ async function populateXMLIngresoCFDI_CARTAPORTE(
       AseguraMedAmbiente:  st_NombreAseguradoraMedAmbiente,
       PolizaMedAmbiente: st_PolizaAseguraCarga
       });
+    }else{
+      autotransporte.ele(`cartaporte${st_VersionCartaPorte}:Seguros`, {
+      AseguraRespCivil: nombreAseguradoraUnidad,
+      PolizaRespCivil: AutotransporteInfo.st_NumPoliza,
+    });
     }
 
 
