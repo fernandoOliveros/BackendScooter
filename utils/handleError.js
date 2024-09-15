@@ -1,9 +1,7 @@
-// errorHandler.js
-module.exports = (err, req, res, next) => {
-    console.error(err.stack);
-    res.status(500).send({
-      status: 'error',
-      message: err.message,
-    });
-  };
+const handleHttpError = ( res, message = 'Internal Server Error', code= 500 ) => {
+  res.status(code);
+  res.send({error: message});
+};
+
+module.exports = {handleHttpError};
   

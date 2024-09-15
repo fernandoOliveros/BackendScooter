@@ -6,6 +6,7 @@ const {
     validatorUnidades,
     validatorReadUnidad,
   } = require("../validators/unidades");
+const { authMiddleware } = require("../middleware/session");
 
 
 /**
@@ -13,6 +14,6 @@ const {
 Create documento: http://localhost:5000/api/unidadesEmpresa/read
  */
 
-router.get('/read/:id',validatorReadUnidad, readUnidadesEmpresaCtrl)
+router.get('/read', authMiddleware, readUnidadesEmpresaCtrl)
 
 module.exports = router;

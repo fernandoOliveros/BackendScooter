@@ -2,7 +2,6 @@ const { handleHttpResponse } = require("../utils/handleResponse");
 const { handleHttpError } = require("../utils/handleError");
 const { sequelize } = require("../config/mysql");
 const { empresasModel } = require("../models");
-const { matchedData } = require("express-validator");
 const { QueryTypes } = require("sequelize");
 
 /**
@@ -12,31 +11,27 @@ const { QueryTypes } = require("sequelize");
 
 const readUnidadesEmpresaCtrl = async (req, res) => {
   try {
-    req = matchedData(req);
-    const { id } = req;
-    const dataEmpresa = await empresasModel.findByPk(id);
+    const { user } = req;
+    const dataEmpresa = await empresasModel.findByPk(user.id_User);
     if (!dataEmpresa) {
-      handleHttpError(res, `No existe empresa con id: ${id}`, 404);
+      handleHttpError(res, `No existe empresa con id: ${user.id_User}`, 404);
       return;
     } else {
+      //Params
+      const page = parseInt(req.query.page);
+      const limit = parseInt(req.query.limit);
+      const offset = (page - 1) * limit;
       let query =
-        "SELECT `unidades`.*, `empresa`.`id_Empresa`,  `candado`.`st_DescripcionCandado`" +
-        "FROM `tbl_unidades` as `unidades`" +
-        "INNER JOIN  `tbl_empresas` as `empresa`" +
-        "ON `empresa`.`id_Empresa`= `unidades`.`id_Empresa`" +
-        "INNER JOIN  `tbl_tipocandado` as `candado`" +
-        "ON `candado`.`id_Candado`= `unidades`.`id_Candado`" +
-        "WHERE `empresa`.`id_Empresa`=:id "+
-        "AND `unidades`.`id_Candado` = 1;";
+        "SELECT * FROM tbl_unidades WHERE id_Empresa =:id AND id_Candado = 1 limit :limit offset :offset;";
       const dataUnidadModified = await sequelize.query(query, {
-        replacements: { id: `${id}` },
+        replacements: { id: `${user.id_Empresa}`, limit: limit, offset: offset},
         type: QueryTypes.SELECT,
       });
       handleHttpResponse(res, dataUnidadModified);
     }
   } catch (e) {
     console.log(e);
-    handleHttpError(res, "ERROR_READ_UNIDADES-EMPRESA");
+    handleHttpResponse(e, null, 401);
   }
 };
 

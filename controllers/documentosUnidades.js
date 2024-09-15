@@ -2,146 +2,61 @@ const { documentosUnidadesModel } = require("../models");
 const { handleHttpResponse } = require("../utils/handleResponse");
 const { handleHttpError } = require("../utils/handleError");
 const { matchedData } = require("express-validator");
-//const { sequelize } = require("../config/mysql");
-//const { QueryTypes } = require("sequelize");
 
-async function createDocumentosCtrl(req, res, next) {
+async function saveDocumentosCtrl(req, res) {
+  let id_Unidad = +req.body.id_Unidad;
   try {
-    const dataEmpty = {
-      // id_Unidad,
-    };
-    const dataRow = await documentosUnidadesModel.create(dataEmpty); //only to generate id_Documento
-    console.log(dataRow.dataValues)
-    let idCreatedRow = dataRow.dataValues.id_Documento;
-    const findDataRow = await documentosUnidadesModel.findByPk(idCreatedRow);
-    req.findDataRow = findDataRow; //attaches variable dataDocs to the global request
-    next();
-  } catch (e) {
-    console.log(e);
-    handleHttpError(res, "ERROR_UPLOAD_DOCS");
-  }
-}
-
-const updateNewNameDocsCtrl = async (req, res) => {
-  try {
-    let { body, files } = req; //splits the request into two objects, id and body
-    let fileNames = [];
-    let fieldNames = [];
-    for (const i in req?.files) {
-      const [file] = req.files[i];
-      let currentFileName = file.filename;
-      let currentFieldName = file.fieldname;
-      fileNames.push(currentFileName);
-      fieldNames.push(currentFieldName);
-    }
-    const dataFiles = fileNames.reduce((accumulator, value, index) => {
-      return { ...accumulator, [`${fieldNames[index]}`]: value };
-    }, {});
-
-    const id_Unidad = parseInt(req.body.id_Unidad);
-    const dataToUpdate = { id_Unidad, ...dataFiles };
-
-    let id_Documento = req.findDataRow.dataValues.id_Documento;
-
-    const dataUpdateDocumento = await documentosUnidadesModel.update(
-      dataToUpdate,
-      {
-        where: { id_Documento: id_Documento },
-      }
-    );
-    const dataReadDocumento = await documentosUnidadesModel.findByPk(
-      id_Documento
-    );
-
-    handleHttpResponse(res, dataReadDocumento);
-  } catch (e) {
-    console.log(e);
-    handleHttpError(res, "ERROR_UPLOAD_NEWNAMES_DOCS");
-  }
-};
-
-async function readDataToUpdateCtrl(req, res, next) {
-  try {
-    let id = parseInt(req.params.id);
-    const findDataRow = await documentosUnidadesModel.findByPk(id);
-    //req.findDataRow = findDataRow;
-    req.findDataRow = findDataRow;
-    next();
-  } catch (e) {
-    console.log(e);
-    handleHttpError(res, "ERROR_READ_ROWDATA");
-  }
-}
-
-const updateDocumentosCtrl = async (req, res) => {
-  try {
-    /*
-    let { body, files } = matchedData(req); //splits the request into two objects, id and body
-    let id_Documento = req.findDataRow.dataValues.id_Documento;
-    let id_Unidad = parseInt(req.body.id_Unidad);
-    let [url_TarjetaCirculacion] = req.files.url_TarjetaCirculacion || "null";
-    let [url_Factura] = req.files.url_Factura || "null";
-    let [url_PermisoSCT] = req.files.url_PermisoSCT || "null";
-
-    url_TarjetaCirculacion = url_TarjetaCirculacion.filename || null;
-    url_Factura = url_Factura.filename || null;
-    url_PermisoSCT = url_PermisoSCT.filename || null;
-
-    let dataToUp = {
-      id_Unidad,
-      url_TarjetaCirculacion,
-      url_Factura,
-      url_PermisoSCT,
-    };
-    console.log(dataToUp);
-
-    const dataUpdatedRow = await documentosUnidadesModel.update(dataToUp, {
-      where: { id_Documento },
-    });
-    let dataFiles = await documentosUnidadesModel.findByPk(id_Documento);
-    dataFiles = { dataFiles, status: `${dataUpdatedRow}` };
-    handleHttpResponse(res, dataFiles);
-    */
-
-    //let id_Documento = parseInt(req.params.id);
-    let { body, files, id } = matchedData(req); //splits the request into two objects, id and body
-
-    let fileNames = [];
-    let fieldNames = [];
-    for (const i in req?.files) {
-      const [file] = req.files[i];
-      let currentFileName = file.filename;
-      let currentFieldName = file.fieldname;
-      fileNames.push(currentFileName);
-      fieldNames.push(currentFieldName);
-    }
-    //convierto array en objeto
-    const dataFiles = fileNames.reduce((accumulator, value, index) => {
-      return { ...accumulator, [`${fieldNames[index]}`]: value };
-    }, {});
-
-    const id_Unidad = parseInt(req.body.id_Unidad);
-    const dataToUpdate = { id_Unidad, ...dataFiles };
-
-    let id_Documento = req.findDataRow.dataValues.id_Documento;
-
-    console.log(dataToUpdate);
-
-    const dataUpdatedRow = await documentosUnidadesModel.update(dataToUpdate, {
-      where: { id_Documento: id_Documento },
-    });
-    let dataRow = await documentosUnidadesModel.findByPk(id_Documento);
-    dataRow = { dataRow, status: `${dataUpdatedRow}` };
+    // armamos el arreglo para el INSERT
+    let dataToInsert = makeArrayFiles(req?.files);
+    dataToInsert = { ...dataToInsert, id_Unidad: id_Unidad }; // añadimos el idUnidad al arreglo
+    let dataRow = await documentosUnidadesModel.create(dataToInsert);
     handleHttpResponse(res, dataRow);
   } catch (e) {
     console.log(e);
-    handleHttpError(res, "ERROR_UPDATE_UNIDAD");
+    handleHttpError(res, "ERROR_CREATE_DOCS");
   }
-};
+}
+
+async function updateNew(req, res) {
+  try {
+    let id_Unidad = +req.body.id_Unidad; // body => id_Unidad
+    let id = +req.params.id; // params /:id
+    let dataRow = null;
+
+    // armamos el arreglo para el UPDATE
+    let dataToUpdate = makeArrayFiles(req?.files);
+    // añadimos el id_Unidad al arreglo
+    dataToUpdate = { ...dataToUpdate, id_Unidad: id_Unidad };
+
+    console.log("Paramas: " + id);
+
+    //Preguntamos si tiene registro, sino tiene generamos uno nuevo
+    if(Number.isNaN(id)){
+      dataRow = await documentosUnidadesModel.create(dataToUpdate);
+    }else{
+      //Buscamos el registro por el id_Unidad
+      let findRowDocumento = await documentosUnidadesModel.findByPk(id);
+      let id_Documento = findRowDocumento.dataValues.id_Documento;
+
+      // UPDATE
+      let dataUpdatedRow = await documentosUnidadesModel.update(dataToUpdate, {
+        where: { id_Documento: id_Documento },
+      });
+
+      dataRow = await documentosUnidadesModel.findByPk(id_Documento);
+      dataRow = { dataRow, status: `${dataUpdatedRow}` };
+    }
+    
+    handleHttpResponse(res, dataRow);
+  } catch (e) {
+    console.log(e);
+    handleHttpError(res,"ERROR_UPDATE_DOCS");
+  }
+}
 
 const readAllDocumentosCtrl = async (req, res) => {
   try {
-    const dataAllDocumentos = await documentosUnidadesModel.findAll();
+    let dataAllDocumentos = await documentosUnidadesModel.findAll();
     handleHttpResponse(res, dataAllDocumentos);
   } catch (e) {
     console.log(e);
@@ -151,8 +66,11 @@ const readAllDocumentosCtrl = async (req, res) => {
 
 const readDocumentoCtrl = async (req, res) => {
   try {
-    let id_Documento = parseInt(req.params.id);
-    const dataDocumento = await documentosUnidadesModel.findByPk(id_Documento);
+    let id_Documento = req.params.id;
+    let dataDocumento = null;
+    if(id_Documento !== null){
+      dataDocumento = await documentosUnidadesModel.findByPk(+id_Documento);
+    }
     handleHttpResponse(res, dataDocumento);
   } catch (e) {
     handleHttpError(res, "ERROR_READ_DOCUMENTO");
@@ -162,8 +80,8 @@ const readDocumentoCtrl = async (req, res) => {
 const deleteDocumentosCtrl = async (req, res) => {
   try {
     req = matchedData(req);
-    const { id } = req;
-    const dataDeleteDocumentos = await documentosUnidadesModel.destroy({
+    let { id } = req;
+    let dataDeleteDocumentos = await documentosUnidadesModel.destroy({
       where: { id_Documento: id },
     });
     handleHttpResponse(res, dataDeleteDocumentos);
@@ -172,12 +90,20 @@ const deleteDocumentosCtrl = async (req, res) => {
   }
 };
 
+function makeArrayFiles(files){
+  let arrayFiles = [];
+  // armamos el arreglo para el UPDATE
+  for (const i in files) {
+    let [file] = files[i];
+    arrayFiles = {...arrayFiles, [file.fieldname]: file.filename};
+  }
+  return arrayFiles;
+}
+
 module.exports = {
-  createDocumentosCtrl,
-  updateDocumentosCtrl,
   readAllDocumentosCtrl,
   readDocumentoCtrl,
   deleteDocumentosCtrl,
-  updateNewNameDocsCtrl,
-  readDataToUpdateCtrl,
+  saveDocumentosCtrl,
+  updateNew
 };

@@ -14,7 +14,7 @@ const createUnidadCtrl = async (req, res) => {
   try {
     const body = matchedData(req); //la data del request venga curada
     const dataUnidad = await unidadesModel.create(body);
-    handleHttpResponse(res, dataUnidad);
+    handleHttpResponse(res,dataUnidad);
   } catch (e) {
     console.log(e);
     handleHttpError(res, "ERROR_UPLOAD_UNIDAD");
@@ -80,9 +80,9 @@ const readUnidadCtrl = async (req, res) => {
       let query =
         "SELECT `candado`.`st_DescripcionCandado`, `unidades`.*, `docs`.`url_TarjetaCirculacion`, `docs`.`url_Factura` , `docs`.`url_PermisoSCT`,`docs`.`id_Documento` " +
         "FROM `tbl_unidades` as `unidades`" +
-        "INNER JOIN `tbl_documentos` as `docs`" +
+        "LEFT JOIN `tbl_documentos` as `docs`" +
         " ON `docs`.`id_Unidad`= `unidades`.`id_Unidad`" +
-        "INNER JOIN  `tbl_tipocandado` as `candado`" +
+        "LEFT JOIN  `tbl_tipocandado` as `candado`" +
         " ON `candado`.`id_Candado`= `unidades`.`id_Candado`" +
         " AND `candado`.`id_Candado`= `unidades`.`id_Candado`" +
         "WHERE `unidades`.`id_Unidad`=:id;";

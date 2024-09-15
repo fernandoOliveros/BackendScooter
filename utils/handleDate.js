@@ -19,4 +19,7 @@ const Secs = addZero(today.getSeconds());
 let date = [fullYear, month, day].join("-");
 let time =  [Hours, Mins, Secs].join("-");
 
-module.exports = {date, time};
+let dateShort = [fullYear, month, day].join("");
+let timeShort = [fullYear, month, day].join("");
+
+module.exports = {date, time, dateShort, timeShort};

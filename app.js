@@ -3,7 +3,6 @@ const express = require("express"); //uso de Express
 const cors = require("cors");
 const app = express();
 const {conexionDBmysql} = require("./config/mysql");
-const errorHandler = require('./utils/handleError.js');
 
 
 
@@ -18,7 +17,7 @@ const port=process.env.PORT || 5000;
  * AQUI INVOCAMOS A LAS RUTAS 
  */
 app.use("/api", require("./routes")); //leer index
-app.use(errorHandler)
+//app.use(handleHttpError)
 
 const ENGINE_DB=process.env.ENGINE_DB; //selecciona el tipo de base de datos
 conexionDBmysql; //conexion a la base de datos MYSQL 

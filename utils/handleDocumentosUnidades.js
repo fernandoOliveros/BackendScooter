@@ -9,7 +9,7 @@ PermisosSCT - PSCT
  */
 
 const multer = require("multer");
-const { date, time } = require("./handleDate");
+const { dateShort, timeShort } = require("./handleDate");
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -17,29 +17,26 @@ const storage = multer.diskStorage({
     cb(null, pathStorage);
   },
   filename: function (req, file, cb) {
-    const idUni = req.findDataRow.dataValues.id_Unidad;
-    const idDoc = req.findDataRow.dataValues.id_Documento;
-
+    const id_Unidad = req.body.id_Unidad;
     const ext = file.originalname.split(".").pop();
-
     switch (file.fieldname) {
       case "url_TarjetaCirculacion": {
-        const filename = `${idDoc}_${idUni}_UTARCIR_${date}.${ext}`;
+        const filename = `TARCIR_${dateShort}${timeShort}.${ext}`;
         cb(null, filename);
         break;
       }
       case "url_Factura": {
-        const filename = `${idDoc}_${idUni}_UFACT_${date}.${ext}`;
+        const filename = `FACT_${dateShort}${timeShort}.${ext}`;
         cb(null, filename);
         break;
       }
       case "url_PermisoSCT": {
-        const filename = `${idDoc}_${idUni}_UPSCT_${date}.${ext}`;
+        const filename = `PERMISOSCT_${dateShort}${timeShort}.${ext}`;
         cb(null, filename);
         break;
       }
       default:
-        const filename = `${idDoc}_${idUni}_UUnknown-${Date.now()}.${ext}`;
+        const filename = `Unknown_${dateShort}${timeShort}.${ext}`;
         cb(null, filename);
     }
   },
