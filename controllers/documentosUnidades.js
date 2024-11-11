@@ -90,7 +90,7 @@ const deleteDocumentosCtrl = async (req, res) => {
   }
 };
 
-function makeArrayFiles(files){
+const makeArrayFiles = (files) => {
   let arrayFiles = [];
   // armamos el arreglo para el UPDATE
   for (const i in files) {

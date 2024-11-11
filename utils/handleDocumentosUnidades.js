@@ -17,7 +17,6 @@ const storage = multer.diskStorage({
     cb(null, pathStorage);
   },
   filename: function (req, file, cb) {
-    const id_Unidad = req.body.id_Unidad;
     const ext = file.originalname.split(".").pop();
     switch (file.fieldname) {
       case "url_TarjetaCirculacion": {

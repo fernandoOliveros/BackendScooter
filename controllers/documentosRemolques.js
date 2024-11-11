@@ -1,23 +1,35 @@
 const { documentosRemolquesModel } = require("../models");
 const { handleHttpResponse } = require("../utils/handleResponse");
 const { handleHttpError } = require("../utils/handleError");
-const { matchedData } = require("express-validator");
 
 async function createDocumentosCtrl(req, res, next) {
+  let id_Remolque = +req.body.id_Remolque;
   try {
-    const dataEmpty = {
-      // id_Remolque,
-    };
-    const dataRow = await documentosRemolquesModel.create(dataEmpty); //only to generate id_Documento
-    console.log(dataRow.dataValues)
-    let idCreatedRow = dataRow.dataValues.id_Documento;
-    const findDataRow = await documentosRemolquesModel.findByPk(idCreatedRow);
-    req.findDataRow = findDataRow; //attaches variable dataDocs to the global request
-    next();
-  } catch (e) {
+    let dataToInsert = makeArrayFiles(req?.files);
+    dataToInsert = { ...dataToInsert, id_Remolque: id_Remolque }; // añadimos el id_Remolque al arreglo
+    let dataRow = documentosRemolquesModel.create(dataToInsert);
+    handleHttpResponse(res, dataRow);
+  } catch (error) {
     console.log(e);
-    handleHttpError(res, "ERROR_UPLOAD_DOCS");
+    handleHttpError(res, "ERROR_CREATE_DOCS REMOLQUE");
   }
+  /*
+    //! DEPRECATED
+    try {
+      const dataEmpty = {
+        // id_Remolque,
+      };
+      const dataRow = await documentosRemolquesModel.create(dataEmpty); //only to generate id_Documento
+      console.log(dataRow.dataValues)
+      let idCreatedRow = dataRow.dataValues.id_Documento;
+      const findDataRow = await documentosRemolquesModel.findByPk(idCreatedRow);
+      req.findDataRow = findDataRow; //attaches variable dataDocs to the global request
+      next();
+    } catch (e) {
+      console.log(e);
+      handleHttpError(res, "ERROR_UPLOAD_DOCS");
+    }
+  */
 }
 
 const updateNewNameDocsCtrl = async (req, res) => {
@@ -73,6 +85,42 @@ async function readDataToUpdateCtrl(req, res, next) {
 
 const updateDocumentosCtrl = async (req, res) => {
   try {
+    let id_Remolque = +req.body.id_Remolque; // body => id_Remolque
+    let id = +req.params.id; // params /:id
+    let dataRow = null;
+
+    // armamos el arreglo para el UPDATE
+    let dataToUpdate = makeArrayFiles(req?.files);
+    // añadimos el id_Remolque al arreglo
+    dataToUpdate = { ...dataToUpdate, id_Remolque: id_Remolque };
+
+    console.log("Paramas: " + id);
+
+    //Preguntamos si tiene registro, sino tiene generamos uno nuevo
+    if(Number.isNaN(id)){
+      dataRow = await documentosRemolquesModel.create(dataToUpdate);
+    }else{
+      //Buscamos el registro por el id_Remolque
+      let findRowDocumento = await documentosRemolquesModel.findByPk(id);
+      let id_Documento = findRowDocumento.dataValues.id_Documento;
+
+      // UPDATE
+      let dataUpdatedRow = await documentosRemolquesModel.update(dataToUpdate, {
+        where: { id_Documento: id_Documento },
+      });
+
+      dataRow = await documentosRemolquesModel.findByPk(id_Documento);
+      dataRow = { dataRow, status: `${dataUpdatedRow}` };
+    }
+    
+    handleHttpResponse(res, dataRow);
+  } catch (e) {
+    console.log(e);
+    handleHttpError(res,"ERROR_UPDATE_DOCS");
+  }
+
+  /*
+  try {
     //let id_Documento = parseInt(req.params.id);
     let { body, files, id } = matchedData(req); //splits the request into two objects, id and body
 
@@ -107,6 +155,7 @@ const updateDocumentosCtrl = async (req, res) => {
     console.log(e);
     handleHttpError(res, "ERROR_UPDATE_REMOLQUE");
   }
+  */
 };
 
 const readAllDocumentosCtrl = async (req, res) => {
@@ -140,6 +189,16 @@ const deleteDocumentosCtrl = async (req, res) => {
     handleHttpError(res, "ERROR_DELETE_DOCUMENTO");
   }
 };
+
+ const makeArrayFiles = (files) => {
+  let arrayFiles = [];
+  // armamos el arreglo para el UPDATE
+  for (const i in files) {
+    let [file] = files[i];
+    arrayFiles = {...arrayFiles, [file.fieldname]: file.filename};
+  }
+  return arrayFiles;
+}
 
 module.exports = {
   createDocumentosCtrl,

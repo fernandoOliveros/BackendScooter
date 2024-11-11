@@ -11,14 +11,15 @@ const {
 } = require("../controllers/documentosRemolques");
 
 const { uploadMiddleware } = require("../utils/handleDocumentosRemolques");
+const { authMiddleware } = require("../middleware/session");
 
 /**
  * RUTAS - DOCUMENTOS DE REMOLQUE
-Create documento: http://localhost:5000/api/documentosRemolques/create
-Read All documentos: http://localhost:5000/api/documentosRemolques/read
-Read One documento: http://localhost:5000/api/documentosRemolques/read/:id
-Update documento: http://localhost:5000/api/documentosRemolques/update/:id
-Delete documento: http://localhost:5000/api/documentosRemolques/delete/:id
+Create documento: api/documentosRemolques/create
+Read All documentos: api/documentosRemolques/read
+Read One documento: api/documentosRemolques/read/:id
+Update documento: api/documentosRemolques/update/:id
+Delete documento: api/documentosRemolques/delete/:id
  */
 
 const uploadDocsMiddleware = uploadMiddleware.fields([
@@ -27,22 +28,10 @@ const uploadDocsMiddleware = uploadMiddleware.fields([
   { name: "url_PermisoSCT", maxCount: 1 },
 ]);
 
-router.post(
-  "/create",
-  createDocumentosCtrl, //works as a middleware
-  uploadDocsMiddleware,
-  updateNewNameDocsCtrl
-);
-
+router.post( "/create", authMiddleware, uploadDocsMiddleware, createDocumentosCtrl);
 router.get("/read", readAllDocumentosCtrl);
 router.get("/read/:id", readDocumentoCtrl);
-
-router.put(
-  "/update/:id",
-  readDataToUpdateCtrl,
-  uploadDocsMiddleware,
-  updateDocumentosCtrl,
-);
+router.put("/update/:id", authMiddleware, uploadDocsMiddleware, updateDocumentosCtrl);
 router.delete("/delete/:id", deleteDocumentosCtrl);
 
 module.exports = router;

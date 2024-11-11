@@ -5,7 +5,7 @@ const { empresasModel } = require("../models");
 const { QueryTypes } = require("sequelize");
 
 /**
- * @param {GET} req  http://localhost:5000/api/unidadesEmpresa/read
+ * @param {GET} req api/unidadesEmpresa/read
  * @param {*} res   Query para leer todo las unidades que pertenecen a una empresa ())
  */
 
@@ -17,21 +17,19 @@ const readUnidadesEmpresaCtrl = async (req, res) => {
       handleHttpError(res, `No existe empresa con id: ${user.id_User}`, 404);
       return;
     } else {
-      //Params
-      const page = parseInt(req.query.page);
-      const limit = parseInt(req.query.limit);
-      const offset = (page - 1) * limit;
       let query =
-        "SELECT * FROM tbl_unidades WHERE id_Empresa =:id AND id_Candado = 1 limit :limit offset :offset;";
+        "SELECT id_Unidad, id_Candado, id_TipoUnidad, st_Marca, st_SubMarca, st_PermisoSCT, st_Economico, st_Anio, st_Placa, " + 
+        "st_NumMotor, st_NumSerie, st_NumPoliza, date_Mecanico, date_Ecologico, id_TipoPermiso, id_AseguradoraRespCivil " + 
+        "FROM tbl_unidades WHERE id_Empresa =:id AND id_Candado = 1;";
       const dataUnidadModified = await sequelize.query(query, {
-        replacements: { id: `${user.id_Empresa}`, limit: limit, offset: offset},
+        replacements: { id: `${user.id_Empresa}`},
         type: QueryTypes.SELECT,
       });
       handleHttpResponse(res, dataUnidadModified);
     }
   } catch (e) {
     console.log(e);
-    handleHttpResponse(e, null, 401);
+    handleHttpError(e, null, 401);
   }
 };
 

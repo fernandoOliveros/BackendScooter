@@ -8,7 +8,7 @@ const validateResults = require("../utils/handleValidator");
  */
 const validatorUnidades = [
   check("id_Unidad").isEmpty(),
-  check("id_Empresa").exists(),
+  //check("id_Empresa").exists(),
   check("id_TipoUnidad").exists(),
   check("id_Candado").exists(),
   check("id_TipoPermiso").exists(),

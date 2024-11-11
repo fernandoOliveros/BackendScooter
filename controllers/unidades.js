@@ -1,4 +1,3 @@
-const { matchedData } = require("express-validator");
 const { handleHttpResponse } = require("../utils/handleResponse");
 const { handleHttpError } = require("../utils/handleError");
 const { unidadesModel } = require("../models");
@@ -12,9 +11,10 @@ const { QueryTypes } = require("sequelize");
 
 const createUnidadCtrl = async (req, res) => {
   try {
-    const body = matchedData(req); //la data del request venga curada
+    const { user, body} = req;
+    body.id_Empresa = user.id_Empresa; // ponemos el id_Empresa
     const dataUnidad = await unidadesModel.create(body);
-    handleHttpResponse(res,dataUnidad);
+    handleHttpResponse(res, dataUnidad);
   } catch (e) {
     console.log(e);
     handleHttpError(res, "ERROR_UPLOAD_UNIDAD");
@@ -24,11 +24,10 @@ const createUnidadCtrl = async (req, res) => {
 const updateUnidadesCtrl = async (req, res) => {
   try {
     let id_Unidad = parseInt(req.params.id);
-    const { body } = req; //splits the request into two objects, id and body
-    let query =
-      "SELECT `id_Unidad`" + "FROM `tbl_unidades`" + "WHERE `id_Unidad` =:id;";
+    const { user, body } = req;
+    let query ="SELECT id_Unidad FROM tbl_unidades WHERE id_Unidad =:id AND id_Empresa =:id_Empresa;";
     let dataId = await sequelize.query(query, {
-      replacements: { id: `${id_Unidad}` },
+      replacements: { id: `${id_Unidad}`, id_Empresa: `${user.id_Empresa}`},
       type: QueryTypes.SELECT,
     });
     if (!dataId) {
@@ -99,8 +98,26 @@ const readUnidadCtrl = async (req, res) => {
 
 const deleteUnidadCtrl = async (req, res) => {
   try {
-    req = matchedData(req);
-    const { id } = req;
+    //buscamos la unidad con el id y la empresa
+    const { user } = req;
+    const id = req.params.id;
+    let query ="SELECT id_Unidad FROM tbl_unidades WHERE id_Unidad =:id AND id_Empresa =:id_Empresa;";
+    let dataId = await sequelize.query(query, {
+      replacements: { id: `${id}`, id_Empresa: `${user.id_Empresa}`},
+      type: QueryTypes.SELECT,
+    });
+    if (!dataId) {
+      handleHttpError(res, `No existe unidad con id: ${id}`, 404);
+      return;
+    }else{
+      let queryUpdate = "UPDATE tbl_unidades SET id_Candado = '0' WHERE id_Unidad =:id AND id_Empresa =:id_Empresa;";
+      let deleteUnidad = await sequelize.query(queryUpdate, {
+        replacements: { id: `${id}`, id_Empresa: `${user.id_Empresa}`},
+        type: QueryTypes.UPDATE,
+      });
+      handleHttpResponse(res, deleteUnidad);
+    }
+    /*
     const dataUnidad = await unidadesModel.findByPk(id);
     if (!dataUnidad) {
       handleHttpError(res, `No existe unidad con id: ${id}`, 404);
@@ -117,6 +134,7 @@ const deleteUnidadCtrl = async (req, res) => {
       dataRow = { dataRow, status: `${getLogicStatus}` };
       handleHttpResponse(res, dataRow);
     }
+    */
   } catch (e) {
     console.log(e);
     handleHttpError(res, "ERROR_DELETE_UNIDAD");

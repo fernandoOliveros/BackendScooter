@@ -6,7 +6,7 @@ const validateResults = require("../utils/handleValidator");
  */
 const validatorRemolque = [
   check("id_Remolque").isEmpty(),
-  check("id_Empresa").exists(),
+  //check("id_Empresa").exists(),
   check("st_Anio").exists(),
   check("st_Economico").exists(),
   check("st_Marca").exists(),
@@ -21,5 +21,12 @@ const validatorRemolque = [
   },
 ];
 
+const validatorReadRemolque = [
+  check("id").exists(),
+  (req, res, next) => {
+    return validateResults(req, res, next);
+  },
+];
 
-module.exports = { validatorRemolque };
+
+module.exports = { validatorRemolque, validatorReadRemolque};
