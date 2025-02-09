@@ -12,6 +12,7 @@ const {
   deleteOperadorCtrl,
   readOperadoresEmpresaCtrl
 } = require("../controllers/operadores");
+const { authMiddleware } = require("../middleware/session");
 
 /**
  * RUTAS - OPERADORES
@@ -32,7 +33,7 @@ router.put(
   updateOperadorCtrl
 );
 router.delete("/delete/:id", deleteOperadorCtrl);
-router.get("/readByEmpresa/:id",  readOperadoresEmpresaCtrl);
+router.get("/readByEmpresa", authMiddleware, readOperadoresEmpresaCtrl);
 
 
 module.exports = router;

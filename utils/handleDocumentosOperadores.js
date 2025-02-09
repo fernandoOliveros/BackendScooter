@@ -10,7 +10,7 @@ url_RFC - RFC
 url_ComprobanteDom- COMPD
  */
 const multer = require("multer");
-const { date } = require("./handleDate");
+const { dateShort, timeShort } = require("./handleDate");
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -25,22 +25,22 @@ const storage = multer.diskStorage({
 
     switch (file.fieldname) {
       case "url_CURP": {
-        const filename = `${idDoc}_${idOp}_CURP_${date}.${ext}`;
+        const filename = `CURP_${dateShort}${timeShort}.${ext}`;
         cb(null, filename);
         break;
       }
       case "url_RFC": {
-        const filename = `${idDoc}_${idOp}_RFC_${date}.${ext}`;
+        const filename = `RFC_${dateShort}${timeShort}.${ext}`;
         cb(null, filename);
         break;
       }
       case "url_ComprobanteDom": {
-        const filename = `${idDoc}_${idOp}_COMPD_${date}.${ext}`;
+        const filename = `COMPD_${dateShort}${timeShort}.${ext}`;
         cb(null, filename);
         break;
       }
       default:
-        const filename = `${idDoc}_${idOp}_unknown-${Date.now()}.${ext}`;
+        const filename = `unknown.${dateShort}${timeShort}${ext}`;
         cb(null, filename);
     }
   },

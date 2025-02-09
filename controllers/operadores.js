@@ -120,25 +120,43 @@ const deleteOperadorCtrl = async (req, res) => {
 
 const readOperadoresEmpresaCtrl = async (req, res) => {
   try {
-    const id = parseInt(req.params.id)
-    const dataEmpresa = await empresasModel.findByPk(id);
+    const { user } = req;
+    const dataEmpresa = await empresasModel.findByPk(user.id_User);
+
     if (!dataEmpresa) {
-      handleHttpError(res, `No existe empresa con id: ${id}`, 404);
+      handleHttpError(res, `No existe empresa con id: ${user.id_User}`, 404);
       return;
     } else {
-      let query =
-        "SELECT `operadores`.*, `empresa`.`id_Empresa`" +
-        "FROM `tbl_operadores` as `operadores`" +
-        "INNER JOIN  `tbl_empresas` as `empresa`" +
-        "ON `empresa`.`id_Empresa`= `operadores`.`id_Empresa`" +
-        "WHERE `empresa`.`id_Empresa`=:id "+
-        "AND `operadores`.`id_Candado` = 1;";
-      const dataOperadorModified = await sequelize.query(query, {
-        replacements: { id: `${id}` },
+      let query = "SELECT id_Operador, id_Candado, id_TipoPuesto, st_Nombre, st_ApellidoP, st_ApellidoM, date_Nacimiento, st_NumIMSS, st_CURP, st_RFC, st_NumLicencia, date_LicenciaVigencia, i_Status, id_TipoFigura FROM tbl_operadores WHERE id_Empresa =:id AND id_Candado = 1;";
+      const dataOperadores = await sequelize.query(query, {
+        replacements: { id: user.id_Empresa },
         type: QueryTypes.SELECT,
       });
-      handleHttpResponse(res, dataOperadorModified);
+      handleHttpResponse(res, dataOperadores);
     }
+
+    /*
+    DEPRECATED 
+      const id = parseInt(req.params.id)
+      const dataEmpresa = await empresasModel.findByPk(id);
+      if (!dataEmpresa) {
+        handleHttpError(res, `No existe empresa con id: ${id}`, 404);
+        return;
+      } else {
+        let query =
+          "SELECT `operadores`.*, `empresa`.`id_Empresa`" +
+          "FROM `tbl_operadores` as `operadores`" +
+          "INNER JOIN  `tbl_empresas` as `empresa`" +
+          "ON `empresa`.`id_Empresa`= `operadores`.`id_Empresa`" +
+          "WHERE `empresa`.`id_Empresa`=:id "+
+          "AND `operadores`.`id_Candado` = 1;";
+        const dataOperadorModified = await sequelize.query(query, {
+          replacements: { id: `${id}` },
+          type: QueryTypes.SELECT,
+        });
+        handleHttpResponse(res, dataOperadorModified);
+      }
+    */
   } catch (e) {
     console.log(e);
     handleHttpError(res, "ERROR_READ_OPERADORES-EMPRESA");
