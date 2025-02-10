@@ -7,7 +7,7 @@ const validateResults = require("../utils/handleValidator");
 const validatorOperadores = [
   check("id_Operador").isEmpty(),
   check("id_Candado").exists().optional({checkFalsy: true}),
-  check("id_Empresa").exists(),
+  //check("id_Empresa").exists(),
   check("id_TipoPuesto").exists(),
   check("st_Nombre").exists().isString(),
   check("st_ApellidoP").exists(), 
@@ -20,7 +20,7 @@ const validatorOperadores = [
   check("st_RFC").optional({checkFalsy: true}), //varch( 13) //checkfalsy
   check("st_NumLicencia").exists(),
   check("date_LicenciaVigencia").exists(),
-  check("i_Status").exists(),
+  //check("i_Status").exists(),
   (req, res, next) => {
     return validateResults(req, res, next);
   },

@@ -8,10 +8,12 @@ const {
   readDocumentoCtrl,
   deleteDocumentosCtrl,
   updateNewNameDocsCtrl,
+  saveDocumentosCtrl,
   readDataToUpdateCtrl,
 } = require("../controllers/documentosOperadores");
 
 const {uploadMiddleware} = require("../utils/handleDocumentosOperadores");
+const { authMiddleware } = require("../middleware/session");
  
 /**
  * RUTAS - DOCUMENTOS DE OPERADORES
@@ -29,12 +31,13 @@ const uploadDocsMiddleware = uploadMiddleware.fields([
   { name: "url_ComprobanteDom", maxCount: 1 },
 ]);
 
-router.post(
-  "/create",
-  createDocumentosCtrl, //works as a middleware
-  uploadDocsMiddleware,
-  updateNewNameDocsCtrl
-);
+// router.post(
+//   "/create",
+//   createDocumentosCtrl, //works as a middleware
+//   uploadDocsMiddleware,
+//   updateNewNameDocsCtrl
+// );
+router.post( "/create", authMiddleware, uploadDocsMiddleware, saveDocumentosCtrl);
 router.get("/read", readAllDocumentosCtrl);
 router.get("/read/:id", validatorReadDocumento, readDocumentoCtrl);
 

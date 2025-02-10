@@ -12,7 +12,9 @@ const { QueryTypes } = require("sequelize");
 
 const createOperadorCtrl = async (req, res) => {
   try {
-    const body = matchedData(req); //la data del request venga curada
+    //const body = matchedData(req); //la data del request venga curada
+    const { user, body} = req;
+    body.id_Empresa = user.id_Empresa; // ponemos el id_Empresa
     const dataOperador = await operadoresModel.create(body);
     handleHttpResponse(res, dataOperador);
   } catch (e) {
@@ -70,16 +72,7 @@ const readOperadorCtrl = async (req, res) => {
       handleHttpError(res, `No existe operador con id: ${id}`, 404);
       return;
     } else {
-      let query =
-        "SELECT `candado`.`st_DescripcionCandado`, `tipopuesto`.`st_NombreTipoPuesto`, `docs`.`url_CURP` , `docs`.`url_RFC`,`docs`.`url_ComprobanteDom`, `docs`.`id_Documento`, `operadores`.* " +
-        "FROM `tbl_operadores` as `operadores`" +
-        "INNER JOIN  `tbl_tipocandado` as `candado`" +
-        "ON `candado`.`id_Candado`= `operadores`.`id_Candado`" +
-        "INNER JOIN `tbl_docs_operadores` as `docs`" +
-        "INNER JOIN `tbl_tipopuesto` AS `tipopuesto`" +
-        "ON `docs`.`id_Operador`= `operadores`.`id_Operador`" +
-        "AND `tipopuesto`.`id_TipoPuesto`= `operadores`.`id_TipoPuesto`" +
-        "WHERE `operadores`.`id_Operador`=:id;";
+      let query = "SELECT id_Empresa,id_TipoPuesto,st_Nombre,st_ApellidoP,st_ApellidoM,date_Nacimiento,st_NumIMSS,st_CURP,st_RFC,st_NumLicencia,date_LicenciaVigencia ,i_Status  FROM tbl_operadores where id_Operador=:id;"
       const dataOperadorModified = await sequelize.query(query, {
         replacements: { id: `${id}` },
         type: QueryTypes.SELECT,

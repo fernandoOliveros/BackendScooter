@@ -11,6 +11,7 @@ const {
   updateContactoCtrl,
   deleteContactoCtrl,
 } = require("../controllers/contactosEmOperadores");
+const { authMiddleware } = require("../middleware/session");
 
 /**
  * RUTAS
@@ -21,18 +22,20 @@ Update Unidad: http://localhost:5000/api/contactosEmOperadores/update/:id
 Delete Unidad: http://localhost:5000/api/contactosEmOperadores/delete/:id
  */
 
-router.post("/create", validatorContactosEmOperadores, createContactoCtrl);
+router.post("/create", validatorContactosEmOperadores, authMiddleware, createContactoCtrl);
 router.get("/read", readAllContactosCtrl);
 router.get("/read/:id", readContactoCtrl);
 router.put(
   "/update/:id",
   validatorReadContactoEmOperador,
   validatorContactosEmOperadores,
+  authMiddleware,
   updateContactoCtrl
 );
 router.delete(
   "/delete/:id",
   validatorReadContactoEmOperador,
+  authMiddleware,
   deleteContactoCtrl
 );
 

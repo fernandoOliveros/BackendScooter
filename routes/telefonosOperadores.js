@@ -8,6 +8,7 @@ const {
   readAllTelefonosCtrl,
   deleteTelefonoCtrl,
 } = require("../controllers/telefonosOperadores");
+const { authMiddleware } = require("../middleware/session");
 
 /**
  * RUTAS
@@ -18,7 +19,7 @@ Update Tel: http://localhost:5000/api/telefonosOperadores/update/:id
 Delete Tel: http://localhost:5000/api/telefonosOperadores/delete/:id
  */
 
-router.post("/create", validatorTelefonosOperadores, createTelefonoCtrl);
+router.post("/create", validatorTelefonosOperadores, authMiddleware, createTelefonoCtrl);
 router.get("/read", readAllTelefonosCtrl);
 router.get("/read/:id", readTelefonoCtrl);
 router.put(

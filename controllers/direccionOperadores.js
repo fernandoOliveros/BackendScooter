@@ -12,7 +12,8 @@ const { QueryTypes } = require("sequelize");
 
 const createDireccionCtrl = async (req, res) => {
   try {
-    const body = matchedData(req); //la data del request venga curada
+    //const body = matchedData(req); //la data del request venga curada
+    const { body } = req;
     const dataUnidad = await direccionOperadoresModel.create(body);
     handleHttpResponse(res, dataUnidad);
   } catch (e) {

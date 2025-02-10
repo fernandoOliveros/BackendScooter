@@ -4,7 +4,6 @@
 
 /**
  * PREFIJOS : 
-url_SolicitudEmpleo – SOLIEM
 url_CURP – CURP
 url_RFC - RFC
 url_ComprobanteDom- COMPD
@@ -18,9 +17,6 @@ const storage = multer.diskStorage({
     cb(null, pathStorage);
   },
   filename: function (req, file, cb) {
-    const idOp = req.foundDataRow.dataValues.id_Operador;
-    const idDoc = req.foundDataRow.dataValues.id_Documento;
-
     const ext = file.originalname.split(".").pop();
 
     switch (file.fieldname) {
@@ -40,7 +36,7 @@ const storage = multer.diskStorage({
         break;
       }
       default:
-        const filename = `unknown.${dateShort}${timeShort}${ext}`;
+        const filename = `unknown_${dateShort}${timeShort}.${ext}`;
         cb(null, filename);
     }
   },

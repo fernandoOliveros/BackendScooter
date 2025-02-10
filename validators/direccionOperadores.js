@@ -14,8 +14,8 @@ const validatorDireccion = [
   check("id_Colonia").exists(),
   check("st_Calle").exists(),
   check("st_NoExterior").exists(),
-  check("st_NoInterior").exists(),
-  check("st_RefDomicilio").exists(),
+  //check("st_NoInterior").exists(),
+  //check("st_RefDomicilio").exists(),
   
   (req, res, next) => {
     return validateResults(req, res, next);

@@ -11,6 +11,7 @@ const {
   deleteDireccionCtrl,
   getByCPCtrl,
 } = require("../controllers/direccionOperadores");
+const { authMiddleware } = require("../middleware/session");
 
 /**
  * RUTAS
@@ -21,7 +22,7 @@ Update direccion: http://localhost:5000/api/direccionOperadores/update/:id
 Delete direccion: http://localhost:5000/api/direccionOperadores/delete/:id
  */
 
-router.post("/create", validatorDireccion, createDireccionCtrl);
+router.post("/create", validatorDireccion, authMiddleware, createDireccionCtrl);
 router.get("/read", readAllDireccionesCtrl);
 router.get("/read/:id", readDireccionCtrl);
 router.put("/update/:id", validatorDireccion, updateDireccionCtrl);

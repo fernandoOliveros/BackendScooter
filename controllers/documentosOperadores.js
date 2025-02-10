@@ -3,6 +3,23 @@ const { handleHttpResponse } = require("../utils/handleResponse");
 const { handleHttpError } = require("../utils/handleError");
 const { matchedData } = require("express-validator");
 
+ const saveDocumentosCtrl = async (req, res) => {
+  let id_Operador = +req.body.id_Operador;
+  try {
+    if (!req.files || Object.keys(req.files).length === 0) {
+      return res.status(400).json({ error: "No se subieron archivos" });
+    }
+    // armamos el arreglo para el INSERT
+    let dataToInsert = makeArrayFiles(req?.files);
+    dataToInsert = { ...dataToInsert, id_Operador: id_Operador }; // añadimos el idUnidad al arreglo
+    let dataRow = await documentosOperadoresModel.create(dataToInsert);
+    handleHttpResponse(res, dataRow);
+  } catch (e) {
+    console.log(e);
+    handleHttpError(res, "ERROR_CREATE_DOCS_OPERADOR");
+  }
+}
+
 const createDocumentosCtrl = async (req, res, next) => {
   try {
     const dataEmpty = {};
@@ -148,6 +165,16 @@ const deleteDocumentosCtrl = async (req, res) => {
   }
 };
 
+const makeArrayFiles = (files) => {
+  let arrayFiles = [];
+  // armamos el arreglo para el UPDATE
+  for (const i in files) {
+    let [file] = files[i];
+    arrayFiles = {...arrayFiles, [file.fieldname]: file.filename};
+  }
+  return arrayFiles;
+}
+
 module.exports = {
   createDocumentosCtrl,
   updateDocumentosCtrl,
@@ -157,4 +184,5 @@ module.exports = {
   updateNewNameDocsCtrl,
   readDataToUpdateCtrl,
   updateDocumentosCtrl,
+  saveDocumentosCtrl,
 };

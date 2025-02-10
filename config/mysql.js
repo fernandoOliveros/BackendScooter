@@ -4,6 +4,7 @@ const database= process.env.mysql_DB;
 const username= process.env.mysql_USERNAME;
 const password= process.env.mysql_PASSWORD;
 const host= process.env.mysql_HOST;
+const port = process.env.mysql_PORT;
 
 //instanciamos la clase que guarda los datos de conexion con la bd
 const sequelize= new Sequelize (
@@ -12,7 +13,8 @@ const sequelize= new Sequelize (
     password,
     {
         host, 
-        dialect: "mysql"
+        dialect: "mysql",
+        port
     }
 )
 
@@ -20,6 +22,7 @@ sequelize.authenticate().then(function(err) {
     console.log('Connection has been established successfully.');
   })
   .catch(function (err) {
+    console.log(err);
     console.log('Unable to connect to the database');
   });
 

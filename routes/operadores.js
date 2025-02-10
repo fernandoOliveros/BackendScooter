@@ -23,7 +23,7 @@ Update operadores: http://localhost:5000/api/operadores/update/:id
 Delete operadores: http://localhost:5000/api/operadores/delete/:id
  */
 
-router.post("/create", validatorOperadores, createOperadorCtrl);
+router.post("/create", validatorOperadores, authMiddleware, createOperadorCtrl);
 router.get("/read", readAllOperadoresCtrl);
 router.get("/read/:id", readOperadorCtrl);
 router.put(
