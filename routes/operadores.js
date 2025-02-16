@@ -28,11 +28,12 @@ router.get("/read", readAllOperadoresCtrl);
 router.get("/read/:id", readOperadorCtrl);
 router.put(
   "/update/:id",
+  authMiddleware,
   validatorReadOperador,
   validatorOperadores,
   updateOperadorCtrl
 );
-router.delete("/delete/:id", deleteOperadorCtrl);
+router.delete("/delete/:id", authMiddleware, deleteOperadorCtrl);
 router.get("/readByEmpresa", authMiddleware, readOperadoresEmpresaCtrl);
 
 

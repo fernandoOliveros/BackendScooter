@@ -12,7 +12,8 @@ const { QueryTypes } = require("sequelize");
 
 const createRemolqueCtrl = async (req, res) => {
   try {
-    const body = matchedData(req); 
+    const { user, body} = req;
+    body.id_Empresa = user.id_Empresa; // ponemos el id_Empresa 
     const dataRemolque = await remolquesModel.create(body);
     handleHttpResponse(res, dataRemolque);
   } catch (e) {
@@ -23,12 +24,12 @@ const createRemolqueCtrl = async (req, res) => {
 
 const updateRemolqueCtrl = async (req, res) => {
   try {
-    const id= parseInt(req.params.id)
-    const { body } = req; 
+    const id= parseInt(req.params.id);
+    const { user, body } = req;
     let query =
-      "SELECT `id_Remolque`" + "FROM `tbl_remolques`" + "WHERE `id_Remolque`=:id;";
+      "SELECT `id_Remolque`" + "FROM `tbl_remolques`" + "WHERE `id_Remolque`=:id AND id_Empresa=:id_Empresa";
     let dataId = await sequelize.query(query, {
-      replacements: { id: `${id}` },
+      replacements: { id: `${id}`, id_Empresa: `${user.id_Empresa}` },
       type: QueryTypes.SELECT,
     });
     if (!dataId) {
@@ -102,6 +103,7 @@ const readRemolqueCtrl = async (req, res) => {
 const deleteRemolqueCtrl = async (req, res) => {
   try {
     const id = parseInt(req.params.id)
+    const {user} = req;
     let query = "SELECT `id_Remolque` FROM `tbl_remolques` WHERE `id_Remolque`=:id";
 
     const dataRemolque = await sequelize.query(query, {
@@ -114,9 +116,9 @@ const deleteRemolqueCtrl = async (req, res) => {
       return;
     } else {
       let query =
-        "UPDATE `tbl_remolques` SET `i_Status`='0' WHERE `id_Remolque`=:id;";
+        "UPDATE `tbl_remolques` SET `i_Status`='0' WHERE `id_Remolque`=:id AND id_Empresa=:id_Empresa";
       const statusDeleteRemolque = await sequelize.query(query, {
-        replacements: { id: `${id}` },
+        replacements: { id: `${id}`,  id_Empresa: `${user.id_Empresa}`},
         type: QueryTypes.UPDATE,
       });
       let getLogicStatus = statusDeleteRemolque.pop();
@@ -132,39 +134,54 @@ const deleteRemolqueCtrl = async (req, res) => {
 
 const readRemolquesEmpresaCtrl = async (req, res) => {
   try {
-    const id = parseInt(req.params.id)
-    let queryEmpresaId = "SELECT `id_Empresa` FROM `tbl_empresas` WHERE `id_Empresa` = :id"
-
-    const dataIdEmpresa = await sequelize.query(queryEmpresaId, {
-      replacements: {id: `${id}`},
-      type: QueryTypes.SELECT,
-    })
-    
-    if (dataIdEmpresa.length==0) {
-      handleHttpError(res, `No existe empresa con id: ${id}`, 404);
+    const { user } = req;
+    const dataEmpresa = await empresasModel.findByPk(user.id_User);
+    if (!dataEmpresa) {
+      handleHttpError(res, `No existe empresa con id: ${user.id_User}`, 404);
       return;
     } else {
-      let query =
-        "SELECT `remolques`.*, `empresa`.`id_Empresa`, `docs`.`url_TarjetaCirculacion`, `docs`.`url_Factura` , `docs`.`url_PermisoSCT`,`docs`.`id_Documento` "+
-        "FROM `tbl_remolques` as `remolques`" +
-        "LEFT JOIN  `tbl_empresas` as `empresa`" +
-        "ON `empresa`.`id_Empresa`= `remolques`.`id_Empresa`" +
-        "LEFT JOIN  `tbl_docs_remolques` as `docs`" +
-        "ON `docs`.`id_Remolque`= `remolques`.`id_Remolque`" +
-        "WHERE `empresa`.`id_Empresa`=:id " + 
-        "AND `remolques`.`i_Status`!=0" ;
-
-      const dataRemolqueModified = await sequelize.query(query, {
-        replacements: { id: `${id}` },
+      let query ="SELECT id_Remolque, id_TipoRemolque, st_Anio, st_Economico, st_Marca, st_Placa, st_NumSerie, date_VigenciaFM, i_Status FROM tbl_remolques WHERE id_Empresa=:id_Empresa and i_Status = 1";
+      const data = await sequelize.query(query, {
+        replacements: { id_Empresa: `${user.id_Empresa}`},
         type: QueryTypes.SELECT,
       });
-      if (dataRemolqueModified.length==0){
-        handleHttpError(res, `Empresa con id: ${id} aun no cuenta con remolques o documentos de remolques`, 404);
-        return;
-      } else{
-        handleHttpResponse(res, dataRemolqueModified);
-      }
+      handleHttpResponse(res, data);
     }
+    /*
+      const id = parseInt(req.params.id)
+      let queryEmpresaId = "SELECT `id_Empresa` FROM `tbl_empresas` WHERE `id_Empresa` = :id"
+
+      const dataIdEmpresa = await sequelize.query(queryEmpresaId, {
+        replacements: {id: `${id}`},
+        type: QueryTypes.SELECT,
+      })
+      
+      if (dataIdEmpresa.length==0) {
+        handleHttpError(res, `No existe empresa con id: ${id}`, 404);
+        return;
+      } else {
+        let query =
+          "SELECT `remolques`.*, `empresa`.`id_Empresa`, `docs`.`url_TarjetaCirculacion`, `docs`.`url_Factura` , `docs`.`url_PermisoSCT`,`docs`.`id_Documento` "+
+          "FROM `tbl_remolques` as `remolques`" +
+          "LEFT JOIN  `tbl_empresas` as `empresa`" +
+          "ON `empresa`.`id_Empresa`= `remolques`.`id_Empresa`" +
+          "LEFT JOIN  `tbl_docs_remolques` as `docs`" +
+          "ON `docs`.`id_Remolque`= `remolques`.`id_Remolque`" +
+          "WHERE `empresa`.`id_Empresa`=:id " + 
+          "AND `remolques`.`i_Status`!=0" ;
+
+        const dataRemolqueModified = await sequelize.query(query, {
+          replacements: { id: `${id}` },
+          type: QueryTypes.SELECT,
+        });
+        if (dataRemolqueModified.length==0){
+          handleHttpError(res, `Empresa con id: ${id} aun no cuenta con remolques o documentos de remolques`, 404);
+          return;
+        } else{
+          handleHttpResponse(res, dataRemolqueModified);
+        }
+      }
+    */
   } catch (e) {
     console.log(e);
     handleHttpError(res, "ERROR_READ_REMOLQUES-EMPRESA");

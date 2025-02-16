@@ -12,8 +12,7 @@ const { QueryTypes } = require("sequelize");
 
 const createDireccionCtrl = async (req, res) => {
   try {
-    //const body = matchedData(req); //la data del request venga curada
-    const { body } = req;
+    const body = matchedData(req); //la data del request venga curada
     const dataUnidad = await direccionOperadoresModel.create(body);
     handleHttpResponse(res, dataUnidad);
   } catch (e) {
@@ -23,6 +22,19 @@ const createDireccionCtrl = async (req, res) => {
 };
 
 const updateDireccionCtrl = async (req, res) => {
+  try {
+    const {id, ...body} = matchedData(req);
+    const updateDireccion = await direccionOperadoresModel.update(body, {
+      where: { id_Operador: id },
+    });
+    handleHttpResponse(res, updateDireccion);
+  } catch (e) {
+    console.log(e);
+    handleHttpError(res, "ERROR_UPDATE_DIRECCION");
+  }
+}
+
+const Old_updateDireccionCtrl = async (req, res) => {
   try {
     const { body } = req; //splits the request into two objects, id and body
     let id = parseInt(req.params.id);

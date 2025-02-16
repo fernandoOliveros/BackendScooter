@@ -23,6 +23,19 @@ const createTelefonoCtrl = async (req, res) => {
 
 const updateTelefonoCtrl = async (req, res) => {
   try {
+    const {id, ... body} = matchedData(req);
+    const updateTelefono = await telefonosOperadoresModel.update(body, {
+      where: { id_Operador: id },
+    });
+    handleHttpResponse(res, updateTelefono);
+  } catch (e) {
+    console.log(e);
+    handleHttpError(res, "ERROR_UPDATE_TELEFONO");
+  }
+}
+
+const Old_updateTelefonoCtrl = async (req, res) => {
+  try {
     const { id, ...body } = matchedData(req); //splits the request into two objects, id and body
     const dataTelefono = await telefonosOperadoresModel.findByPk(id);
     if (!dataTelefono) {

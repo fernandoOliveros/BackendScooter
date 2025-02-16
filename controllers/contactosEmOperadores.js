@@ -24,6 +24,19 @@ const createContactoCtrl = async (req, res) => {
 const updateContactoCtrl = async (req, res) => {
   try {
     const { id, ...body } = matchedData(req); //splits the request into two objects, id and body
+    const dataUpdateContacto = await contactosEmergenciaModel.update(body, {
+      where: { id_Operador: id },
+    });
+    handleHttpResponse(res, dataUpdateContacto);
+  } catch (e) {
+    console.log(e);
+    handleHttpError(res, "ERROR_UPDATE_CONTACT_OPERADOR");
+  }
+}
+
+const Old_updateContactoCtrl = async (req, res) => {
+  try {
+    const { id, ...body } = matchedData(req); //splits the request into two objects, id and body
     const dataContacto = await contactosEmergenciaModel.findByPk(id);
     if (!dataContacto) {
       handleHttpError(

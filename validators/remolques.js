@@ -13,7 +13,7 @@ const validatorRemolque = [
   check("st_Placa").exists(),
   check("st_NumSerie").exists(),
   check("date_VigenciaFM").exists(),
-  check("i_Status").default(1),
+  //check("i_Status").default(1),
   check("id_TipoRemolque").exists(),
 
   (req, res, next) => {

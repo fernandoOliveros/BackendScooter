@@ -2,14 +2,12 @@ const express = require("express");
 const router = express.Router();
 const { validatorReadDocumento } = require("../validators/documentos");
 const {
-  createDocumentosCtrl,
-  updateDocumentosCtrl,
   readAllDocumentosCtrl,
   readDocumentoCtrl,
   deleteDocumentosCtrl,
-  updateNewNameDocsCtrl,
   saveDocumentosCtrl,
-  readDataToUpdateCtrl,
+  readDocumentosByOperador,
+  updateDocuments
 } = require("../controllers/documentosOperadores");
 
 const {uploadMiddleware} = require("../utils/handleDocumentosOperadores");
@@ -31,22 +29,25 @@ const uploadDocsMiddleware = uploadMiddleware.fields([
   { name: "url_ComprobanteDom", maxCount: 1 },
 ]);
 
+router.post("/create", uploadDocsMiddleware, authMiddleware, saveDocumentosCtrl);
+router.get("/read", readAllDocumentosCtrl);
+router.get("/read/:id", validatorReadDocumento, readDocumentoCtrl);
+router.get("/readByOperador/:id", authMiddleware, validatorReadDocumento, readDocumentosByOperador);
+router.put("/update/:id", uploadDocsMiddleware, authMiddleware, updateDocuments);
+router.delete("/delete/:id", validatorReadDocumento, deleteDocumentosCtrl);
+
 // router.post(
 //   "/create",
 //   createDocumentosCtrl, //works as a middleware
 //   uploadDocsMiddleware,
 //   updateNewNameDocsCtrl
 // );
-router.post( "/create", authMiddleware, uploadDocsMiddleware, saveDocumentosCtrl);
-router.get("/read", readAllDocumentosCtrl);
-router.get("/read/:id", validatorReadDocumento, readDocumentoCtrl);
 
-router.put(
-  "/update/:id",
-  readDataToUpdateCtrl,
-  uploadDocsMiddleware,
-  updateDocumentosCtrl,
-);
-router.delete("/delete/:id", validatorReadDocumento, deleteDocumentosCtrl);
-
+// router.put(
+//   "/update/:id",
+//   authMiddleware,
+//   readDataToUpdateCtrl,
+//   uploadDocsMiddleware,
+//   updateDocumentosCtrl,
+// );
 module.exports = router;

@@ -24,6 +24,7 @@ router.get("/read", readAllTelefonosCtrl);
 router.get("/read/:id", readTelefonoCtrl);
 router.put(
   "/update/:id",
+  authMiddleware,
   validatorReadTelefonoOperador,
   validatorTelefonosOperadores,
   updateTelefonoCtrl

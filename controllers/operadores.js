@@ -26,13 +26,14 @@ const createOperadorCtrl = async (req, res) => {
 const updateOperadorCtrl = async (req, res) => {
   try {
     const { id, ...body } = matchedData(req); //splits the request into two objects, id and body
+    const user = req.user;
     const dataOperador = await operadoresModel.findByPk(id);
     if (!dataOperador) {
       handleHttpError(res, `No existe operador con id: ${id}`, 404);
       return;
     }
     const dataUpdateOperador = await operadoresModel.update(body, {
-      where: { id_Operador: id },
+      where: { id_Operador: id, id_Empresa: user.id_Empresa },
     });
     /*if(dataUpdateOperador==0){
       //console.log(`No se logro updateOperador con id: ${id}`)
@@ -88,16 +89,17 @@ const readOperadorCtrl = async (req, res) => {
 
 const deleteOperadorCtrl = async (req, res) => {
   try {
-    id = parseInt(req.params.id)
+    id = parseInt(req.params.id);
+    const { user } = req;
     const dataOperador = await operadoresModel.findByPk(id);
     if (!dataOperador) {
       handleHttpError(res, `No existe operador con id: ${id}`, 404);
       return;
     } else {
       let query =
-        "UPDATE `tbl_operadores` SET `id_Candado`='0' WHERE `id_Operador`=:id;";
+        "UPDATE `tbl_operadores` SET `id_Candado`='0' WHERE `id_Operador`=:id AND id_Empresa=:id_Empresa";
       const statusDeleteOperador = await sequelize.query(query, {
-        replacements: { id: `${id}` },
+        replacements: { id: `${id}`,  id_Empresa: `${user.id_Empresa}` },
         type: QueryTypes.UPDATE,
       });
       let getLogicStatus = statusDeleteOperador.pop();

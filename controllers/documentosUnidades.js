@@ -17,7 +17,7 @@ async function saveDocumentosCtrl(req, res) {
   }
 }
 
-async function updateNew(req, res) {
+const updateNew = async (req, res) => {
   try {
     let id_Unidad = +req.body.id_Unidad; // body => id_Unidad
     let id = +req.params.id; // params /:id
@@ -46,8 +46,7 @@ async function updateNew(req, res) {
       dataRow = await documentosUnidadesModel.findByPk(id_Documento);
       dataRow = { dataRow, status: `${dataUpdatedRow}` };
     }
-    
-    handleHttpResponse(res, dataRow);
+    handleHttpResponse(res, "");
   } catch (e) {
     console.log(e);
     handleHttpError(res,"ERROR_UPDATE_DOCS");

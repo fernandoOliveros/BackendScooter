@@ -2,6 +2,8 @@ const { documentosOperadoresModel } = require("../models");
 const { handleHttpResponse } = require("../utils/handleResponse");
 const { handleHttpError } = require("../utils/handleError");
 const { matchedData } = require("express-validator");
+const { sequelize } = require("../config/mysql");
+const { QueryTypes } = require("sequelize");
 
  const saveDocumentosCtrl = async (req, res) => {
   let id_Operador = +req.body.id_Operador;
@@ -17,6 +19,41 @@ const { matchedData } = require("express-validator");
   } catch (e) {
     console.log(e);
     handleHttpError(res, "ERROR_CREATE_DOCS_OPERADOR");
+  }
+}
+
+const updateDocuments = async (req, res) => {
+  try {
+    let id_Operador = +req.body.id_Operador; // id_Operador
+    console.log(id_Operador);
+    let id = +req.params.id; // idDocumento
+    console.log(id);
+    let dataRow = null;
+
+    // armamos el arreglo para el UPDATE
+    let dataToUpdate = makeArrayFiles(req?.files);
+    // añadimos el id_Operador al arreglo
+    dataToUpdate = { ...dataToUpdate, id_Operador: id_Operador };
+    //Preguntamos si tiene registro, sino tiene generamos uno nuevo
+    if(Number.isNaN(id)){
+      dataRow = await documentosOperadoresModel.create(dataToUpdate);
+    }else{
+      //Buscamos el registro por el id_Operador
+      let findRowDocumento = await documentosOperadoresModel.findByPk(id);
+      let id_Documento = findRowDocumento.dataValues.id_Documento;
+
+      // UPDATE
+      let dataUpdatedRow = await documentosOperadoresModel.update(dataToUpdate, {
+        where: { id_Documento: id_Documento },
+      });
+
+      dataRow = await documentosOperadoresModel.findByPk(id_Documento);
+      dataRow = { dataRow, status: `${dataUpdatedRow}` };
+    }
+    handleHttpResponse(res, dataRow);
+  } catch (e) {
+    console.log(e);
+    handleHttpError(res,"ERROR_UPDATE_DOCS");
   }
 }
 
@@ -151,6 +188,22 @@ const readDocumentoCtrl = async (req, res) => {
   }
 };
 
+const readDocumentosByOperador = async(req, res) => {
+  try {
+    req = matchedData(req);
+    const { id } = req;
+    let query = "SELECT * FROM tbl_docs_operadores WHERE id_Operador=:id;";
+    const dataDocsOperador = await sequelize.query(query, {
+      replacements: { id: `${id}` },
+      type: QueryTypes.SELECT,
+    });
+    handleHttpResponse(res, dataDocsOperador);
+  } catch (error) {
+    console.log(error);
+    handleHttpError(res, "ERROR_READ_DOCS_OPERADOR");
+  }
+}
+
 const deleteDocumentosCtrl = async (req, res) => {
   try {
     req = matchedData(req);
@@ -185,4 +238,6 @@ module.exports = {
   readDataToUpdateCtrl,
   updateDocumentosCtrl,
   saveDocumentosCtrl,
+  readDocumentosByOperador,
+  updateDocuments,
 };

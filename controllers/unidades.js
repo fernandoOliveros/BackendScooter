@@ -107,7 +107,7 @@ const deleteUnidadCtrl = async (req, res) => {
       type: QueryTypes.SELECT,
     });
     if (!dataId) {
-      handleHttpError(res, `No existe unidad con id: ${id}`, 404);
+      handleHttpError(res, `No existe unidad con id: ${id}`, 403);
       return;
     }else{
       let queryUpdate = "UPDATE tbl_unidades SET id_Candado = '0' WHERE id_Unidad =:id AND id_Empresa =:id_Empresa;";

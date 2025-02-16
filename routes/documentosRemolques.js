@@ -28,10 +28,10 @@ const uploadDocsMiddleware = uploadMiddleware.fields([
   { name: "url_PermisoSCT", maxCount: 1 },
 ]);
 
-router.post( "/create", authMiddleware, uploadDocsMiddleware, createDocumentosCtrl);
+router.post( "/create", uploadDocsMiddleware, authMiddleware, createDocumentosCtrl);
 router.get("/read", readAllDocumentosCtrl);
 router.get("/read/:id", readDocumentoCtrl);
-router.put("/update/:id", authMiddleware, uploadDocsMiddleware, updateDocumentosCtrl);
+router.put("/update/:id",uploadDocsMiddleware, authMiddleware, updateDocumentosCtrl);
 router.delete("/delete/:id", deleteDocumentosCtrl);
 
 module.exports = router;

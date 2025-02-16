@@ -27,9 +27,9 @@ router.get("/read", readAllContactosCtrl);
 router.get("/read/:id", readContactoCtrl);
 router.put(
   "/update/:id",
+  authMiddleware,
   validatorReadContactoEmOperador,
   validatorContactosEmOperadores,
-  authMiddleware,
   updateContactoCtrl
 );
 router.delete(
