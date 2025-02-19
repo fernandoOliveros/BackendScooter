@@ -12,7 +12,8 @@ const { QueryTypes } = require("sequelize");
 
 const createViajeCtrl = async (req, res) => {
   try {
-    const body = matchedData(req); //la data del request venga curada
+    const { user, body} = req;
+    body.id_Empresa = user.id_Empresa;
     console.log("entering createViajeCtrl");
     const dataViaje = await viajeModel.create(body);
     handleHttpResponse(res, dataViaje);
@@ -70,12 +71,11 @@ const updateViajesCtrl = async (req, res) => {
 
 async function getLatestFolio(req, res) {
   try {
-    const id = parseInt(req.params.id);
-    //console.log("id", id)
+    const { user } = req;
     let query =
       "SELECT max(`folio_int_viaje`) as `id_latest_folio`  from `tbl_viaje` WHERE `id_Empresa`=:id;";
     const latest_folio_data = await sequelize.query(query, {
-      replacements: { id: `${id}` },
+      replacements: { id: `${user.id_Empresa}` },
       type: QueryTypes.SELECT,
     });
     let latest_folio = latest_folio_data.pop();

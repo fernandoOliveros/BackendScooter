@@ -14,6 +14,7 @@ const {
   getLatestFolio,
   readViajeActivoEmpresaCtrl
 } = require("../controllers/viajes");
+const { authMiddleware } = require("../middleware/session");
 
 /**
  * RUTAS
@@ -25,12 +26,12 @@ Delete Viaje: http://localhost:5000/api/Viajes/delete/:id
 read only one viaje: http://localhost:5000/api/viajes/read/4
  */
 
-router.post("/create", validatorViajes, createViajeCtrl);
+router.post("/create", validatorViajes, authMiddleware, createViajeCtrl);
 //router.get("/read", readAllViajesCtrl);
 router.get("/read/:id", readViajeCtrl);
 router.get("/readByEmpresa/:id", readViajeEmpresaCtrl);
 
-router.get("/getLatestFolio/:id", getLatestFolio); //send id of the enterprise you want the latest folio from
+router.get("/getLatestFolio", authMiddleware, getLatestFolio); //send id of the enterprise you want the latest folio from
 router.get("/readActivosByEmpresa/:id", readViajeActivoEmpresaCtrl);
 
 

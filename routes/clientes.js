@@ -12,6 +12,7 @@ const {
   deleteclienteCtrl,
   readclientesEmpresaCtrl,
 } = require("../controllers/clientes");
+const { authMiddleware } = require("../middleware/session");
 
 /**
  * RUTAS - ClienteES
@@ -23,15 +24,11 @@ Delete Clientee: http://localhost:5000/api/Clientes/delete/:id
  */
 
 
-router.post("/create", validatorClientesCreate, createclienteCtrl);
-router.get("/read", readAllClientesCtrl);
-router.get("/read/:id", validatorReadCliente, readclienteCtrl);
-router.put(
-  "/update/:id",
-  [validatorClientesCreate, validatorReadCliente],
-  updateclienteCtrl
-);
-router.get("/readByEmpresa/:id", validatorReadCliente, readclientesEmpresaCtrl);
-router.delete("/delete/:id", validatorReadCliente, deleteclienteCtrl);
+router.post("/create", validatorClientesCreate,  authMiddleware, createclienteCtrl);
+router.get("/read", authMiddleware, readAllClientesCtrl);
+router.get("/read/:id", validatorReadCliente, authMiddleware, readclienteCtrl);
+router.put( "/update/:id", [validatorClientesCreate, validatorReadCliente], authMiddleware, updateclienteCtrl);
+router.get("/readByEmpresa", authMiddleware, readclientesEmpresaCtrl);
+router.delete("/delete/:id", validatorReadCliente, authMiddleware, deleteclienteCtrl);
 
 module.exports = router;
