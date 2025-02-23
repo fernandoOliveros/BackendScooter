@@ -56,9 +56,12 @@ const Unidad = sequelize.define(
     },
     id_AseguradoraRespCivil: {
       type: DataTypes.NUMBER,
-      allowNull: true,
-
+      allowNull: true
     },
+    dec_PesoBrutoVehicular:{
+      type: DataTypes.DECIMAL,
+      allowNull: true
+    }
   },
   {
     timestamps: false, //se debe especificar para cada modelo, o especificar globalmente desde /../../config/mysql

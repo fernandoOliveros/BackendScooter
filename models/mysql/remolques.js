@@ -37,6 +37,10 @@ const Remolque = sequelize.define(
       type: DataTypes.TINYINT,
       default : 1,
     },
+    dec_PesoBrutoVehicular:{
+      type: DataTypes.DECIMAL,
+      allowNull: true
+    }
 
   },
   {

@@ -12,9 +12,8 @@ const { QueryTypes } = require("sequelize");
 // CREATE
 const createCFDICtrl = async (req, res, next) => {
   try {
+    // console.log("\n\nim here createCFDICtrl");
     const body =req.body; //la data del request venga curada
-
-    // console.log("\n\n before creating the body", body);
     
     const cfdi = await cfdiModel.create(body);
     handleHttpResponse(res, cfdi)
