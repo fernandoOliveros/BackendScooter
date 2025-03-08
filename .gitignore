@@ -1,3 +1,5 @@
 node_modules/
 #storage/
 #NOT COMMENT STORAGE FOR ENDPOINT "CREATE (ANY) DOCUMENTOS " TO WORK
+*.pdf
+*.pdf
