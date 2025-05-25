@@ -30,4 +30,19 @@ async function readClaveProductoServicioCtrl(req, res) {
   }
 }
 
-module.exports = { readClaveProductoServicioCtrl, readClaveUnidadPeso };
+async function readClaveProductoServicioById(req, res) {
+  try {
+    const id = req.params.id;
+    let query = 'SELECT * FROM cat_claveproductoservicio WHERE id_ClaveProducto =:id;';
+    const dataq = await sequelize.query(query, {
+      replacements: { id: `${id}` },
+      type: QueryTypes.SELECT,
+    });
+    handleHttpResponse(res, dataq);
+  } catch (e) {
+    console.log(e);
+    handleHttpError(res, "ERROR_READ_ID_CLAVE-PRODUCTO-SERVICIO");
+  }
+}
+
+module.exports = { readClaveProductoServicioCtrl, readClaveUnidadPeso, readClaveProductoServicioById};

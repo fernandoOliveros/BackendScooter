@@ -219,17 +219,18 @@ const getRemolquesByViajeCtrl = async (id_Viaje) => {
 
 const readViajeActivoEmpresaCtrl = async (req, res) => {
   try {
-    const id = parseInt(req.params.id);
-    const dataEmpresa = await empresasModel.findByPk(id);
-    if (!dataEmpresa) {
-      handleHttpError(res, `No existe empresa con id: ${id}`, 404);
-      return;
-    } else {
+    // const id = parseInt(req.params.id);
+    // const dataEmpresa = await empresasModel.findByPk(id);
+    // if (!dataEmpresa) {
+    //   handleHttpError(res, `No existe empresa con id: ${id}`, 404);
+    //   return;
+    // } else {
+      const { user } = req;
       let query =
         "SELECT `viaje`.*, `empresa`.`id_Empresa`, `unidades`.`st_Economico` as st_EconomicoUnidad, `operadores`.`st_Nombre`, operadores.st_ApellidoP FROM `tbl_viaje` as `viaje` LEFT JOIN  `tbl_empresas` as `empresa` ON `empresa`.`id_Empresa`= `viaje`.`id_Empresa` LEFT JOIN  `tbl_unidades` as `unidades` ON `unidades`.`id_Unidad`= `viaje`.`id_Unidad` LEFT JOIN  `tbl_operadores` as `operadores` ON `operadores`.`id_Operador`= `viaje`.`id_Operador` WHERE `empresa`.`id_Empresa`=:id AND `viaje`.`id_Candado`= 1 AND `viaje`.`id_StatusViaje`= 1";
 
       const dataViajeModified = await sequelize.query(query, {
-        replacements: { id: `${id}` },
+        replacements: { id: `${user.id_Empresa}` },
         type: QueryTypes.SELECT,
       });
 
@@ -249,7 +250,7 @@ const readViajeActivoEmpresaCtrl = async (req, res) => {
         const idViaje = viaje.id_Viaje;
 
         let verifyCfdiExistanceQuery =
-"SELECT `tbl_cfdi`.st_LugarExpedicion, `tbl_cfdi`.i_Timbrado, `tbl_cfdi`.id_CFDI, `tbl_cfdi`.dec_Total, `tbl_cfdi`.`dec_Total`, `tbl_clientes`.* FROM `tbl_cfdi` RIGHT JOIN `tbl_viaje` ON `tbl_viaje`.`id_Viaje` = `tbl_cfdi`.`id_Viaje` RIGHT JOIN `tbl_clientes` ON `tbl_clientes`.`id_Cliente` = `tbl_cfdi`.`id_Cliente` WHERE `tbl_cfdi`.`id_Viaje`=:id";
+        "SELECT `tbl_cfdi`.st_LugarExpedicion, `tbl_cfdi`.i_Timbrado, `tbl_cfdi`.id_CFDI, `tbl_cfdi`.dec_Total, `tbl_cfdi`.`dec_Total`, `tbl_clientes`.* FROM `tbl_cfdi` RIGHT JOIN `tbl_viaje` ON `tbl_viaje`.`id_Viaje` = `tbl_cfdi`.`id_Viaje` RIGHT JOIN `tbl_clientes` ON `tbl_clientes`.`id_Cliente` = `tbl_cfdi`.`id_Cliente` WHERE `tbl_cfdi`.`id_Viaje`=:id";
         const verifyCfdiExistanceQueryResult = await sequelize.query(
           verifyCfdiExistanceQuery,
           {
@@ -296,7 +297,7 @@ const readViajeActivoEmpresaCtrl = async (req, res) => {
       }
 
       handleHttpResponse(res, dataViajeModified);
-    }
+    //}
   } catch (e) {
     console.log(e);
     handleHttpError(res, "ERROR_READ_viaje-EMPRESA");

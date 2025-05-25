@@ -79,14 +79,10 @@ const readRemolqueCtrl = async (req, res) => {
       return;
     } else {
       let query =
-        "SELECT `remolques`.*, `docs`.`id_Documento`, `docs`.`url_Factura`, `docs`.`url_PermisoSCT`, `docs`.`url_TarjetaCirculacion` "+
-        //"`docs`.`url_TarjetaCirculacion`, `docs`.`url_Factura` , `docs`.`url_PermisoSCT`,`docs`.`id_Documento` " +
+        "SELECT `remolques`.*, `docs`.`id_Documento`"+
         "FROM `tbl_remolques` as `remolques`" +
         "LEFT JOIN `tbl_docs_remolques` as `docs`" +
         "ON `docs`.`id_Remolque`= `remolques`.`id_Remolque`" +
-        //"INNER JOIN  `tbl_tipocandado` as `candado`" +
-        //"ON `candado`.`id_Candado`= `unidades`.`id_Candado`" +
-        //" AND `candado`.`id_Candado`= `unidades`.`id_Candado`" +
         "WHERE `remolques`.`id_Remolque`=:id;";
       const dataRemolqueModified = await sequelize.query(query, {
         replacements: { id: `${id}` },

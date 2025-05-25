@@ -69,6 +69,7 @@ const readAllUnidadesCtrl = async (req, res) => {
 const readUnidadCtrl = async (req, res) => {
   try {
     const id= parseInt(req.params.id)
+    console.log(id);
     //console.log(`El id ESSSS ${id}`)
 
     const dataUnidad = await unidadesModel.findByPk(id);
@@ -76,15 +77,13 @@ const readUnidadCtrl = async (req, res) => {
       handleHttpError(res, `No existe unidad con id: ${id}`, 404);
       return;
     } else {
-      let query =
-        "SELECT `candado`.`st_DescripcionCandado`, `unidades`.*, `docs`.`url_TarjetaCirculacion`, `docs`.`url_Factura` , `docs`.`url_PermisoSCT`,`docs`.`id_Documento` " +
-        "FROM `tbl_unidades` as `unidades`" +
-        "LEFT JOIN `tbl_documentos` as `docs`" +
-        " ON `docs`.`id_Unidad`= `unidades`.`id_Unidad`" +
-        "LEFT JOIN  `tbl_tipocandado` as `candado`" +
-        " ON `candado`.`id_Candado`= `unidades`.`id_Candado`" +
-        " AND `candado`.`id_Candado`= `unidades`.`id_Candado`" +
-        "WHERE `unidades`.`id_Unidad`=:id;";
+      let query = "SELECT unidades.*, docs.id_Documento " +
+        " FROM tbl_unidades as unidades" +
+        " LEFT JOIN tbl_documentos as docs" +
+        " ON docs.id_Unidad = unidades.id_Unidad" +
+        " WHERE unidades.id_Unidad=:id;";
+
+      //let query = "SELECT * FROM tbl_unidades WHERE id_Unidad= :id;";
       const dataUnidadModified = await sequelize.query(query, {
         replacements: { id: `${id}` },
         type: QueryTypes.SELECT,
@@ -92,6 +91,7 @@ const readUnidadCtrl = async (req, res) => {
       handleHttpResponse(res, dataUnidadModified);
     }
   } catch (e) {
+    console.log(e);
     handleHttpError(res, "ERROR_READ_UNIDAD");
   }
 };
