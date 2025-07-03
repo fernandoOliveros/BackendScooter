@@ -43,6 +43,8 @@ const {
 const {
   createDireccionDestinoCPCtrl,
 } = require("../controllers/direccionDestinoCP");
+const { createCartaPorteV2, getCartaPorteByIdV2 } = require("../controllers/cartaPorte_new");
+const { authMiddleware } = require("../middleware/session");
 
 /**
  * RUTAS - CARTA PORTE
@@ -67,8 +69,10 @@ router.post("/create", validateCartaporte, createCartaPorteCtrl);
 router.get("/create/:id", createXmlCartaPorteFromDBCtrl);
 router.put("/update/:id", validateCartaporte, updateCartaPorteCtrl);
 router.get("/read/:id", readOneCartaPorteCtrl);
-router.get("/readAllByEmpresa/:id", readAllByEmpresaCartaPorteCtrl);
+router.get("/readAllByEmpresa/:id", authMiddleware, readAllByEmpresaCartaPorteCtrl);
 router.delete("/delete/:id",deleteCartaPorteCtrl);
+router.post("/createV2", authMiddleware , createCartaPorteV2);
+router.get("/getCartaPorteV2/:id", authMiddleware , getCartaPorteByIdV2);
 
 
 

@@ -55,15 +55,13 @@ const readAllCartasPorteCtrl = async (req, res) => {
 // READ ALL
 const readAllByEmpresaCartaPorteCtrl = async (req, res) => {
   try {
-    console.log("test")
-    let id_Empresa=req.params.id;
-    let query = "    SELECT tbl_cartaporte.* FROM tbl_cartaporte LEFT JOIN tbl_cfdi on tbl_cartaporte.id_CFDI = tbl_cfdi.id_CFDI   WHERE tbl_cfdi.id_Empresa = :id"
+    const {user} = req;
+    let query = "    SELECT tbl_cartaporte.* FROM tbl_cartaporte LEFT JOIN tbl_cfdi on tbl_cartaporte.id_CFDI = tbl_cfdi.id_CFDI WHERE tbl_cfdi.id_Empresa = :id";
       const result = await sequelize.query(query, {
-          replacements: { id: `${id_Empresa}` },
+          replacements: { id: user.id_Empresa },
         type: sequelize.QueryTypes.SELECT, // Use the appropriate type
       });
     handleHttpResponse(res, result)
-
   } catch (err) {
     console.error(err);
     res.status(500).json({ success: false, message: 'Server Error' });

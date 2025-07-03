@@ -19,10 +19,11 @@ const CartaPorte = sequelize.define(
     },
     id_CFDI: {
       type: DataTypes.INTEGER,
+      allowNull: false,
     },
     folio_int_cp: {
       type: DataTypes.INTEGER,
-      allowNull: true,
+      allowNull: false,
     },
     i_NumTotalMercancias: {
       type: DataTypes.INTEGER,
@@ -80,7 +81,7 @@ const CartaPorte = sequelize.define(
     },
   },
   {
-    timestamps: false,
+    timestamps: true,
     tableName: "tbl_cartaporte",
   }
 );

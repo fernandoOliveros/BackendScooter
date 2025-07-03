@@ -9,7 +9,7 @@ async function RunPythonSelladoCtrl(req, res) {
   const pythonScriptPath = "./controllers/pySelladoXML.py";
 
   // Comando para ejecutar el script de Python
-  const command = `python ${pythonScriptPath}`;
+  const command = `python3 ${pythonScriptPath}`;
 
  
   try {
@@ -32,7 +32,7 @@ async function GetCertBase64Ctrl(req, res) {
     const pythonScriptPath = "./controllers/pySelladoXML.py";
   
     // Comando para ejecutar el script de Python
-    const command = `python ${pythonScriptPath}`;
+    const command = `python3 ${pythonScriptPath}`;
   
     try {
         const { stdout } = await executeCommand(command);

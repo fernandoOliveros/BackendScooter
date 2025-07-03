@@ -2704,7 +2704,7 @@ async function GetCertBase64Ctrl(st_EmpresaRFC) {
   const folder = st_EmpresaRFC;
 
   // Comando para ejecutar el script de Python
-  const command = `python ${pythonScriptPath} --parameter "${folder}"`;
+  const command = `python3 ${pythonScriptPath} --parameter "${folder}"`;
   try {
     const { stdout } = await executeCommand(command);
     // console.log(`Salida del script: ${stdout}`);
@@ -2737,7 +2737,7 @@ async function getSelloCtrl(st_EmpresaRFC, id_CFDI_DB, nameXML) {
   const folder = st_EmpresaRFC;
 
   // Comando para ejecutar el script de Python
-  const command = `python ${pythonScriptPath} --parameter "${folder}" --nombreXML "${nameXMLcreated}"`;
+  const command = `python3 ${pythonScriptPath} --parameter "${folder}" --nombreXML "${nameXMLcreated}"`;
   try {
     const { stdout } = await executeCommand(command);
     //console.log(`Salida del script: ${stdout}`);
